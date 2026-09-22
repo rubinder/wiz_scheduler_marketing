@@ -1,0 +1,92 @@
+---
+import Base from "../layouts/Base.astro";
+import { m } from "../theme";
+import { getCopy } from "../i18n";
+import { appLink } from "../lib/site";
+import { localePath, type Locale } from "../lib/links";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getCopy(locale);
+
+const PAGE_SLUGS = [
+  "dashboard", "company", "regions", "locations", "roles", "role-equivalents", "employees",
+  "hour-restrictions", "day-blackouts", "employee-onboarding", "employee-association",
+  "shift-templates", "schedule", "export-schedules", "data-privacy",
+] as const;
+type Slug = (typeof PAGE_SLUGS)[number];
+const pages = t.features.pages as Record<Slug, { title: string; desc: string }>;
+const ordinal = (i: number) => String(i + 1).padStart(2, "0");
+const tocLink =
+  `flex items-baseline gap-2 border-b ${m.rule.line} border-s-2 border-transparent py-2 ${m.text.meta} ` +
+  "transition-colors hover:!text-ink hover:border-marker focus-visible:outline focus-visible:outline-2 " +
+  "focus-visible:outline-offset-2 focus-visible:outline-ink";
+---
+<Base locale={locale} title={`${t.features.pageTitle} | ${t.common.appName}`} description={t.features.pageIntro} path="/features">
+  <main class="max-w-[92rem] mx-auto px-6">
+    <section class="pt-12 lg:pt-20 pb-12">
+      <div class="max-w-[62ch] text-start">
+        <h1 class={`${m.text.display} font-display text-5xl lg:text-6xl font-semibold leading-[0.95] mb-6`}>{t.features.pageTitle}</h1>
+        <p class={`${m.text.muted} text-lg leading-relaxed max-w-[62ch]`}>{t.features.pageIntro}</p>
+      </div>
+    </section>
+
+    <section class="pb-20">
+      <div class="lg:grid lg:grid-cols-[220px_1fr] lg:gap-10">
+        <aside class="hidden lg:block">
+          <div class="sticky top-20">
+            <h2 class={`${m.text.meta} mb-3`}>{t.features.tocTitle}</h2>
+            <nav class="flex flex-col">
+              {PAGE_SLUGS.map((slug, idx) => (
+                <a href={`#${slug}`} class={tocLink}>
+                  <span class="shrink-0">{ordinal(idx)}</span>
+                  <span class="normal-case tracking-normal">{pages[slug].title}</span>
+                </a>
+              ))}
+            </nav>
+          </div>
+        </aside>
+
+        <div class="flex flex-col gap-10">
+          {PAGE_SLUGS.map((slug, idx) => (
+            <article
+              id={slug}
+              class={`${m.surface} border ${m.rule.heavy} p-6 lg:p-10 scroll-mt-24 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-center ${
+                idx % 2 === 1 ? "lg:[&>div:first-child]:order-2" : ""
+              }`}
+            >
+              <div class={`${m.surface} border ${m.rule.line} overflow-hidden aspect-[16/10]`}>
+                <img
+                  src={`/screenshots/${slug}.png`}
+                  alt={pages[slug].title}
+                  loading="lazy"
+                  width="1600"
+                  height="1000"
+                  class="w-full h-full object-cover object-top"
+                />
+              </div>
+              <div>
+                <p class={`${m.text.meta} mb-2`}>{ordinal(idx)}</p>
+                <h3 class={`${m.text.display} font-display text-2xl font-semibold mb-3`}>{pages[slug].title}</h3>
+                <p class={`${m.text.muted} max-w-[62ch] leading-relaxed`}>{pages[slug].desc}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="pb-24">
+      <div class="max-w-2xl">
+        <h2 class={`${m.text.display} font-display text-4xl font-semibold mb-4`}>{t.features.ctaTitle}</h2>
+        <p class={`${m.text.muted} text-lg mb-8 max-w-[55ch]`}>{t.features.ctaDesc}</p>
+        <div class="flex flex-wrap items-center gap-6">
+          <a href={appLink("/register")} class={m.btn.primary}>{t.features.ctaBtn}</a>
+          <a href={localePath(locale, "/")} class={m.btn.link}>{t.features.backToHome}</a>
+        </div>
+      </div>
+    </section>
+  </main>
+</Base>
