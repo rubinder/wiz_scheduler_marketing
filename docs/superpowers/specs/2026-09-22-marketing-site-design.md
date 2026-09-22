@@ -1,7 +1,8 @@
 # WizScheduler marketing site — design
 
 Date: 2026-09-22
-Status: approved in conversation, awaiting written review
+Status: approved 2026-09-22; amended during planning (Astro 7, legal documents
+fetched from the app API, NYC retail notice corrected to 72 hours)
 
 ## Purpose
 
@@ -22,7 +23,7 @@ invites, verification and everything behind auth.
 | Locales at launch | English (default, at `/`) and Spanish (at `/es/`) |
 | Hosting | Same AWS account: new private S3 bucket + new CloudFront distribution at apex and www |
 | Design | Port the app's current landing look, theme, fonts and copy; extend in that style |
-| Generator | Astro 5 with Tailwind and React integrations, TypeScript strict |
+| Generator | Astro 7 with the React integration, Tailwind 3 via PostCSS, TypeScript 5 strict |
 | Pages in first release | Home, Features, Privacy, Terms, DPA, NYC Fair Workweek, Compare 7shifts, Free schedule checker |
 | Compare target | 7shifts first (NYC restaurant incumbent, app has a 7shifts importer); Deputy later on the same template |
 | Checker lead capture | None. Results shown immediately; single sign-up CTA below them |
@@ -32,8 +33,11 @@ invites, verification and everything behind auth.
 
 ### Toolchain
 
-- Astro 5, `@astrojs/tailwind`, `@astrojs/react`, `@astrojs/sitemap`,
-  TypeScript strict. Node 24 pinned in `.nvmrc`.
+- Astro 7, `@astrojs/react`, `@astrojs/sitemap`, `@astrojs/check`,
+  TypeScript 5.9 (`@astrojs/check` does not accept TypeScript 7). Node 24
+  pinned in `.nvmrc`; Astro 7 needs Node 22.12+.
+- Tailwind 3.4 wired through `postcss.config.cjs`, not `@astrojs/tailwind`
+  (that integration stops at Astro 5). Astro picks PostCSS up automatically.
 - `tailwind.config.ts` copied from `wiz_scheduler/frontend`: palette
   (cream, sage, accent, ink, newsprint, paper, rule, marker, clear), font
   families (`display`, `body`, `data` via CSS variables) and the `wiz-glow`
@@ -42,7 +46,9 @@ invites, verification and everything behind auth.
   woff2 subsets) with the same preload tags the app's `index.html` uses.
 - `motion` is a dependency for `RotaHero` and `SectionRule` only.
 - `xlsx` (SheetJS community build) is a dependency for the checker island
-  only.
+  only, installed from the SheetJS CDN tarball
+  (`https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz`); the npm registry
+  copy is frozen at 0.18.5 with open advisories.
 - Vitest for unit tests. Playwright optional for pre-cutover checks; not
   part of CI in this release.
 
@@ -75,13 +81,14 @@ wiz_scheduler_marketing/
       404.astro
       es/                        same files, Spanish
     content/
-      legal/{en,es}/{privacy-policy,terms,dpa}.md
+      legal/fixture.json         snapshot of the app API's three legal documents
       compare/{en,es}/7shifts.md
     i18n/
       en.ts, es.ts               typed copy objects (subset of the app's locale files: landing, features, gdpr, nav)
       index.ts                   getCopy(locale) + t helper
     lib/
       site.ts                    APP_URL, API_URL, SITE_URL constants
+      legal.ts                   build-time fetch of /gdpr/{privacy-policy,terms,dpa}, fixture fallback
       checker/
         parse.ts                 CSV / TSV / XLSX -> rows; header guessing
         request.ts               rows -> API payload; caps; timezone default
@@ -108,8 +115,9 @@ wiz_scheduler_marketing/
   client-side locale state, no flash of English on Spanish pages.
 - Copy for template-driven pages lives in typed objects (`i18n/en.ts`,
   `i18n/es.ts`) sharing one `Copy` type. A missing Spanish key is a
-  TypeScript build error. Long-form pages (legal, compare) are Markdown per
-  locale.
+  TypeScript build error. Compare pages are Markdown per locale. Legal documents are
+  English only because the app API serves a single version; Spanish routes
+  show the English text inside Spanish page chrome with a one-line note.
 - Spanish copy for ported sections comes from the app's `es.ts`. New pages
   get new Spanish copy written alongside the English.
 - Other locales (including RTL `ar` and `ur`) are out of scope. Adding one
@@ -128,17 +136,30 @@ wiz_scheduler_marketing/
   block; pricing tile; sign-up CTA. Copy from the app's `landing.*` keys.
 - **Features** (`/features`): ported as is.
 - **Privacy policy** (`/privacy-policy`), **Terms** (`/terms`),
-  **DPA** (`/dpa`): converted to Markdown under `content/legal`, text
-  unchanged. Paths are identical to the app's so existing emails and the
-  app footer keep working after cutover.
+  **DPA** (`/dpa`): the app does not hold these as static text; it serves
+  them from public, unauthenticated API endpoints (`GET
+  /api/v1/gdpr/{privacy-policy,terms,dpa}`, hardcoded in
+  `backend/routers/gdpr.py`, version 1.0, effective 2026-04-05, DPA carries a
+  processors table). Consent records in the app reference that version, so
+  the API stays the single source. The site fetches the three documents at
+  build time (`LEGAL_SOURCE=api`, used by the deploy workflow) and falls
+  back to a committed snapshot `content/legal/fixture.json`
+  (`LEGAL_SOURCE=fixture`, the default for local and PR builds). A script
+  refreshes the snapshot. Paths are identical to the app's so existing
+  emails and the app footer keep working after cutover.
 
 ### New pages
 
 - **NYC Fair Workweek scheduling** (`/nyc-fair-workweek-scheduling`).
-  Sections: who the law covers (fast food chains 30+ nationally, retail 20+
-  employees in NYC); the rules in plain words (14-day advance notice,
-  11-hour rest / no clopening, schedule-change premiums, offer hours to
-  existing staff first) with the penalty ranges; how WizScheduler enforces
+  Sections: who the law covers (fast food establishments that are part of a
+  chain of 30 or more nationally; retail employers with 20 or more employees
+  in NYC); the fast food rules in plain words (14-day advance notice;
+  11 hours between shifts or a $100 clopening premium with written consent;
+  schedule-change premiums of $10 to $75 by notice window; offer hours to
+  existing staff before hiring) and the retail rules (72 hours' notice, no
+  on-call shifts, no additions or cancellations inside 72 hours without
+  consent); fines of $500 per violation per worker, $750 for a second within
+  two years, $1,000 after that; how WizScheduler enforces
   each today — the 11-hour rule is enforced in generation and validation,
   notice tracking and premiums are roadmap and are labelled as such, never
   implied as shipped; CTA to the checker; CTA to sign up. Legal facts cite
@@ -341,6 +362,7 @@ The marketing bucket and distribution can remain.
 |---|---|---|
 | Public compliance-check API + CORS setting | issue #116 | agent pipeline |
 | Activation funnel (attributes checker/NYC signups) | issue #115 | agent pipeline |
+| Legal documents (public GDPR endpoints, already live) | `backend/routers/gdpr.py` | none |
 | Terraform: bucket, distribution, aliases, Route53, `app_domain` | `terraform/**` | human |
 | Google OAuth origin | Google console | human |
 | App redirects + marketing component removal | follow-up PR | either |
