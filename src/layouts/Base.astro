@@ -1,0 +1,35 @@
+---
+import "../styles/global.css";
+import Seo from "../components/Seo.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import type { Locale } from "../lib/links";
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  path: string;
+  noindex?: boolean;
+}
+const { locale, title, description, path, noindex } = Astro.props;
+---
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/Archivo-2.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/SourceSans3-6.woff2" />
+    <Seo locale={locale} title={title} description={description} path={path} noindex={noindex} />
+    <slot name="head" />
+  </head>
+  <body>
+    <div class="min-h-screen bg-newsprint text-ink font-body">
+      <Nav locale={locale} path={path} />
+      <slot />
+      <Footer locale={locale} />
+    </div>
+  </body>
+</html>

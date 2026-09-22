@@ -1,0 +1,32 @@
+---
+import { m } from "../theme";
+import { getCopy } from "../i18n";
+import { localePath, type Locale } from "../lib/links";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getCopy(locale);
+const links = [
+  { to: "/features", label: t.landing.featuresLink },
+  { to: "/nyc-fair-workweek-scheduling", label: t.nav.nyc },
+  { to: "/free-schedule-checker", label: t.nav.checker },
+  { to: "/compare/7shifts", label: t.nav.compare },
+  { to: "/privacy-policy", label: t.gdpr.privacyPolicy },
+  { to: "/terms", label: t.gdpr.termsOfService },
+  { to: "/dpa", label: t.gdpr.dpa },
+];
+---
+<footer class={`border-t ${m.rule.heavy} mt-24`}>
+  <div class="max-w-[92rem] mx-auto px-6 py-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-2.5">
+      <img src="/favicon.svg" alt="" class="w-5 h-5" />
+      <span class={`${m.text.meta} !text-ink`}>{t.common.appName}</span>
+    </div>
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+      {links.map((l) => <a href={localePath(locale, l.to)} class={`${m.btn.link} text-sm`}>{l.label}</a>)}
+    </div>
+    <span class={m.text.meta}>Suggestival LLC</span>
+  </div>
+</footer>

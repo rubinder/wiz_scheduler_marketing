@@ -1,0 +1,15 @@
+---
+import Base from "../layouts/Base.astro";
+import { getCopy } from "../i18n";
+import { m } from "../theme";
+
+const t = getCopy("en");
+---
+<Base locale="en" title={`${t.notFound.title} | ${t.common.appName}`} description={t.notFound.desc} path="/404" noindex>
+  <main class="max-w-[92rem] mx-auto px-6 py-24">
+    <p class={`${m.text.meta} mb-6`}>404</p>
+    <h1 class={`${m.text.display} font-display text-5xl font-semibold mb-4`}>{t.notFound.title}</h1>
+    <p class={`${m.text.muted} mb-8 max-w-[50ch]`}>{t.notFound.desc}</p>
+    <a href="/" class={m.btn.primary}>{t.notFound.home}</a>
+  </main>
+</Base>

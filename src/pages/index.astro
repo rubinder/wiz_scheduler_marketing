@@ -1,8 +1,11 @@
 ---
-import "../styles/global.css";
+import Base from "../layouts/Base.astro";
+import { getCopy } from "../i18n";
+
+const t = getCopy("en");
 ---
-<!doctype html>
-<html lang="en">
-  <head><meta charset="UTF-8" /><title>Wiz Scheduler</title></head>
-  <body><h1 class="font-display text-3xl">Wiz Scheduler</h1></body>
-</html>
+<Base locale="en" title={t.common.appName} description={t.landing.heroDesc} path="/">
+  <main class="max-w-[92rem] mx-auto px-6 py-24">
+    <h1 class="font-display text-5xl font-semibold">{t.landing.heroTitle} {t.landing.heroTitleAccent}</h1>
+  </main>
+</Base>
