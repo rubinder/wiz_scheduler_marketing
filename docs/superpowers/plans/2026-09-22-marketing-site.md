@@ -2382,7 +2382,7 @@ export const collections = { compare };
 
 - [ ] **Step 2: Check the competitor facts, then write the content**
 
-Open `https://www.7shifts.com/pricing` in a browser (the page needs JavaScript; a plain fetch returns an empty shell). Compare with the table below, correct any figure, and set `checkedOn` in both files to today's date. The figures below are from a third-party summary verified 2026-09-01 and must not ship unverified.
+Open `https://www.7shifts.com/pricing` in a browser (the page needs JavaScript; a plain fetch returns an empty shell). Compare with the table below, correct any figure, and set `checkedOn` in both files to today's date. The figures below were read from 7shifts' live pricing page on 2026-09-22 (monthly billing; the page's Team Size selector switches between the 1–30 and 31+ tiers).
 
 `src/content/compare/en/7shifts.md`
 ```md
@@ -2403,13 +2403,12 @@ checkedOn: "2026-09-22"
 | | 7shifts | WizScheduler |
 | --- | --- | --- |
 | Free plan | Comp: 1 location, up to 15 employees | 1 location, 5 employees, 5 schedule generations a month |
-| Entry paid plan | Essentials: $44.99 per location per month | $18 per month for all locations |
-| Mid plan | Pro: $89.99 per location per month | Same $18 plan |
-| Top plan | Premium: $149.99 per location per month | Same $18 plan |
-| Annual discount | About 10% | None |
-| AI scheduling | Auto-scheduling on Pro and above | Pay-as-you-go credits from $10, bought separately |
+| Teams of 1 to 30 | Essentials $49.99 per location per month (up to 30 employees); Premium $149.99 | $18 per month for all locations |
+| Teams of 31 or more | Pro $99.99 per location per month (up to 60 employees); Premium $199.99 | Same $18 plan |
+| Annual billing | 10% off | No discount |
+| Labor compliance tools | Premium plan | 11-hour rest rule on every plan |
 
-A three-location restaurant group on 7shifts Pro pays about $270 a month. On WizScheduler it pays $18, plus whatever AI credits it chooses to buy.
+A three-location restaurant group on 7shifts Pro pays about $300 a month. On WizScheduler it pays $18, plus whatever AI credits it chooses to buy.
 
 ## Where 7shifts is stronger
 
@@ -2456,13 +2455,12 @@ checkedOn: "2026-09-22"
 | | 7shifts | WizScheduler |
 | --- | --- | --- |
 | Plan gratuito | Comp: 1 ubicación, hasta 15 empleados | 1 ubicación, 5 empleados, 5 generaciones de horario al mes |
-| Plan de pago inicial | Essentials: $44.99 por ubicación al mes | $18 al mes para todas las ubicaciones |
-| Plan intermedio | Pro: $89.99 por ubicación al mes | El mismo plan de $18 |
-| Plan superior | Premium: $149.99 por ubicación al mes | El mismo plan de $18 |
-| Descuento anual | Alrededor del 10% | Ninguno |
-| Horarios con AI | Auto-programación en Pro y superiores | Créditos de pago por uso desde $10, comprados aparte |
+| Equipos de 1 a 30 | Essentials $49.99 por ubicación al mes (hasta 30 empleados); Premium $149.99 | $18 al mes para todas las ubicaciones |
+| Equipos de 31 o más | Pro $99.99 por ubicación al mes (hasta 60 empleados); Premium $199.99 | El mismo plan de $18 |
+| Facturación anual | 10% de descuento | Sin descuento |
+| Herramientas de cumplimiento laboral | Plan Premium | Regla de 11 horas de descanso en todos los planes |
 
-Un grupo de tres restaurantes en 7shifts Pro paga unos $270 al mes. En WizScheduler paga $18, más los créditos de AI que decida comprar.
+Un grupo de tres restaurantes en 7shifts Pro paga unos $300 al mes. En WizScheduler paga $18, más los créditos de AI que decida comprar.
 
 ## Dónde 7shifts es más fuerte
 
