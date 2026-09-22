@@ -1,0 +1,125 @@
+---
+import Base from "../layouts/Base.astro";
+import SectionRule from "../components/SectionRule.astro";
+import { m } from "../theme";
+import { getCopy } from "../i18n";
+import { appLink, NYC_PRESET } from "../lib/site";
+import { localePath, type Locale } from "../lib/links";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getCopy(locale);
+const n = t.nyc;
+/** Date the legal summary below was last checked against DCWP material. Update when the copy changes. */
+const REVIEWED_ON = "2026-09-22";
+const statusLabel = (s: string) => (s === "enforced" ? n.enforced : n.roadmap);
+const statusClass = (s: string) => (s === "enforced" ? `${m.text.clear}` : "text-ink/60");
+---
+<Base locale={locale} title={`${n.metaTitle} | ${t.common.appName}`} description={n.metaDesc} path="/nyc-fair-workweek-scheduling">
+  <main class="max-w-[92rem] mx-auto px-6">
+    <section class="pt-16 pb-16 max-w-[62ch]">
+      <p class={`${m.text.meta} mb-6`}>{n.eyebrow}</p>
+      <h1 class={`${m.text.display} font-display text-5xl sm:text-6xl font-semibold leading-[0.95] mb-6`}>
+        {n.title} <span class={m.mark}>{n.titleAccent}</span>
+      </h1>
+      <p class={`${m.text.muted} text-lg leading-relaxed mb-9`}>{n.intro}</p>
+      <div class="flex flex-wrap items-center gap-4">
+        <a href={localePath(locale, "/free-schedule-checker")} class={m.btn.primary}>{n.ctaChecker}</a>
+        <a href={appLink("/register", NYC_PRESET)} class={m.btn.link}>{n.ctaSignup}</a>
+      </div>
+    </section>
+
+    <SectionRule eyebrow={n.coveredEyebrow} title={n.coveredTitle} />
+    <div class={`grid gap-px md:grid-cols-2 bg-rule border ${m.rule.line} mb-24`}>
+      <div class="bg-newsprint p-6">
+        <h3 class={`${m.text.display} font-display text-2xl font-semibold mb-3`}>{n.fastFoodTitle}</h3>
+        <p class={`${m.text.muted} leading-relaxed`}>{n.fastFoodDesc}</p>
+      </div>
+      <div class="bg-newsprint p-6">
+        <h3 class={`${m.text.display} font-display text-2xl font-semibold mb-3`}>{n.retailTitle}</h3>
+        <p class={`${m.text.muted} leading-relaxed`}>{n.retailDesc}</p>
+      </div>
+    </div>
+
+    <SectionRule eyebrow={n.rulesEyebrow} />
+    <div class="grid gap-10 md:grid-cols-2 mb-24">
+      <div>
+        <p class={`${m.text.meta} mb-4`}>{n.fastFoodRulesTitle}</p>
+        <dl class={`border-t ${m.rule.line}`}>
+          {n.fastFoodRules.map((r) => (
+            <div class={`border-b ${m.rule.line} py-4`}>
+              <dt class={`${m.text.body} font-medium`}>{r.title}</dt>
+              <dd class={`${m.text.muted} text-sm leading-relaxed`}>{r.desc}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+      <div>
+        <p class={`${m.text.meta} mb-4`}>{n.retailRulesTitle}</p>
+        <dl class={`border-t ${m.rule.line}`}>
+          {n.retailRules.map((r) => (
+            <div class={`border-b ${m.rule.line} py-4`}>
+              <dt class={`${m.text.body} font-medium`}>{r.title}</dt>
+              <dd class={`${m.text.muted} text-sm leading-relaxed`}>{r.desc}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </div>
+
+    <SectionRule eyebrow={n.premiumsEyebrow} title={n.premiumsTitle} />
+    <div class={`${m.surface} border ${m.rule.heavy} p-6 md:p-10 max-w-3xl mb-10`}>
+      <div class="overflow-x-auto">
+        <table class="w-full font-data text-sm tabular-nums">
+          <thead>
+            <tr class={`border-b ${m.rule.line}`}>
+              <th class={`${m.text.meta} text-start pb-3`}>{n.premiumsNotice}</th>
+              <th class={`${m.text.meta} text-end pb-3`}>{n.premiumsAdded}</th>
+              <th class={`${m.text.meta} text-end pb-3`}>{n.premiumsReduced}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {n.premiums.map((p) => (
+              <tr class={`border-b ${m.rule.grid}`}>
+                <td class="py-2.5 text-start">{p.notice}</td>
+                <td class="py-2.5 text-end">{p.added}</td>
+                <td class="py-2.5 text-end">{p.reduced}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class={`border ${m.rule.line} p-6 md:p-8 max-w-3xl mb-24`}>
+      <p class={`${m.text.meta} mb-3`}>{n.finesTitle}</p>
+      <p class={`${m.text.muted} max-w-[60ch]`}>{n.finesDesc}</p>
+    </div>
+
+    <SectionRule eyebrow={n.productEyebrow} title={n.productTitle} />
+    <dl class={`border-t ${m.rule.line} mb-24`}>
+      {n.productRows.map((r) => (
+        <div class={`border-b ${m.rule.line} py-4 grid gap-1 md:grid-cols-[18rem_8rem_1fr] md:gap-8`}>
+          <dt class={`${m.text.body} font-medium`}>{r.title}</dt>
+          <dd class={`${m.text.meta} ${statusClass(r.status)}`}>{statusLabel(r.status)}</dd>
+          <dd class={`${m.text.muted} text-sm leading-relaxed`}>{r.desc}</dd>
+        </div>
+      ))}
+    </dl>
+
+    <SectionRule eyebrow={n.ctaEyebrow} title={n.ctaTitle} />
+    <div class="max-w-2xl mb-16">
+      <p class={`${m.text.muted} text-lg mb-8 max-w-[55ch]`}>{n.ctaDesc}</p>
+      <div class="flex flex-wrap items-center gap-6">
+        <a href={localePath(locale, "/free-schedule-checker")} class={m.btn.primary}>{n.ctaChecker}</a>
+        <a href={appLink("/register", NYC_PRESET)} class={m.btn.link}>{n.ctaSignup}</a>
+      </div>
+    </div>
+
+    <p class={`${m.text.meta} mb-2`}>{n.reviewedOn} <time datetime={REVIEWED_ON}>{REVIEWED_ON}</time></p>
+    <p class={`${m.text.muted} text-sm mb-8`}>
+      <a href={n.sourceUrl} rel="noopener" target="_blank" class={m.btn.link}>{n.source}</a>
+    </p>
+  </main>
+</Base>
