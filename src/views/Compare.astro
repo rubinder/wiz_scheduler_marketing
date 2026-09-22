@@ -1,0 +1,39 @@
+---
+import { getEntry, render } from "astro:content";
+import Base from "../layouts/Base.astro";
+import { m } from "../theme";
+import { getCopy } from "../i18n";
+import { appLink } from "../lib/site";
+import { localePath, type Locale } from "../lib/links";
+
+interface Props {
+  locale: Locale;
+  slug: string;
+}
+const { locale, slug } = Astro.props;
+const t = getCopy(locale);
+const entry = await getEntry("compare", `${locale}/${slug}`);
+if (!entry) throw new Error(`compare entry missing: ${locale}/${slug}`);
+const { Content } = await render(entry);
+const d = entry.data;
+---
+<Base locale={locale} title={`${d.title} | ${t.common.appName}`} description={d.description} path={`/compare/${slug}`}>
+  <main class="max-w-[92rem] mx-auto px-6">
+    <section class="pt-16 pb-10 max-w-[62ch]">
+      <p class={`${m.text.meta} mb-6`}>{t.nav.compare}</p>
+      <h1 class={`${m.text.display} font-display text-5xl sm:text-6xl font-semibold leading-[0.95] mb-6`}>{d.title}</h1>
+      <p class={`${m.text.muted} text-lg leading-relaxed`}>{d.description}</p>
+    </section>
+    <article class="prose-rota max-w-4xl">
+      <Content />
+    </article>
+    <p class={`${m.text.meta} mt-12`}>
+      {t.compare.checkedOn} <time datetime={d.checkedOn}>{d.checkedOn}</time> ·
+      <a href={d.competitorUrl} rel="noopener nofollow" target="_blank" class={m.btn.link}>{d.competitor}</a>
+    </p>
+    <div class="flex flex-wrap items-center gap-6 mt-12 mb-16">
+      <a href={appLink("/register")} class={m.btn.primary}>{t.compare.ctaSignup}</a>
+      <a href={localePath(locale, "/")} class={m.btn.link}>{t.compare.ctaHome}</a>
+    </div>
+  </main>
+</Base>
