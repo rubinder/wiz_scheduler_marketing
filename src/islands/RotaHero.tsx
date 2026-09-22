@@ -40,7 +40,7 @@ export default function RotaHero({ copy, registerUrl }: Props) {
         };
 
   const Count = ({ to }: { to: number }) => {
-    const [n, setN] = useState(reduce ? to : 0);
+    const [n, setN] = useState(0);
     useEffect(() => {
       if (reduce || to === 0) {
         setN(to);
