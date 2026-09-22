@@ -62,10 +62,10 @@ const exampleRows = [
   { item: t.landing.exampleEmployees, usage: t.landing.exampleEmployeesUsage, cost: t.landing.exampleEmployeesCost },
 ];
 const meters = [
-  { tag: "AI", title: t.landing.aiScheduling, included: t.landing.aiCredits, includedValue: "$10 · $25 · $50", overage: "Cost x 130%", note: t.landing.aiOverageNote },
-  { tag: "RUNS", title: t.landing.schedules, included: t.landing.included, includedValue: "50 / month", overage: "$0.10 / 50", note: t.landing.schedulesOverageNote },
-  { tag: "DATA", title: t.landing.storage, included: t.landing.included, includedValue: "0.5 GB", overage: "$0.50 / GB", note: t.landing.storageOverageNote },
-  { tag: "TEAM", title: t.landing.employees, included: t.landing.included, includedValue: "1,000", overage: "$1.00 / 1K", note: t.landing.employeesOverageNote },
+  { tag: t.home.meterAi, title: t.landing.aiScheduling, included: t.landing.aiCredits, includedValue: "$10 · $25 · $50", overage: t.home.aiOverage, note: t.landing.aiOverageNote },
+  { tag: t.home.meterRuns, title: t.landing.schedules, included: t.landing.included, includedValue: t.home.runsIncluded, overage: "$0.10 / 50", note: t.landing.schedulesOverageNote },
+  { tag: t.home.meterData, title: t.landing.storage, included: t.landing.included, includedValue: "0.5 GB", overage: "$0.50 / GB", note: t.landing.storageOverageNote },
+  { tag: t.home.meterTeam, title: t.landing.employees, included: t.landing.included, includedValue: "1,000", overage: "$1.00 / 1K", note: t.landing.employeesOverageNote },
 ];
 const jsonLd = {
   "@context": "https://schema.org",
@@ -81,10 +81,15 @@ const title = `${t.common.appName} — ${t.landing.badge}`;
 <Base locale={locale} title={title} description={t.landing.heroDesc} path="/">
   <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
 
-  <RotaHero client:load copy={t.landing} registerUrl={appLink("/register")} />
+  <RotaHero
+    client:load
+    copy={t.landing}
+    registerUrl={appLink("/register")}
+    rota={{ shifts: t.home.rotaShifts, people: t.home.rotaPeople, violations: t.home.rotaViolations }}
+  />
 
   <main class="max-w-[92rem] mx-auto px-6">
-    <SectionRule eyebrow="01 — Capability" title={t.landing.featuresTitle} />
+    <SectionRule eyebrow={t.home.eyebrowCapability} title={t.landing.featuresTitle} />
     <p class={`${m.text.muted} max-w-[60ch] mb-10`}>{t.landing.featuresDesc}</p>
     <div class="grid gap-10 md:grid-cols-3 mb-16">
       {principalFeatures.map((f) => (
@@ -105,13 +110,13 @@ const title = `${t.common.appName} — ${t.landing.badge}`;
 
     <div id="demo" class={`${m.inverse} -mx-6 px-6 py-20 mb-24 scroll-mt-20`}>
       <div class="max-w-5xl mx-auto">
-        <p class={`${m.text.meta} !text-newsprint/60 mb-4`}>02 — Proof</p>
+        <p class={`${m.text.meta} !text-newsprint/60 mb-4`}>{t.home.eyebrowProof}</p>
         <h2 class="font-display text-3xl md:text-5xl font-semibold leading-[1.05] mb-4">{t.landing.demoTitle}</h2>
         <p class="text-newsprint/70 font-body max-w-[60ch] mb-10">{t.landing.demoDesc}</p>
         <div class="relative w-full" style="padding-bottom: 56.25%">
           <iframe
             class="absolute inset-0 w-full h-full"
-            src="https://www.youtube.com/embed/t1FblchNbb8"
+            src="https://www.youtube-nocookie.com/embed/t1FblchNbb8"
             title={t.landing.demoTitle}
             loading="lazy"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -126,7 +131,7 @@ const title = `${t.common.appName} — ${t.landing.badge}`;
       </div>
     </div>
 
-    <SectionRule eyebrow="03 — Method" title={t.landing.strategiesTitle} />
+    <SectionRule eyebrow={t.home.eyebrowMethod} title={t.landing.strategiesTitle} />
     <p class={`${m.text.muted} max-w-[60ch] mb-10`}>{t.landing.strategiesDesc}</p>
     <div class={`${m.surface} border ${m.rule.heavy} p-6 md:p-10 mb-10`}>
       <p class={`${m.text.meta} mb-3`}><span class={m.mark}>{aiStrategy.tag}</span></p>
@@ -143,7 +148,7 @@ const title = `${t.common.appName} — ${t.landing.badge}`;
       ))}
     </div>
 
-    <SectionRule eyebrow="04 — Inputs" title={t.landing.inputsTitle} />
+    <SectionRule eyebrow={t.home.eyebrowInputs} title={t.landing.inputsTitle} />
     <p class={`${m.text.muted} max-w-[60ch] mb-10`}>{t.landing.inputsDesc}</p>
     <div class="grid gap-10 md:grid-cols-2 mb-8">
       <div>
@@ -172,7 +177,7 @@ const title = `${t.common.appName} — ${t.landing.badge}`;
     <p class={`${m.text.muted} text-sm max-w-[60ch] mb-2`}>{t.landing.inputsTemplatesNote}</p>
     <p class={`${m.text.meta} mb-24`}>{t.landing.inputsNotYet}</p>
 
-    <SectionRule id="pricing" eyebrow="05 — Cost" title={t.landing.pricingTitle} />
+    <SectionRule id="pricing" eyebrow={t.home.eyebrowCost} title={t.landing.pricingTitle} />
     <p class={`${m.text.muted} max-w-[60ch] mb-10`}>{t.landing.pricingDesc}</p>
     <div class={`${m.surface} border ${m.rule.heavy} p-6 md:p-10 max-w-3xl mb-10`}>
       <p class={`${m.text.meta} mb-6`}>{t.landing.exampleTitle}</p>
@@ -237,7 +242,7 @@ const title = `${t.common.appName} — ${t.landing.badge}`;
       ))}
     </div>
 
-    <SectionRule eyebrow="06 — Assurance" title={t.landing.complianceTitle} />
+    <SectionRule eyebrow={t.home.eyebrowAssurance} title={t.landing.complianceTitle} />
     <p class={`${m.text.muted} max-w-[60ch] mb-10`}>{t.landing.complianceDesc}</p>
     <dl class={`grid gap-px sm:grid-cols-2 lg:grid-cols-4 bg-rule border ${m.rule.line} mb-10`}>
       {compliance.map((c) => (

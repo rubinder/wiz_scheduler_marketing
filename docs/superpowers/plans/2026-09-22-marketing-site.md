@@ -3580,7 +3580,7 @@ dist/terms/index.html
 ```
 `grep -o '<loc>' dist/sitemap-0.xml | wc -l` prints 16 and `grep -o 'hreflang' dist/sitemap-0.xml | wc -l` is greater than 0 (the sitemap is emitted on one line, so `grep -c` would print 1).
 
-Run `npm run preview` and check Lighthouse (Chrome DevTools, mobile) on `/` and `/nyc-fair-workweek-scheduling`: Performance and SEO >= 90. If Performance is below, the usual cause is the YouTube iframe on home; confirm `loading="lazy"` is present before looking further.
+Run `npm run preview` and check Lighthouse (Chrome DevTools, mobile) on `/`, `/nyc-fair-workweek-scheduling` and `/features`: Performance and SEO >= 90. If Performance is below, the usual cause is the YouTube iframe on home; confirm `loading="lazy"` is present before looking further.
 
 - [ ] **Step 6: Commit**
 

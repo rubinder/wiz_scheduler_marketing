@@ -293,16 +293,24 @@ workflow.
 
 ### Cutover order
 
-1. Deploy the site to its bucket; verify every route on the distribution's
-   `*.cloudfront.net` hostname before touching DNS.
-2. One terraform apply: new distribution, alias change, Route53 records,
-   `app_domain` wiring. Quiet hour; the app alias change causes a brief
-   window of certificate/alias propagation.
-3. App repo follow-up PR: root path redirects to `/login`; `/features`,
+1. **apply-A**: new distribution and bucket only, no apex/www aliases yet
+   (or a temporary `*.cloudfront.net`-only config) — it cannot carry them
+   until it has been deployed to and verified. One viewer-request
+   CloudFront function merges the `www_to_apex` redirect with the
+   index-rewrite, since CloudFront allows only one function per event type
+   per behavior. Custom error responses cover both 404 (missing key) and
+   403 (a private bucket behind OAC answers 403 for a missing key).
+2. **Deploy and verify**: push this repo to `main`, then verify every route
+   on the distribution's `*.cloudfront.net` hostname before touching DNS.
+3. **apply-B**: add the apex/www aliases to the marketing distribution,
+   change the app distribution's aliases to `app.<domain>`, Route53
+   records, `app_domain` wiring. Quiet hour; the app alias change causes a
+   brief window of certificate/alias propagation.
+4. App repo follow-up PR: root path redirects to `/login`; `/features`,
    `/privacy-policy`, `/terms`, `/dpa` redirect to the apex equivalents;
    `sitemap.xml`/`robots.txt` removed from the app; marketing components
    deleted in a later cleanup.
-4. Old apex bookmarks land on marketing home, which links to login and
+5. Old apex bookmarks land on marketing home, which links to login and
    sign-up.
 
 ### Rollback

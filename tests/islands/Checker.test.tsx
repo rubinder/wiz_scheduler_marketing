@@ -59,6 +59,14 @@ describe("Checker", () => {
     expect(body.min_rest_hours).toBe(11);
   });
 
+  it("surfaces skipped rows alongside the results", async () => {
+    const fetchImpl = vi.fn(async () => json(200, response));
+    render(<Checker {...props} fetchImpl={fetchImpl} />);
+    pasteAndCheck("Employee\tStart\tEnd\nA.B.\t2026-10-05 16:00\t2026-10-06 00:00\nC.D.\t\t2026-10-06 14:00");
+    await waitFor(() => expect(screen.getByText(en.checker.resultsTitle)).toBeInTheDocument());
+    expect(screen.getByText(/1 rows skipped/)).toBeInTheDocument();
+  });
+
   it("shows the busy message on 429 and the unavailable message on failure, never a result", async () => {
     const { unmount } = render(<Checker {...props} fetchImpl={vi.fn(async () => json(429, {}))} />);
     pasteAndCheck();

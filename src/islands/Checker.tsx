@@ -35,6 +35,7 @@ export default function Checker({ copy: c, apiUrl, enabled, registerUrl, sampleU
   const [error, setError] = useState<ErrorKey | null>(null);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<CheckResponse | null>(null);
+  const [skipped, setSkipped] = useState(0);
 
   if (!enabled) {
     return (
@@ -70,7 +71,7 @@ export default function Checker({ copy: c, apiUrl, enabled, registerUrl, sampleU
     setResult(null);
     if (table.rows.length === 0) return setError("errNoRows");
     if (mapping.employee < 0 || mapping.start < 0 || mapping.end < 0) return setError("errMapping");
-    const { rows } = toShiftRows(table, mapping);
+    const { rows, skipped: skippedCount } = toShiftRows(table, mapping);
     const built = buildRequest(rows, { timezone, publishedAt });
     if (!built.ok) return setError(built.reason === "too_many" ? "errTooMany" : "errNoRows");
     setError(null);
@@ -78,6 +79,7 @@ export default function Checker({ copy: c, apiUrl, enabled, registerUrl, sampleU
     const out = await checkSchedule(apiUrl, built.request, fetchImpl);
     setBusy(false);
     if (!out.ok) return setError(out.reason === "busy" ? "errBusy" : "errUnavailable");
+    setSkipped(skippedCount);
     setResult(out.data);
   };
 
@@ -166,6 +168,9 @@ export default function Checker({ copy: c, apiUrl, enabled, registerUrl, sampleU
         {result && (
           <>
             <h2 className={`${m.text.display} font-display text-3xl font-semibold mb-6`}>{c.resultsTitle}</h2>
+            {skipped > 0 && (
+              <p className={`${m.alert.info} mb-6`}>{c.skippedRows.replace("{n}", String(skipped))}</p>
+            )}
             <div className={`grid gap-px sm:grid-cols-3 bg-rule border ${m.rule.line} mb-8`}>
               <div className="bg-newsprint p-5"><div className={`${m.text.data} text-2xl font-semibold`} data-testid="total-employees">{result.totals.employees}</div><div className={`${m.text.meta} mt-1`}>{c.totalEmployees}</div></div>
               <div className="bg-newsprint p-5"><div className={`${m.text.data} text-2xl font-semibold`} data-testid="total-clopenings">{result.totals.clopenings}</div><div className={`${m.text.meta} mt-1`}>{c.totalClopenings}</div></div>

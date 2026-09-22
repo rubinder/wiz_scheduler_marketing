@@ -1,5 +1,6 @@
+// Build-time only: reads process.env directly, so it must not be imported by an island.
 import fixture from "../content/legal/fixture.json";
-import { API_URL } from "./site";
+import { LEGAL_API_URL } from "./site";
 
 export type LegalKind = "privacy-policy" | "terms" | "dpa";
 
@@ -35,7 +36,7 @@ export async function getLegal(kind: LegalKind, opts: Options = {}): Promise<Leg
   const source = opts.source ?? legalSource();
   if (source === "fixture") return fixture[kind] as LegalDoc;
 
-  const apiUrl = opts.apiUrl ?? API_URL;
+  const apiUrl = opts.apiUrl ?? LEGAL_API_URL;
   const fetchImpl = opts.fetchImpl ?? fetch;
   let res: Response;
   try {

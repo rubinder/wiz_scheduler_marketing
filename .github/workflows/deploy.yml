@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       LEGAL_SOURCE: api
+      LEGAL_API_URL: ${{ vars.LEGAL_API_URL }}
       PUBLIC_CHECKER_ENABLED: ${{ vars.PUBLIC_CHECKER_ENABLED }}
       AWS_REGION: us-east-1
     steps:
@@ -36,10 +37,15 @@ jobs:
         run: |
           aws s3 sync dist/_astro "s3://${{ vars.MARKETING_BUCKET }}/_astro" \
             --cache-control "public, max-age=31536000, immutable"
+      - name: Upload fonts (immutable)
+        run: |
+          aws s3 sync dist/fonts "s3://${{ vars.MARKETING_BUCKET }}/fonts" \
+            --cache-control "public, max-age=31536000, immutable"
       - name: Upload everything else (short cache) and prune
         run: |
           aws s3 sync dist "s3://${{ vars.MARKETING_BUCKET }}" \
             --exclude "_astro/*" \
+            --exclude "fonts/*" \
             --cache-control "public, max-age=300" \
             --delete
       - name: Invalidate CloudFront

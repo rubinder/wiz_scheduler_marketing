@@ -1,6 +1,7 @@
 export const SITE_URL = "https://wizscheduler.com";
-export const APP_URL: string = import.meta.env.PUBLIC_APP_URL ?? "https://app.wizscheduler.com";
-export const API_URL: string = import.meta.env.PUBLIC_API_URL ?? `${APP_URL}/api/v1`;
+export const APP_URL: string = import.meta.env.PUBLIC_APP_URL || "https://app.wizscheduler.com";
+export const API_URL: string = import.meta.env.PUBLIC_API_URL || `${APP_URL}/api/v1`;
+export const LEGAL_API_URL: string = import.meta.env.LEGAL_API_URL || API_URL;
 export const CHECKER_ENABLED: boolean = import.meta.env.PUBLIC_CHECKER_ENABLED === "true";
 export const NYC_PRESET = "nyc-fair-workweek";
 

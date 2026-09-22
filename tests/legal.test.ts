@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { getLegal, legalSource } from "../src/lib/legal";
+import { LEGAL_API_URL } from "../src/lib/site";
 import fixture from "../src/content/legal/fixture.json";
 
 const doc = { version: "9.9", effective_date: "2030-01-01", content: "api text" };
@@ -27,6 +28,12 @@ describe("getLegal", () => {
     const result = await getLegal("privacy-policy", { source: "api", apiUrl: "https://x/api/v1", fetchImpl });
     expect(fetchImpl).toHaveBeenCalledWith("https://x/api/v1/gdpr/privacy-policy");
     expect(result).toEqual(doc);
+  });
+
+  it("defaults to LEGAL_API_URL when no apiUrl is given", async () => {
+    const fetchImpl = vi.fn(async () => jsonResponse(200, doc));
+    await getLegal("terms", { source: "api", fetchImpl });
+    expect(fetchImpl).toHaveBeenCalledWith(`${LEGAL_API_URL}/gdpr/terms`);
   });
 
   it("throws on a non-OK response so the build fails", async () => {

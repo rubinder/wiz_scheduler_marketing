@@ -14,7 +14,7 @@ export default defineConfig({
   integrations: [
     react(),
     sitemap({
-      i18n: { defaultLocale: "en", locales: { en: "en-US", es: "es-US" } },
+      i18n: { defaultLocale: "en", locales: { en: "en", es: "es" } },
       filter: (page) => !page.endsWith("/404"),
     }),
   ],

@@ -17,8 +17,8 @@ const ogLocale = locale === "es" ? "es_US" : "en_US";
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
 {noindex && <meta name="robots" content="noindex" />}
-{alternates(path).map((a) => <link rel="alternate" hreflang={a.locale} href={`${SITE_URL}${a.href}`} />)}
-<link rel="alternate" hreflang="x-default" href={`${SITE_URL}${localePath("en", path)}`} />
+{!noindex && alternates(path).map((a) => <link rel="alternate" hreflang={a.locale} href={`${SITE_URL}${a.href}`} />)}
+{!noindex && <link rel="alternate" hreflang="x-default" href={`${SITE_URL}${localePath("en", path)}`} />}
 <meta property="og:type" content="website" />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />

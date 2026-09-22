@@ -12,9 +12,10 @@ export type RotaCopy = Pick<
 interface Props {
   copy: RotaCopy;
   registerUrl: string;
+  rota: { shifts: string; people: string; violations: string };
 }
 
-export default function RotaHero({ copy, registerUrl }: Props) {
+export default function RotaHero({ copy, registerUrl, rota }: Props) {
   const reduce = useReducedMotion();
 
   const cellAt = (day: number, band: number) => CELLS.find((c) => c.day === day && c.band === band);
@@ -134,16 +135,16 @@ export default function RotaHero({ copy, registerUrl }: Props) {
             <span data-total="shifts">
               <Count to={TOTALS.shifts} />
             </span>{" "}
-            <span className="text-ink/70">shifts</span>
+            <span className="text-ink/70">{rota.shifts}</span>
           </span>
           <span className={`${m.text.data} text-sm`}>
             <span data-total="people">
               <Count to={TOTALS.people} />
             </span>{" "}
-            <span className="text-ink/70">people</span>
+            <span className="text-ink/70">{rota.people}</span>
           </span>
           <span className={`${m.text.data} text-sm ${m.text.clear}`}>
-            <span data-total="violations">{TOTALS.violations}</span> rest violations
+            <span data-total="violations">{TOTALS.violations}</span> {rota.violations}
           </span>
         </div>
       </div>

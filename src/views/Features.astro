@@ -1,4 +1,6 @@
 ---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
 import Base from "../layouts/Base.astro";
 import { m } from "../theme";
 import { getCopy } from "../i18n";
@@ -19,6 +21,13 @@ const PAGE_SLUGS = [
 type Slug = (typeof PAGE_SLUGS)[number];
 const pages = t.features.pages as Record<Slug, { title: string; desc: string }>;
 const ordinal = (i: number) => String(i + 1).padStart(2, "0");
+
+const shots = import.meta.glob<{ default: ImageMetadata }>("../assets/screenshots/*.png", { eager: true });
+const shotFor = (slug: Slug): ImageMetadata => {
+  const mod = shots[`../assets/screenshots/${slug}.png`];
+  if (!mod) throw new Error(`Missing screenshot for features slug "${slug}": expected src/assets/screenshots/${slug}.png`);
+  return mod.default;
+};
 const tocLink =
   `flex items-baseline gap-2 border-b ${m.rule.line} border-s-2 border-transparent py-2 ${m.text.meta} ` +
   "transition-colors hover:!text-ink hover:border-marker focus-visible:outline focus-visible:outline-2 " +
@@ -58,12 +67,15 @@ const tocLink =
               }`}
             >
               <div class={`${m.surface} border ${m.rule.line} overflow-hidden aspect-[16/10]`}>
-                <img
-                  src={`/screenshots/${slug}.png`}
+                <Image
+                  src={shotFor(slug)}
                   alt={pages[slug].title}
+                  width={1600}
+                  height={1000}
+                  widths={[640, 960, 1600]}
+                  sizes="(min-width: 1024px) 45vw, 100vw"
+                  format="webp"
                   loading="lazy"
-                  width="1600"
-                  height="1000"
                   class="w-full h-full object-cover object-top"
                 />
               </div>
