@@ -114,7 +114,7 @@ dist/
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "autoprefixer": "^10.4.20",
-    "jsdom": "^30.1.1",
+    "jsdom": "^29.1.1",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.19",
     "typescript": "~5.9.3",
