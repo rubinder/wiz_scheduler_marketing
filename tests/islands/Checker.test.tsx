@@ -85,4 +85,16 @@ describe("Checker", () => {
     pasteAndCheck("Foo\tBar\tBaz\n1\t2\t3");
     expect(screen.getByText(en.checker.errMapping)).toBeInTheDocument();
   });
+
+  it("resets the file input after reading so the same file can be re-checked", async () => {
+    render(<Checker {...props} />);
+    const input = screen.getByLabelText(en.checker.upload) as HTMLInputElement;
+    const file = new File(["Employee,Start,End\nA.B.,2026-10-05 16:00,2026-10-06 00:00"], "sample.csv", {
+      type: "text/csv",
+    });
+    Object.defineProperty(input, "files", { value: [file] });
+    fireEvent.change(input);
+    await waitFor(() => expect(screen.getByLabelText(en.checker.colEmployee)).toBeInTheDocument());
+    expect(input.value).toBe("");
+  });
 });

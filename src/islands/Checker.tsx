@@ -125,7 +125,7 @@ export default function Checker({ copy: c, apiUrl, enabled, registerUrl, sampleU
       >
         <div>
           <label htmlFor={ids.file} className={m.label}>{c.upload}</label>
-          <input id={ids.file} type="file" accept=".csv,.xlsx,.xls,text/csv" className={`${m.input} file:me-3`} onChange={(e) => void onFile(e.target.files?.[0])} />
+          <input id={ids.file} type="file" accept=".csv,.xlsx,.xls,text/csv" className={`${m.input} file:me-3`} onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; void onFile(f); }} />
           <p className={`${m.text.muted} text-xs mt-1.5`}>{c.uploadHint} <a href={sampleUrl} className={m.btn.link}>{c.sample}</a></p>
         </div>
         <div>
