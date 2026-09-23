@@ -1,0 +1,270 @@
+---
+import Base from "../layouts/Base.astro";
+import SectionRule from "../components/SectionRule.astro";
+import RotaHero from "../islands/RotaHero";
+import { m } from "../theme";
+import { getCopy } from "../i18n";
+import { appLink } from "../lib/site";
+import { localePath, type Locale } from "../lib/links";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getCopy(locale);
+const L = (p: string) => localePath(locale, p);
+
+const principalFeatures = [
+  { title: t.landing.featAITitle, desc: t.landing.featAIDesc },
+  { title: t.landing.featStrategiesTitle, desc: t.landing.featStrategiesDesc },
+  { title: t.landing.featMultiLocTitle, desc: t.landing.featMultiLocDesc },
+];
+const supportingFeatures = [
+  { title: t.landing.featHourCapsTitle, desc: t.landing.featHourCapsDesc },
+  { title: t.landing.featDayRulesTitle, desc: t.landing.featDayRulesDesc },
+  { title: t.landing.featSelfServiceTitle, desc: t.landing.featSelfServiceDesc },
+  { title: t.landing.feat7shiftsTitle, desc: t.landing.feat7shiftsDesc },
+  { title: t.landing.featDeputyTitle, desc: t.landing.featDeputyDesc },
+  { title: t.landing.featGDPRTitle, desc: t.landing.featGDPRDesc },
+  { title: t.landing.featAffinitiesTitle, desc: t.landing.featAffinitiesDesc },
+  { title: t.landing.featRoleEquivTitle, desc: t.landing.featRoleEquivDesc },
+  { title: t.landing.featLangsTitle, desc: t.landing.featLangsDesc },
+];
+const strategies = [
+  { name: t.landing.stratRotation, tag: t.landing.stratRotationTag, desc: t.landing.stratRotationDesc },
+  { name: t.landing.stratRotationHistory, tag: t.landing.stratRotationHistoryTag, desc: t.landing.stratRotationHistoryDesc },
+  { name: t.landing.stratMaxHours, tag: t.landing.stratMaxHoursTag, desc: t.landing.stratMaxHoursDesc },
+];
+const aiStrategy = { name: t.landing.stratAI, tag: t.landing.stratAITag, desc: t.landing.stratAIDesc };
+const hardInputs = [
+  { title: t.landing.inputAvailabilityTitle, desc: t.landing.inputAvailabilityDesc },
+  { title: t.landing.inputRolesTitle, desc: t.landing.inputRolesDesc },
+  { title: t.landing.inputHourRestrictionsTitle, desc: t.landing.inputHourRestrictionsDesc },
+  { title: t.landing.inputDayRulesTitle, desc: t.landing.inputDayRulesDesc },
+  { title: t.landing.inputMinRestTitle, desc: t.landing.inputMinRestDesc },
+  { title: t.landing.inputAssociationTitle, desc: t.landing.inputAssociationDesc },
+];
+const softInputs = [
+  { title: t.landing.inputDayPrefsTitle, desc: t.landing.inputDayPrefsDesc },
+  { title: t.landing.inputHourRangeTitle, desc: t.landing.inputHourRangeDesc },
+  { title: t.landing.inputFreqCapsTitle, desc: t.landing.inputFreqCapsDesc },
+];
+const compliance = [
+  { title: t.landing.compDataExportTitle, desc: t.landing.compDataExportDesc },
+  { title: t.landing.compErasureTitle, desc: t.landing.compErasureDesc },
+  { title: t.landing.compConsentTitle, desc: t.landing.compConsentDesc },
+  { title: t.landing.compNoNamesTitle, desc: t.landing.compNoNamesDesc },
+];
+const exampleRows = [
+  { item: t.landing.exampleSchedules, usage: t.landing.exampleSchedulesUsage, cost: t.landing.exampleSchedulesCost },
+  { item: t.landing.exampleAI, usage: t.landing.exampleAIUsage, cost: t.landing.exampleAICost },
+  { item: t.landing.exampleStorage, usage: t.landing.exampleStorageUsage, cost: t.landing.exampleStorageCost },
+  { item: t.landing.exampleEmployees, usage: t.landing.exampleEmployeesUsage, cost: t.landing.exampleEmployeesCost },
+];
+const meters = [
+  { tag: t.home.meterAi, title: t.landing.aiScheduling, included: t.landing.aiCredits, includedValue: "$10 · $25 · $50", overage: t.home.aiOverage, note: t.landing.aiOverageNote },
+  { tag: t.home.meterRuns, title: t.landing.schedules, included: t.landing.included, includedValue: t.home.runsIncluded, overage: "$0.10 / 50", note: t.landing.schedulesOverageNote },
+  { tag: t.home.meterData, title: t.landing.storage, included: t.landing.included, includedValue: "0.5 GB", overage: "$0.50 / GB", note: t.landing.storageOverageNote },
+  { tag: t.home.meterTeam, title: t.landing.employees, included: t.landing.included, includedValue: "1,000", overage: "$1.00 / 1K", note: t.landing.employeesOverageNote },
+];
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Wiz Scheduler",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  description: t.landing.heroDesc,
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+};
+const title = `${t.common.appName} — ${t.landing.badge}`;
+---
+<Base locale={locale} title={title} description={t.landing.heroDesc} path="/">
+  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+
+  <RotaHero
+    client:load
+    copy={t.landing}
+    registerUrl={appLink("/register")}
+    rota={{ shifts: t.home.rotaShifts, people: t.home.rotaPeople, violations: t.home.rotaViolations }}
+  />
+
+  <main class="max-w-[92rem] mx-auto px-6">
+    <SectionRule eyebrow={t.home.eyebrowCapability} title={t.landing.featuresTitle} />
+    <p class={`${m.text.muted} max-w-[60ch] mb-10`}>{t.landing.featuresDesc}</p>
+    <div class="grid gap-10 md:grid-cols-3 mb-16">
+      {principalFeatures.map((f) => (
+        <div>
+          <h3 class={`${m.text.display} font-display text-2xl font-semibold mb-3`}>{f.title}</h3>
+          <p class={`${m.text.muted} leading-relaxed`}>{f.desc}</p>
+        </div>
+      ))}
+    </div>
+    <dl class={`border-t ${m.rule.line} mb-24`}>
+      {supportingFeatures.map((f) => (
+        <div class={`border-b ${m.rule.line} py-4 grid gap-1 md:grid-cols-[18rem_1fr] md:gap-8`}>
+          <dt class={`${m.text.body} font-medium`}>{f.title}</dt>
+          <dd class={`${m.text.muted} text-sm leading-relaxed`}>{f.desc}</dd>
+        </div>
+      ))}
+    </dl>
+
+    <div id="demo" class={`${m.inverse} -mx-6 px-6 py-20 mb-24 scroll-mt-20`}>
+      <div class="max-w-5xl mx-auto">
+        <p class={`${m.text.meta} !text-newsprint/60 mb-4`}>{t.home.eyebrowProof}</p>
+        <h2 class="font-display text-3xl md:text-5xl font-semibold leading-[1.05] mb-4">{t.landing.demoTitle}</h2>
+        <p class="text-newsprint/70 font-body max-w-[60ch] mb-10">{t.landing.demoDesc}</p>
+        <div class="relative w-full" style="padding-bottom: 56.25%">
+          <iframe
+            class="absolute inset-0 w-full h-full"
+            src="https://www.youtube-nocookie.com/embed/t1FblchNbb8"
+            title={t.landing.demoTitle}
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <div class="mt-10">
+          <a href={L("/features")} class={`${m.btn.secondary} !border-newsprint/40 !text-newsprint hover:!border-newsprint`}>
+            {t.landing.exploreDashboard}
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <SectionRule eyebrow={t.home.eyebrowMethod} title={t.landing.strategiesTitle} />
+    <p class={`${m.text.muted} max-w-[60ch] mb-10`}>{t.landing.strategiesDesc}</p>
+    <div class={`${m.surface} border ${m.rule.heavy} p-6 md:p-10 mb-10`}>
+      <p class={`${m.text.meta} mb-3`}><span class={m.mark}>{aiStrategy.tag}</span></p>
+      <h3 class={`${m.text.display} font-display text-3xl font-semibold mb-4`}>{aiStrategy.name}</h3>
+      <p class={`${m.text.muted} leading-relaxed max-w-[62ch]`}>{aiStrategy.desc}</p>
+    </div>
+    <div class={`grid gap-px md:grid-cols-3 bg-rule border ${m.rule.line} mb-24`}>
+      {strategies.map((s) => (
+        <div class="bg-newsprint p-6">
+          <p class={`${m.text.meta} mb-2`}>{s.tag}</p>
+          <h3 class={`${m.text.body} font-medium mb-2`}>{s.name}</h3>
+          <p class={`${m.text.muted} text-sm leading-relaxed`}>{s.desc}</p>
+        </div>
+      ))}
+    </div>
+
+    <SectionRule eyebrow={t.home.eyebrowInputs} title={t.landing.inputsTitle} />
+    <p class={`${m.text.muted} max-w-[60ch] mb-10`}>{t.landing.inputsDesc}</p>
+    <div class="grid gap-10 md:grid-cols-2 mb-8">
+      <div>
+        <p class={`${m.text.meta} mb-4`}>{t.landing.inputsHardHeading}</p>
+        <dl class="space-y-4">
+          {hardInputs.map((i) => (
+            <div>
+              <dt class={`${m.text.body} font-medium`}>{i.title}</dt>
+              <dd class={`${m.text.muted} text-sm leading-relaxed`}>{i.desc}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+      <div>
+        <p class={`${m.text.meta} mb-4`}>{t.landing.inputsSoftHeading}</p>
+        <dl class="space-y-4">
+          {softInputs.map((i) => (
+            <div>
+              <dt class={`${m.text.body} font-medium`}>{i.title}</dt>
+              <dd class={`${m.text.muted} text-sm leading-relaxed`}>{i.desc}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </div>
+    <p class={`${m.text.muted} text-sm max-w-[60ch] mb-2`}>{t.landing.inputsTemplatesNote}</p>
+    <p class={`${m.text.meta} mb-24`}>{t.landing.inputsNotYet}</p>
+
+    <SectionRule id="pricing" eyebrow={t.home.eyebrowCost} title={t.landing.pricingTitle} />
+    <p class={`${m.text.muted} max-w-[60ch] mb-10`}>{t.landing.pricingDesc}</p>
+    <div class={`${m.surface} border ${m.rule.heavy} p-6 md:p-10 max-w-3xl mb-10`}>
+      <p class={`${m.text.meta} mb-6`}>{t.landing.exampleTitle}</p>
+      <div class="overflow-x-auto">
+        <table class="w-full font-data text-sm tabular-nums">
+          <thead>
+            <tr class={`border-b ${m.rule.line}`}>
+              <th class={`${m.text.meta} text-start pb-3`}>{t.landing.exampleItem}</th>
+              <th class={`${m.text.meta} text-start pb-3`}>{t.landing.exampleUsage}</th>
+              <th class={`${m.text.meta} text-end pb-3`}>{t.landing.exampleCost}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class={`border-b ${m.rule.grid}`}>
+              <td class="py-2.5 text-start">{t.landing.exampleBase}</td>
+              <td class="py-2.5 text-start"></td>
+              <td class="py-2.5 text-end">$18.00</td>
+            </tr>
+            {exampleRows.map((r) => (
+              <tr class={`border-b ${m.rule.grid}`}>
+                <td class="py-2.5 text-start">{r.item}</td>
+                <td class="py-2.5 text-start">{r.usage}</td>
+                <td class={`py-2.5 text-end ${m.text.clear}`}>{r.cost}</td>
+              </tr>
+            ))}
+            <tr class="border-t-2 border-ink font-semibold">
+              <td class="py-4">{t.landing.exampleTotal}</td>
+              <td></td>
+              <td class="py-4 text-end text-lg">$22.25</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class={`border ${m.rule.line} p-6 md:p-8 mb-10`}>
+      <p class={`${m.text.meta} mb-3`}>{t.landing.allInOnePlan}</p>
+      <div class={`${m.text.display} font-display text-5xl font-semibold mb-2`}>
+        $18<span class={`${m.text.muted} text-xl font-normal`}> {t.landing.pricePerMonth}</span>
+      </div>
+      <p class={`${m.text.clear} mb-3 max-w-[60ch]`}>{t.landing.normalStrategiesNote}</p>
+      <p class={`${m.text.muted} mb-8 max-w-[60ch]`}>{t.landing.basePlanDesc}</p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-4xl">
+        <div><div class={`${m.text.data} text-2xl font-semibold`}>{t.landing.aiPackFrom}</div><div class={`${m.text.meta} mt-1`}>{t.landing.aiCredits}</div></div>
+        <div><div class={`${m.text.data} text-2xl font-semibold`}>50</div><div class={`${m.text.meta} mt-1`}>{t.landing.compSchedules}</div></div>
+        <div><div class={`${m.text.data} text-2xl font-semibold`}>0.5 GB</div><div class={`${m.text.meta} mt-1`}>{t.landing.storageIncluded}</div></div>
+        <div><div class={`${m.text.data} text-2xl font-semibold`}>1K</div><div class={`${m.text.meta} mt-1`}>{t.landing.employeesIncluded}</div></div>
+      </div>
+    </div>
+
+    <div class={`grid gap-px md:grid-cols-4 bg-rule border ${m.rule.line} mb-24`}>
+      {meters.map((x) => (
+        <div class="bg-newsprint p-5">
+          <p class={`${m.text.meta} mb-2`}>{x.tag}</p>
+          <h3 class={`${m.text.body} font-medium mb-3`}>{x.title}</h3>
+          <div class="space-y-2 text-sm">
+            <div class={`flex justify-between ${m.text.muted}`}><span>{x.included}</span><span class={m.text.data}>{x.includedValue}</span></div>
+            <div class={`border-t ${m.rule.grid} pt-2 flex justify-between ${m.text.muted}`}><span>{t.landing.overage}</span><span class={m.text.data}>{x.overage}</span></div>
+            <p class={`${m.text.muted} text-xs pt-1`}>{x.note}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <SectionRule eyebrow={t.home.eyebrowAssurance} title={t.landing.complianceTitle} />
+    <p class={`${m.text.muted} max-w-[60ch] mb-10`}>{t.landing.complianceDesc}</p>
+    <dl class={`grid gap-px sm:grid-cols-2 lg:grid-cols-4 bg-rule border ${m.rule.line} mb-10`}>
+      {compliance.map((c) => (
+        <div class="bg-newsprint p-5">
+          <dt class={`${m.text.body} text-sm font-medium mb-1`}>{c.title}</dt>
+          <dd class={`${m.text.muted} text-xs leading-relaxed`}>{c.desc}</dd>
+        </div>
+      ))}
+    </dl>
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm mb-24">
+      <a href={L("/privacy-policy")} class={m.btn.link}>{t.gdpr.privacyPolicy}</a>
+      <a href={L("/terms")} class={m.btn.link}>{t.gdpr.termsOfService}</a>
+      <a href={L("/dpa")} class={m.btn.link}>{t.gdpr.dpa}</a>
+    </div>
+
+    <div class="max-w-2xl mb-24">
+      <h2 class={`${m.text.display} font-display text-4xl font-semibold mb-4`}>{t.landing.ctaTitle}</h2>
+      <p class={`${m.text.muted} text-lg mb-8 max-w-[55ch]`}>{t.landing.ctaDesc}</p>
+      <div class="flex flex-wrap items-center gap-6">
+        <a href={appLink("/register")} class={m.btn.primary}>{t.landing.ctaBtn}</a>
+        <a href={appLink("/login")} class={m.btn.link}>{t.login.signIn}</a>
+      </div>
+    </div>
+  </main>
+</Base>

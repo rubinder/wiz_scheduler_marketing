@@ -1,0 +1,55 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-marketing
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      LEGAL_SOURCE: api
+      LEGAL_API_URL: ${{ vars.LEGAL_API_URL }}
+      PUBLIC_CHECKER_ENABLED: ${{ vars.PUBLIC_CHECKER_ENABLED }}
+      AWS_REGION: us-east-1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Upload hashed assets (immutable)
+        run: |
+          aws s3 sync dist/_astro "s3://${{ vars.MARKETING_BUCKET }}/_astro" \
+            --cache-control "public, max-age=31536000, immutable"
+      - name: Upload fonts (immutable)
+        run: |
+          aws s3 sync dist/fonts "s3://${{ vars.MARKETING_BUCKET }}/fonts" \
+            --cache-control "public, max-age=31536000, immutable"
+      - name: Upload everything else (short cache) and prune
+        run: |
+          aws s3 sync dist "s3://${{ vars.MARKETING_BUCKET }}" \
+            --exclude "_astro/*" \
+            --exclude "fonts/*" \
+            --cache-control "public, max-age=300" \
+            --delete
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${{ vars.MARKETING_DISTRIBUTION_ID }}" \
+            --paths "/*"

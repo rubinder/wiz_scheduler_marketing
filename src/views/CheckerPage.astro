@@ -1,0 +1,36 @@
+---
+import Base from "../layouts/Base.astro";
+import Checker from "../islands/Checker";
+import { m } from "../theme";
+import { getCopy } from "../i18n";
+import { API_URL, appLink, CHECKER_ENABLED, NYC_PRESET } from "../lib/site";
+import type { Locale } from "../lib/links";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getCopy(locale);
+const c = t.checker;
+---
+<Base locale={locale} title={`${c.metaTitle} | ${t.common.appName}`} description={c.metaDesc} path="/free-schedule-checker">
+  <main class="max-w-[92rem] mx-auto px-6">
+    <section class="pt-16 pb-12 max-w-[62ch]">
+      <p class={`${m.text.meta} mb-6`}>{c.eyebrow}</p>
+      <h1 class={`${m.text.display} font-display text-5xl sm:text-6xl font-semibold leading-[0.95] mb-6`}>
+        {c.title} <span class={m.mark}>{c.titleAccent}</span>
+      </h1>
+      <p class={`${m.text.muted} text-lg leading-relaxed`}>{c.intro}</p>
+    </section>
+    <section class="pb-24">
+      <Checker
+        client:visible
+        copy={c}
+        apiUrl={API_URL}
+        enabled={CHECKER_ENABLED}
+        registerUrl={appLink("/register", NYC_PRESET)}
+        sampleUrl="/sample-schedule.csv"
+      />
+    </section>
+  </main>
+</Base>

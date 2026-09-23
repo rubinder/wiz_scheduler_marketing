@@ -1,0 +1,67 @@
+---
+import Base from "../layouts/Base.astro";
+import { m } from "../theme";
+import { getCopy } from "../i18n";
+import { getLegal, type LegalKind } from "../lib/legal";
+import { localePath, type Locale } from "../lib/links";
+
+interface Props {
+  locale: Locale;
+  kind: LegalKind;
+}
+const { locale, kind } = Astro.props;
+const t = getCopy(locale);
+const titles: Record<LegalKind, string> = {
+  "privacy-policy": t.gdpr.privacyPolicy,
+  terms: t.gdpr.termsOfService,
+  dpa: t.gdpr.dpa,
+};
+const title = titles[kind];
+const doc = await getLegal(kind);
+const description = doc.content.replace(/\s+/g, " ").slice(0, 155);
+---
+<Base locale={locale} title={`${title} | ${t.common.appName}`} description={description} path={`/${kind}`}>
+  <main class="max-w-4xl mx-auto px-6 py-16">
+    <article class={`${m.surface} border ${m.rule.line} p-8`}>
+      <h1 class={`${m.text.display} font-display text-2xl font-semibold text-center mb-2`}>{title}</h1>
+      <div class={`flex justify-between text-sm ${m.text.muted} mb-6`}>
+        <span>{t.gdpr.version}: {doc.version}</span>
+        <span>{t.gdpr.effectiveDate}: {doc.effective_date}</span>
+      </div>
+      {locale !== "en" && <p class={`${m.alert.info} mb-6`}>{t.legal.englishOnly}</p>}
+      <div class="max-w-[68ch]" lang="en">
+        <p class={`${m.text.body} whitespace-pre-wrap`}>{doc.content}</p>
+      </div>
+
+      {doc.processors && doc.processors.length > 0 && (
+        <div class="mt-6" lang="en">
+          <h2 class={`${m.text.display} font-display text-lg font-semibold mb-3`}>{t.gdpr.processors}</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-start">
+              <thead>
+                <tr class={`border-b ${m.rule.line}`}>
+                  <th class={`py-2 px-3 ${m.text.meta} font-medium text-start`}>{t.gdpr.processorName}</th>
+                  <th class={`py-2 px-3 ${m.text.meta} font-medium text-start`}>{t.gdpr.processorPurpose}</th>
+                  <th class={`py-2 px-3 ${m.text.meta} font-medium text-start`}>{t.gdpr.processorLocation}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {doc.processors.map((p) => (
+                  <tr class={`border-b ${m.rule.line}`}>
+                    <td class={`py-2 px-3 ${m.text.body}`}>{p.name}</td>
+                    <td class={`py-2 px-3 ${m.text.body}`}>{p.purpose}</td>
+                    <td class={`py-2 px-3 ${m.text.body}`}>{p.location}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      <div class="mt-6 text-center">
+        <a href={localePath(locale, "/")} class={`${m.btn.link} text-sm`}>{t.legal.backHome}</a>
+      </div>
+    </article>
+  </main>
+</Base>

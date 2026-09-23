@@ -1,0 +1,28 @@
+@import "./fonts.css";
+@import "./type.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply bg-newsprint;
+  }
+  body {
+    @apply bg-newsprint text-ink font-body;
+  }
+}
+
+/* Markdown bodies (compare pages). No typography plugin: the rules are few. */
+@layer components {
+  .prose-rota h2 { @apply font-display text-3xl font-semibold leading-[1.05] mt-16 mb-4; }
+  .prose-rota h3 { @apply font-display text-2xl font-semibold mt-10 mb-3; }
+  .prose-rota p { @apply font-body text-ink/70 leading-relaxed max-w-[62ch] mb-4; }
+  .prose-rota ul { @apply list-disc ps-6 mb-6 max-w-[62ch]; }
+  .prose-rota li { @apply font-body text-ink/70 leading-relaxed mb-1; }
+  .prose-rota a { @apply underline underline-offset-4 decoration-rule hover:decoration-marker; }
+  .prose-rota table { @apply w-full font-data text-sm tabular-nums my-8; }
+  .prose-rota th { @apply font-data text-ink/70 uppercase tracking-[0.14em] text-xs text-start pb-3 border-b border-rule; }
+  .prose-rota td { @apply py-2.5 text-start border-b border-rule/70 align-top; }
+}

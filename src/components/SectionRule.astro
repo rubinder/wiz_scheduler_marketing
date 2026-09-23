@@ -1,0 +1,21 @@
+---
+import { m } from "../theme";
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  id?: string;
+}
+const { eyebrow, title, id } = Astro.props;
+---
+<div id={id} class="scroll-mt-20">
+  <div class={`border-t ${m.rule.heavy}`}></div>
+  {(eyebrow || title) && (
+    <div class="pt-6 pb-10 flex flex-col gap-3 md:flex-row md:items-baseline md:gap-8">
+      {eyebrow && <span class={`${m.text.meta} shrink-0 md:w-40`}>{eyebrow}</span>}
+      {title && (
+        <h2 class={`${m.text.display} font-display text-3xl md:text-5xl font-semibold leading-[1.05]`}>{title}</h2>
+      )}
+    </div>
+  )}
+</div>

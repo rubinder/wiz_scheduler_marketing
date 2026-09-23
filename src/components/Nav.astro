@@ -1,0 +1,54 @@
+---
+import { m } from "../theme";
+import { getCopy } from "../i18n";
+import { appLink } from "../lib/site";
+import { LOCALES, localePath, type Locale } from "../lib/links";
+
+interface Props {
+  locale: Locale;
+  path: string;
+}
+const { locale, path } = Astro.props;
+const t = getCopy(locale);
+const langName: Record<Locale, string> = { en: t.nav.english, es: t.nav.spanish };
+const links = [
+  { href: localePath(locale, "/nyc-fair-workweek-scheduling"), label: t.nav.nyc },
+  { href: localePath(locale, "/free-schedule-checker"), label: t.nav.checker },
+  { href: localePath(locale, "/features"), label: t.nav.features },
+];
+---
+<nav class={`sticky top-0 z-50 bg-newsprint border-b ${m.rule.line}`}>
+  <div class="max-w-[92rem] mx-auto px-6 h-16 flex items-center justify-between gap-6">
+    <a href={localePath(locale, "/")} class="flex items-center gap-3 min-w-0 shrink-0">
+      <img src="/favicon.svg" alt="" class="w-7 h-7 shrink-0" />
+      <span class={`${m.text.display} font-display text-lg font-semibold uppercase tracking-[0.06em] hidden sm:inline truncate`}>
+        {t.common.appName}
+      </span>
+    </a>
+    <div class="hidden lg:flex items-center gap-6">
+      {links.map((l) => <a href={l.href} class={`${m.btn.link} text-sm`}>{l.label}</a>)}
+    </div>
+    <div class="flex items-center gap-3 sm:gap-5 shrink-0">
+      <ul class="flex items-center gap-1" aria-label={t.nav.language}>
+        {LOCALES.map((l) => (
+          <li>
+            <a
+              href={localePath(l, path)}
+              hreflang={l}
+              lang={l}
+              title={langName[l]}
+              aria-current={l === locale ? "page" : undefined}
+              class={`${m.text.meta} px-2 py-1 border transition-colors ${
+                l === locale ? "border-ink !text-ink" : `${m.rule.line} hover:!text-ink`
+              }`}
+            >
+              {l.toUpperCase()}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <a href={appLink("/login")} class={`${m.btn.link} text-sm hidden sm:inline`}>{t.login.signIn}</a>
+      <a href={appLink("/register")} class={`${m.btn.primary} !px-4 !py-2 text-sm`}>{t.register.registerBtn}</a>
+    </div>
+  </div>
+</nav>
