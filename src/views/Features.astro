@@ -15,8 +15,10 @@ const t = getCopy(locale);
 
 const PAGE_SLUGS = [
   "dashboard", "company", "regions", "locations", "roles", "role-equivalents", "employees",
-  "hour-restrictions", "day-blackouts", "employee-onboarding", "employee-association",
-  "shift-templates", "schedule", "export-schedules", "data-privacy",
+  "team", "hour-restrictions", "day-blackouts", "day-preferences", "hour-range-preferences",
+  "frequency-caps", "employee-onboarding", "employee-availability", "employee-association",
+  "shift-templates", "check-in-qr", "check-in-report", "payroll", "special-hours", "schedule",
+  "export-schedules", "approved-schedules", "data-privacy",
 ] as const;
 type Slug = (typeof PAGE_SLUGS)[number];
 const pages = t.features.pages as Record<Slug, { title: string; desc: string }>;
