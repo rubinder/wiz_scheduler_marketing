@@ -108,6 +108,102 @@ const statusClass = (s: string) => (s === "enforced" ? `${m.text.clear}` : "text
       ))}
     </dl>
 
+    {/* Detailed Rule Explanations */}
+    <SectionRule eyebrow="Deep Dive" title="Understanding Each Rule" />
+    <div class="max-w-3xl mb-24">
+      <div class="space-y-12">
+        <div>
+          <h3 class={`${m.text.display} text-2xl font-semibold mb-4`}>11-Hour Rest Requirement</h3>
+          <p class={`${m.text.muted} text-base leading-relaxed mb-4`}>
+            Workers must have at least 11 consecutive hours off between shifts. This rule applies regardless of shift length or when shifts occur.
+          </p>
+          <div class={`${m.surface} border ${m.rule.line} p-4 mb-4`}>
+            <p class={`${m.text.meta} font-medium mb-2`}>Example:</p>
+            <p class={`${m.text.muted} text-sm`}>If a worker's shift ends at 10 PM on Monday, they cannot start work until 9 AM on Tuesday (11 hours later). Starting them at 9:01 AM violates the rule.</p>
+          </div>
+          <p class={`${m.text.muted} text-base`}>
+            This protects worker health and prevents fatigue-related errors, especially critical in fast food and retail environments where mistakes can be costly.
+          </p>
+        </div>
+
+        <div>
+          <h3 class={`${m.text.display} text-2xl font-semibold mb-4`}>14-Day Advance Notice</h3>
+          <p class={`${m.text.muted} text-base leading-relaxed mb-4`}>
+            Schedule changes must be communicated at least 14 calendar days before the shift. This applies to all schedule changes—additions, removals, or modifications.
+          </p>
+          <div class={`${m.surface} border ${m.rule.line} p-4 mb-4`}>
+            <p class={`${m.text.meta} font-medium mb-2`}>Example:</p>
+            <p class={`${m.text.muted} text-sm`}>If you're scheduling for the week of October 20, you must finalize the schedule by October 6 (14 days prior). Last-minute changes are only allowed in genuine emergencies.</p>
+          </div>
+          <p class={`${m.text.muted} text-base`}>
+            This gives workers time to arrange childcare, transportation, and other commitments, reducing no-shows and improving workforce stability.
+          </p>
+        </div>
+
+        <div>
+          <h3 class={`${m.text.display} text-2xl font-semibold mb-4`}>Clopening Restrictions</h3>
+          <p class={`${m.text.muted} text-base leading-relaxed mb-4`}>
+            A "clopening" is a shift that closes the store one day and opens it the next. These are prohibited unless the worker explicitly agrees and receives premium pay.
+          </p>
+          <div class={`${m.surface} border ${m.rule.line} p-4 mb-4`}>
+            <p class={`${m.text.meta} font-medium mb-2`}>Example:</p>
+            <p class={`${m.text.muted} text-sm`}>A worker closes at 11 PM Friday and is scheduled to open at 6 AM Saturday. This is a clopening and requires explicit opt-in and $100 premium pay (as of 2026).</p>
+          </div>
+          <p class={`${m.text.muted} text-base`}>
+            Clopenings cause extreme fatigue and burnout. The premium requirement incentivizes managers to minimize them, improving employee wellbeing.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {/* Frequently Asked Questions */}
+    <SectionRule eyebrow="Common Questions" title="NYC Fair Workweek FAQ" />
+    <div class="max-w-3xl mb-24">
+      <div class="space-y-8">
+        <div>
+          <h3 class="font-semibold text-lg mb-3">What counts as a "schedule change"?</h3>
+          <p class={`${m.text.muted} text-base`}>
+            Any modification to a published schedule: adding a shift, removing a shift, changing the time, swapping days, or adjusting duration. The 14-day notice applies to all of these.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-lg mb-3">What's an emergency exception?</h3>
+          <p class={`${m.text.muted} text-base`}>
+            Genuine emergencies (worker no-shows, natural disasters, public health crises) allow last-minute changes without the 14-day notice. However, this must be truly exceptional, not routine.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-lg mb-3">How is the 11-hour rest calculated?</h3>
+          <p class={`${m.text.muted} text-base`}>
+            It's 11 consecutive hours off, including sleep time. If a shift ends at 10 PM, the worker must be off until 9 AM the next day. Overlapping by even 1 minute violates the rule.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-lg mb-3">What penalties apply if rules are broken?</h3>
+          <p class={`${m.text.muted} text-base`}>
+            NYC Department of Consumer and Worker Protection (DCWP) can fine employers up to $500 per violation per employee per day. Willful violations can exceed $1,000. Workers also have the right to sue.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-lg mb-3">Does Wiz Scheduler enforce these rules?</h3>
+          <p class={`${m.text.muted} text-base`}>
+            Yes. Our scheduler prevents violations by blocking schedules that would break the 11-hour rule, enforcing 14-day advance notice, and flagging clopenings. You can still override if needed, but you'll be explicitly warned.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-lg mb-3">How do I know if I'm compliant?</h3>
+          <p class={`${m.text.muted} text-base`}>
+            Use our free Fair Workweek checker above. Upload your schedule and we'll scan it for violations. It takes 30 seconds and covers all three rules.
+          </p>
+        </div>
+      </div>
+    </div>
+
     <SectionRule eyebrow={n.ctaEyebrow} title={n.ctaTitle} />
     <div class="max-w-2xl mb-16">
       <p class={`${m.text.muted} text-lg mb-8 max-w-[55ch]`}>{n.ctaDesc}</p>
