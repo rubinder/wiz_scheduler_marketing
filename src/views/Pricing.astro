@@ -29,7 +29,7 @@ const plans = [
   {
     name: "Pro",
     price: "$18",
-    period: "/month flat",
+    period: "/month base + overages",
     description: "For growing teams",
     features: [
       "Unlimited locations",
@@ -47,6 +47,14 @@ const plans = [
 
 const title = "Pricing";
 const description = "Simple, transparent pricing for WizScheduler";
+
+const meterRows = [
+  { item: "Base subscription", included: "—", cost: "$18.00" },
+  { item: "Employees", included: "1,000", overage: "$1.00 per 1K", cost: "$0.00" },
+  { item: "Storage", included: "0.5 GB", overage: "$0.50 per GB", cost: "$0.00" },
+  { item: "Schedules generated", included: "50/month", overage: "$0.10 per 50", cost: "$0.00" },
+  { item: "AI usage", included: "Included", overage: "Metered", cost: "Variable" },
+];
 ---
 <Base locale={locale} title={title} description={description} path={L("/pricing")}>
   <main class="max-w-[92rem] mx-auto px-6">
@@ -110,6 +118,41 @@ const description = "Simple, transparent pricing for WizScheduler";
       </div>
     </section>
 
+    {/* Metering */}
+    <section class="pb-24 max-w-3xl">
+      <SectionRule eyebrow="Transparent" title="What You Pay For" />
+      <p class={`${m.text.muted} max-w-[60ch] mb-10`}>
+        Pro plan starts at $18/month. You only pay for what you use beyond the included free tiers.
+      </p>
+      <div class={`${m.surface} border ${m.rule.heavy} p-6 md:p-10`}>
+        <div class="overflow-x-auto">
+          <table class="w-full font-data text-sm">
+            <thead>
+              <tr class={`border-b ${m.rule.line}`}>
+                <th class={`${m.text.meta} text-start pb-3`}>Item</th>
+                <th class={`${m.text.meta} text-start pb-3`}>Included</th>
+                <th class={`${m.text.meta} text-start pb-3`}>Overage Rate</th>
+                <th class={`${m.text.meta} text-end pb-3`}>Example Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              {meterRows.map((row) => (
+                <tr class={`border-b ${m.rule.grid}`}>
+                  <td class="py-2.5 text-start">{row.item}</td>
+                  <td class="py-2.5 text-start">{row.included}</td>
+                  <td class="py-2.5 text-start">{row.overage}</td>
+                  <td class="py-2.5 text-end">{row.cost}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class={`${m.text.muted} text-sm mt-6 max-w-[60ch]`}>
+        Most small teams stay under the free tiers and pay only $18/month. Larger teams with 1,000+ employees or high schedule generation may see additional charges.
+      </p>
+    </section>
+
     {/* FAQ */}
     <section class="max-w-3xl pb-20">
       <SectionRule eyebrow="Questions" title="FAQ" />
@@ -123,7 +166,7 @@ const description = "Simple, transparent pricing for WizScheduler";
         <div>
           <h3 class="font-semibold mb-2">How does billing work?</h3>
           <p class={`${m.text.muted} text-sm`}>
-            Pro plan is a flat $18/month, regardless of how many locations you have. Unlimited locations, unlimited employees, unlimited schedules.
+            Pro plan has a $18/month base subscription. You get 1,000 employees, 0.5 GB storage, and 50 schedule generations included. Overages beyond those are billed separately. Most teams with under 1,000 employees see only the $18/month charge.
           </p>
         </div>
         <div>
