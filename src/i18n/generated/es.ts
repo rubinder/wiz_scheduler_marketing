@@ -181,6 +181,10 @@ export default {
         "title": "Equipo",
         "desc": "Invita a otros gerentes para que ayuden a administrar la cuenta. Sigue las invitaciones pendientes y quién ya las aceptó, todo en un solo lugar."
       },
+      "quick-entry": {
+        "title": "Entrada rápida",
+        "desc": "Consolida los flujos de gerente comunes en un solo formulario. Rápidamente agrega empleados, registra conflictos, configura relaciones de tutoría y actualiza preferencias sin navegar entre pantallas."
+      },
       "hour-restrictions": {
         "title": "Restricciones de horas",
         "desc": "Aplica topes y mínimos semanales por empleado. Útil para visas de estudiante, acuerdos a tiempo parcial y presupuestos de horas extras. La IA nunca planificará fuera de estos límites."
