@@ -69,12 +69,82 @@ const meters = [
 ];
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: "Wiz Scheduler",
-  applicationCategory: "BusinessApplication",
-  operatingSystem: "Web",
-  description: t.landing.heroDesc,
-  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://wizscheduler.com/#organization",
+      name: "Wiz Scheduler",
+      alternateName: "WizScheduler",
+      url: "https://wizscheduler.com",
+      logo: "https://wizscheduler.com/favicon.svg",
+      description: "AI-powered employee scheduling for restaurants and retail teams.",
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "Customer Service",
+        email: "admin@suggestival.com",
+      },
+      sameAs: [
+        "https://www.linkedin.com/company/wiz-scheduler",
+        "https://www.youtube.com/@WizScheduler",
+        "https://twitter.com/wizscheduler",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://wizscheduler.com/#website",
+      name: "Wiz Scheduler",
+      url: "https://wizscheduler.com",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: "https://wizscheduler.com/?q={search_term_string}",
+        },
+        query_input: "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://wizscheduler.com/#software",
+      name: "Wiz Scheduler",
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      description: t.landing.heroDesc,
+      url: "https://wizscheduler.com",
+      publisher: {
+        "@id": "https://wizscheduler.com/#organization",
+      },
+      offers: {
+        "@type": "AggregateOffer",
+        priceCurrency: "USD",
+        lowPrice: "0",
+        highPrice: "18",
+        offerDetails: [
+          {
+            "@type": "Offer",
+            name: "Free Plan",
+            price: "0",
+            priceCurrency: "USD",
+            description: "Up to 2 locations, 25 employees, 1 schedule/location/month",
+          },
+          {
+            "@type": "Offer",
+            name: "Pro Plan",
+            price: "18",
+            priceCurrency: "USD",
+            priceSpecification: {
+              "@type": "PriceSpecification",
+              priceCurrency: "USD",
+              price: "18",
+              billingDuration: "P1M",
+              unitCode: "C62",
+            },
+            description: "Unlimited locations, employees, generations",
+          },
+        ],
+      },
+    },
+  ],
 };
 const title = `${t.common.appName} — ${t.landing.badge}`;
 ---

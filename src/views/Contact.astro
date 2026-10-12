@@ -1,0 +1,112 @@
+---
+import Base from "../layouts/Base.astro";
+import { m } from "../theme";
+import { localePath, type Locale } from "../lib/links";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const L = (p: string) => localePath(locale, p);
+
+const title = "Contact Us";
+const description = "Get in touch with WizScheduler";
+---
+<Base locale={locale} title={title} description={description} path={L("/contact")}>
+  <main class="max-w-[92rem] mx-auto px-6">
+    {/* Hero */}
+    <section class="pt-12 lg:pt-20 pb-16">
+      <div class="max-w-[62ch]">
+        <h1 class={`${m.text.display} font-display text-5xl lg:text-6xl font-semibold leading-[0.95] mb-6`}>
+          Get in Touch
+        </h1>
+        <p class={`${m.text.muted} text-lg leading-relaxed max-w-[62ch]`}>
+          Questions about Wiz Scheduler? We'd love to hear from you.
+        </p>
+      </div>
+    </section>
+
+    {/* Contact Info & Links */}
+    <section class="max-w-3xl pb-20">
+      <div class="grid md:grid-cols-2 gap-12">
+        {/* Contact Methods */}
+        <div>
+          <h2 class={`${m.text.display} text-2xl font-semibold mb-6`}>Contact Methods</h2>
+          <div class="space-y-6">
+            <div>
+              <h3 class="font-semibold mb-1">Email</h3>
+              <a
+                href="mailto:admin@suggestival.com"
+                class="text-blue-600 hover:underline"
+              >
+                admin@suggestival.com
+              </a>
+            </div>
+            <div>
+              <h3 class="font-semibold mb-1">Legal & Privacy</h3>
+              <a
+                href="mailto:admin@suggestival.com"
+                class="text-blue-600 hover:underline"
+              >
+                admin@suggestival.com
+              </a>
+            </div>
+            <div>
+              <h3 class="font-semibold mb-1">Support</h3>
+              <p class={`${m.text.muted} text-sm`}>
+                Questions about your account? Log in and use the help chat in-app.
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-12 pt-12 border-t border-gray-200">
+            <h3 class="font-semibold mb-4">Company</h3>
+            <p class={`${m.text.muted} text-sm mb-2`}>
+              <strong>Suggestival LLC</strong>
+            </p>
+            <p class={`${m.text.muted} text-sm`}>
+              Building AI-powered scheduling for restaurants and retail teams.
+            </p>
+          </div>
+        </div>
+
+        {/* Quick Links */}
+        <div>
+          <h2 class={`${m.text.display} text-2xl font-semibold mb-6`}>Resources</h2>
+          <ul class="space-y-3">
+            <li>
+              <a href={L("/pricing")} class="text-blue-600 hover:underline">
+                Pricing
+              </a>
+            </li>
+            <li>
+              <a href={L("/features")} class="text-blue-600 hover:underline">
+                Features
+              </a>
+            </li>
+            <li>
+              <a href={L("/about")} class="text-blue-600 hover:underline">
+                About Us
+              </a>
+            </li>
+            <li>
+              <a href={L("/privacy-policy")} class="text-blue-600 hover:underline">
+                Privacy Policy
+              </a>
+            </li>
+            <li>
+              <a href={L("/terms")} class="text-blue-600 hover:underline">
+                Terms of Service
+              </a>
+            </li>
+            <li>
+              <a href={L("/dpa")} class="text-blue-600 hover:underline">
+                Data Processing Agreement
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+</Base>
