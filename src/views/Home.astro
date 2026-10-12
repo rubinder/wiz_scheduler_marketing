@@ -64,6 +64,7 @@ const exampleRows = [
 const meters = [
   { tag: t.home.meterAi, title: t.landing.aiScheduling, included: t.landing.aiCredits, includedValue: "$10 · $25 · $50", overage: t.home.aiOverage, note: t.landing.aiOverageNote },
   { tag: t.home.meterRuns, title: t.landing.schedules, included: t.landing.included, includedValue: t.home.runsIncluded, overage: "$0.10 / 25", note: t.landing.schedulesOverageNote },
+  { tag: "Managers", title: "Manager Seats", included: t.landing.included, includedValue: "50", overage: "$5.00 / 50", note: "Per paid plan" },
   { tag: t.home.meterData, title: t.landing.storage, included: t.landing.included, includedValue: "0.5 GB", overage: "$0.50 / GB", note: t.landing.storageOverageNote },
   { tag: t.home.meterTeam, title: t.landing.employees, included: t.landing.included, includedValue: "500", overage: "$1.00 / 500", note: t.landing.employeesOverageNote },
 ];
@@ -293,8 +294,8 @@ const title = `${t.common.appName} — ${t.landing.badge}`;
       <p class={`${m.text.muted} mb-8 max-w-[60ch]`}>{t.landing.basePlanDesc}</p>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-4xl">
         <div><div class={`${m.text.data} text-2xl font-semibold`}>{t.landing.aiPackFrom}</div><div class={`${m.text.meta} mt-1`}>{t.landing.aiCredits}</div></div>
+        <div><div class={`${m.text.data} text-2xl font-semibold`}>50</div><div class={`${m.text.meta} mt-1`}>Manager Seats</div></div>
         <div><div class={`${m.text.data} text-2xl font-semibold`}>25</div><div class={`${m.text.meta} mt-1`}>{t.landing.compSchedules}</div></div>
-        <div><div class={`${m.text.data} text-2xl font-semibold`}>0.5 GB</div><div class={`${m.text.meta} mt-1`}>{t.landing.storageIncluded}</div></div>
         <div><div class={`${m.text.data} text-2xl font-semibold`}>500</div><div class={`${m.text.meta} mt-1`}>{t.landing.employeesIncluded}</div></div>
       </div>
     </div>

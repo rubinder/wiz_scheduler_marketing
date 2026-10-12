@@ -51,6 +51,7 @@ const description = "Simple, transparent pricing for WizScheduler";
 const meterRows = [
   { item: "Base subscription", included: "—", cost: "$18.00" },
   { item: "Employees", included: "500", overage: "$1.00 per 500", cost: "$0.00" },
+  { item: "Manager seats", included: "50", overage: "$5.00 per 50", cost: "$0.00" },
   { item: "Storage", included: "0.5 GB", overage: "$0.50 per GB", cost: "$0.00" },
   { item: "Schedules generated", included: "25/month", overage: "$0.10 per 25", cost: "$0.00" },
   { item: "AI usage", included: "Included", overage: "Metered", cost: "Variable" },
@@ -166,7 +167,7 @@ const meterRows = [
         <div>
           <h3 class="font-semibold mb-2">How does billing work?</h3>
           <p class={`${m.text.muted} text-sm`}>
-            Pro plan has a $18/month base subscription. You get 500 employees, 0.5 GB storage, and 25 schedule generations per month included. Overages beyond those are billed separately. Most teams with under 500 employees see only the $18/month charge.
+            Pro plan has a $18/month base subscription. Included: 500 employees, 50 manager seats, 0.5 GB storage, and 25 schedule generations per month. Overages beyond those are billed separately. Most teams with under 500 employees and fewer than 50 managers see only the $18/month charge.
           </p>
         </div>
         <div>
