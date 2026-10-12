@@ -22,6 +22,23 @@ const c = t.checker;
       </h1>
       <p class={`${m.text.muted} text-lg leading-relaxed`}>{c.intro}</p>
     </section>
+    {/* Overview */}
+    <section class="pb-12 max-w-3xl">
+      <h2 class={`${m.text.display} text-2xl font-semibold mb-4`}>How It Works</h2>
+      <p class={`${m.text.muted} text-base leading-relaxed mb-4`}>
+        Upload your weekly schedule (as a CSV or Excel file) and our checker will instantly scan it for violations of NYC Fair Workweek laws. We check all three core rules:
+      </p>
+      <ul class={`${m.text.muted} text-base space-y-2 mb-6`}>
+        <li><strong>11-Hour Rest Rule:</strong> Workers must have at least 11 consecutive hours off between shifts.</li>
+        <li><strong>14-Day Advance Notice:</strong> Schedule changes must be communicated at least 14 days before the shift.</li>
+        <li><strong>Clopening Restrictions:</strong> Closing one day and opening the next requires explicit opt-in and premium pay.</li>
+      </ul>
+      <p class={`${m.text.muted} text-base leading-relaxed`}>
+        Get a detailed report in seconds. No account needed, no data is stored. It's completely free and completely private.
+      </p>
+    </section>
+
+    {/* Checker Tool */}
     <section class="pb-24">
       <Checker
         client:visible
@@ -31,6 +48,117 @@ const c = t.checker;
         registerUrl={appLink("/register", NYC_PRESET)}
         sampleUrl="/sample-schedule.csv"
       />
+    </section>
+
+    {/* File Format Instructions */}
+    <section class="max-w-3xl mb-24">
+      <h2 class={`${m.text.display} text-2xl font-semibold mb-4`}>Accepted File Formats</h2>
+      <p class={`${m.text.muted} text-base mb-6`}>
+        The checker accepts CSV and Excel files (.csv, .xlsx, .xls). Your file must include these columns:
+      </p>
+      <div class={`${m.surface} border ${m.rule.line} p-6 mb-6`}>
+        <table class="w-full text-sm">
+          <thead>
+            <tr class={`border-b ${m.rule.line}`}>
+              <th class="text-start font-semibold pb-2">Column Name</th>
+              <th class="text-start font-semibold pb-2">Required</th>
+              <th class="text-start font-semibold pb-2">Format</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class={`border-b ${m.rule.line}`}>
+              <td class="py-2">Employee Name</td>
+              <td>Yes</td>
+              <td>Text (any format)</td>
+            </tr>
+            <tr class={`border-b ${m.rule.line}`}>
+              <td class="py-2">Date</td>
+              <td>Yes</td>
+              <td>MM/DD/YYYY or YYYY-MM-DD</td>
+            </tr>
+            <tr class={`border-b ${m.rule.line}`}>
+              <td class="py-2">Start Time</td>
+              <td>Yes</td>
+              <td>HH:MM (24-hour format)</td>
+            </tr>
+            <tr>
+              <td class="py-2">End Time</td>
+              <td>Yes</td>
+              <td>HH:MM (24-hour format)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class={`${m.text.muted} text-base`}>
+        Download our sample schedule above to see an example format. You can also export directly from most scheduling systems and upload the file as-is.
+      </p>
+    </section>
+
+    {/* FAQ */}
+    <section class="max-w-3xl mb-24">
+      <h2 class={`${m.text.display} text-2xl font-semibold mb-6`}>Frequently Asked Questions</h2>
+      <div class="space-y-8">
+        <div>
+          <h3 class="font-semibold text-lg mb-2">Is my data secure?</h3>
+          <p class={`${m.text.muted} text-base`}>
+            Yes. Your schedule file is not stored on our servers. We scan it in memory, show you the results, and delete the file immediately. No backups, no logging of your data.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-lg mb-2">Do I need to create an account?</h3>
+          <p class={`${m.text.muted} text-base`}>
+            No. The checker is completely anonymous and free. If you want to generate AI-optimized schedules, you'll need to sign up for Wiz Scheduler, but the checker itself requires nothing.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-lg mb-2">What if my schedule is compliant?</h3>
+          <p class={`${m.text.muted} text-base`}>
+            Great! You'll get a green result showing zero violations. You can download a compliance certificate to share with your legal team or auditors if needed.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-lg mb-2">What if violations are found?</h3>
+          <p class={`${m.text.muted} text-base`}>
+            The report will list each violation with the employee name, date, and rule broken. You can fix the violations manually or use Wiz Scheduler to generate a compliant schedule automatically.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-lg mb-2">Does this cover other labor laws?</h3>
+          <p class={`${m.text.muted} text-base`}>
+            This tool focuses on NYC Fair Workweek law specifically. For broader compliance (wage-and-hour, overtime, etc.), consult your payroll provider or a labor attorney.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-lg mb-2">Can I use this for other states?</h3>
+          <p class={`${m.text.muted} text-base`}>
+            This checker is built specifically for NYC Fair Workweek law. Other states have different rules. We're building support for other jurisdictions—check back soon.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-lg mb-2">What file size limit do you have?</h3>
+          <p class={`${m.text.muted} text-base`}>
+            You can upload files up to 10 MB. Most schedules are much smaller, so this covers tens of thousands of shifts.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    {/* CTA */}
+    <section class="max-w-3xl mb-16 pb-16 border-t border-gray-200">
+      <h2 class={`${m.text.display} text-2xl font-semibold mb-4 mt-12`}>Ready to Automate Scheduling?</h2>
+      <p class={`${m.text.muted} text-base mb-8`}>
+        The checker helps you catch violations, but it requires manual fixes. Wiz Scheduler generates compliant schedules automatically, respecting availability, skills, team preferences, and labor law—all in seconds.
+      </p>
+      <div class="flex flex-wrap items-center gap-4">
+        <a href={appLink("/register", NYC_PRESET)} class={m.btn.primary}>Start Free</a>
+        <a href="/nyc-fair-workweek-scheduling" class={m.btn.link}>Learn More</a>
+      </div>
     </section>
   </main>
 </Base>

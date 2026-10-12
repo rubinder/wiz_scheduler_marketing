@@ -1,0 +1,296 @@
+---
+import Base from "../../layouts/Base.astro";
+import SectionRule from "../../components/SectionRule.astro";
+import { m } from "../../theme";
+import { appLink } from "../../lib/site";
+import { localePath, type Locale } from "../../lib/links";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const L = (p: string) => localePath(locale, p);
+
+const tools = [
+  {
+    name: "Wiz Scheduler",
+    description: "AI-powered scheduling with Fair Workweek compliance",
+    pricing: "Free + $18/location/mo",
+    aiScheduling: true,
+    fairWorkweek: true,
+    teamAffinities: true,
+    skillBasedRotation: true,
+    bulkImportExport: true,
+    payrollIntegration: true,
+    pros: [
+      "AI generates optimized schedules in seconds",
+      "Automatic NYC Fair Workweek compliance",
+      "Affordable: free tier + $18/month per location",
+      "Team preferences & affinities built in",
+      "Direct export to 7shifts, Deputy, Homebase"
+    ],
+    cons: [
+      "Newer product, smaller user base"
+    ]
+  },
+  {
+    name: "7shifts",
+    description: "Market leader for restaurant scheduling and labor management",
+    pricing: "$3-7 per user/month",
+    aiScheduling: false,
+    fairWorkweek: false,
+    teamAffinities: false,
+    skillBasedRotation: true,
+    bulkImportExport: true,
+    payrollIntegration: true,
+    pros: [
+      "Large user base, lots of integrations",
+      "Strong POS and payroll connectivity",
+      "Robust labor law reminders (not enforcement)",
+      "Mobile app for employees"
+    ],
+    cons: [
+      "No AI scheduling—you build schedules manually",
+      "Does not enforce Fair Workweek (reminders only)",
+      "Higher per-user cost at scale"
+    ]
+  },
+  {
+    name: "Deputy",
+    description: "Workforce management with rostering and task assignments",
+    pricing: "$6-12 per user/month",
+    aiScheduling: false,
+    fairWorkweek: false,
+    teamAffinities: false,
+    skillBasedRotation: true,
+    bulkImportExport: true,
+    payrollIntegration: true,
+    pros: [
+      "Strong task assignment and time tracking",
+      "Geo-location check-in",
+      "Mobile experience is solid",
+      "Good payroll integrations"
+    ],
+    cons: [
+      "No AI scheduling",
+      "Does not enforce Fair Workweek",
+      "Complex UI with steep learning curve"
+    ]
+  },
+  {
+    name: "Homebase",
+    description: "Free scheduling and time tracking for small teams",
+    pricing: "Free + $10/mo/user for Premium",
+    aiScheduling: false,
+    fairWorkweek: false,
+    teamAffinities: false,
+    skillBasedRotation: false,
+    bulkImportExport: true,
+    payrollIntegration: true,
+    pros: [
+      "Completely free for basic scheduling",
+      "Simple, intuitive interface",
+      "Integrated time tracking and timesheets",
+      "Good for small restaurants and retail"
+    ],
+    cons: [
+      "No AI or intelligent scheduling",
+      "Limited reporting and analytics",
+      "No Fair Workweek enforcement",
+      "Limited integrations"
+    ]
+  },
+  {
+    name: "Rotageek",
+    description: "European workforce scheduling platform",
+    pricing: "£3-8 per user/month",
+    aiScheduling: false,
+    fairWorkweek: false,
+    teamAffinities: false,
+    skillBasedRotation: true,
+    bulkImportExport: true,
+    payrollIntegration: true,
+    pros: [
+      "Strong on shift swap and availability management",
+      "Good compliance tools for UK/EU regulations",
+      "Strong reporting suite",
+      "Mobile app with biometric check-in"
+    ],
+    cons: [
+      "No AI scheduling",
+      "Less suitable for US market",
+      "More expensive per user",
+      "Steeper learning curve"
+    ]
+  },
+  {
+    name: "When I Work",
+    description: "Simple scheduling and communication for small teams",
+    pricing: "Free + $2-4/user/mo",
+    aiScheduling: false,
+    fairWorkweek: false,
+    teamAffinities: false,
+    skillBasedRotation: false,
+    bulkImportExport: true,
+    payrollIntegration: false,
+    pros: [
+      "Very affordable for small teams",
+      "Simple, clean interface",
+      "Good team communication features",
+      "No payroll integration needed"
+    ],
+    cons: [
+      "No AI scheduling",
+      "No Fair Workweek support",
+      "Limited skill-based features",
+      "Poor integration ecosystem"
+    ]
+  }
+];
+
+const title = "7shifts Alternatives: Scheduling Comparison";
+const description = "Compare Wiz Scheduler to 7shifts, Deputy, Homebase, and other scheduling platforms. See pricing, features, and AI capabilities.";
+---
+<Base locale={locale} title={title} description={description} path={L("/compare/7shifts-alternatives")}>
+  <main class="max-w-[92rem] mx-auto px-6">
+    {/* Hero */}
+    <section class="pt-12 lg:pt-20 pb-16">
+      <div class="max-w-[62ch]">
+        <h1 class={`${m.text.display} font-display text-5xl lg:text-6xl font-semibold leading-[0.95] mb-6`}>
+          7shifts Alternatives
+        </h1>
+        <p class={`${m.text.muted} text-lg leading-relaxed max-w-[62ch]`}>
+          Compare popular restaurant and retail scheduling platforms. See how Wiz Scheduler stacks up on pricing, AI capabilities, and compliance features.
+        </p>
+      </div>
+    </section>
+
+    {/* Quick Comparison Table */}
+    <section class="pb-24">
+      <SectionRule eyebrow="Side by Side" title="Feature Comparison" />
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class={`border-b ${m.rule.line}`}>
+              <th class="text-start font-semibold pb-3 pr-4">Tool</th>
+              <th class="text-center pb-3 px-2">AI Scheduling</th>
+              <th class="text-center pb-3 px-2">Fair Workweek</th>
+              <th class="text-center pb-3 px-2">Team Affinities</th>
+              <th class="text-center pb-3 px-2">Skill Rotation</th>
+              <th class="text-center pb-3 px-2">Payroll Integration</th>
+              <th class="text-end pb-3 pl-4">Pricing</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tools.map((tool) => (
+              <tr class={`border-b ${m.rule.line}`}>
+                <td class="py-3 pr-4 font-medium">{tool.name}</td>
+                <td class="text-center py-3 px-2">{tool.aiScheduling ? "✓" : "—"}</td>
+                <td class="text-center py-3 px-2">{tool.fairWorkweek ? "✓" : "—"}</td>
+                <td class="text-center py-3 px-2">{tool.teamAffinities ? "✓" : "—"}</td>
+                <td class="text-center py-3 px-2">{tool.skillBasedRotation ? "✓" : "—"}</td>
+                <td class="text-center py-3 px-2">{tool.payrollIntegration ? "✓" : "—"}</td>
+                <td class="text-end py-3 pl-4 text-sm">{tool.pricing}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {/* Detailed Comparison */}
+    <section class="pb-24">
+      <SectionRule eyebrow="Detailed" title="Platform Breakdown" />
+      <div class="space-y-12">
+        {tools.map((tool) => (
+          <div class={`${m.surface} border ${m.rule.line} p-8`}>
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <h3 class={`${m.text.display} text-2xl font-semibold mb-1`}>{tool.name}</h3>
+                <p class={`${m.text.muted} text-sm mb-3`}>{tool.description}</p>
+                <p class={`${m.text.body} font-semibold text-lg`}>{tool.pricing}</p>
+              </div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+              <div>
+                <h4 class="font-semibold mb-3 text-green-700">Pros</h4>
+                <ul class="space-y-2">
+                  {tool.pros.map((pro) => (
+                    <li class={`${m.text.muted} text-sm flex gap-2`}>
+                      <span class="flex-shrink-0">✓</span>
+                      <span>{pro}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h4 class="font-semibold mb-3 text-red-700">Cons</h4>
+                <ul class="space-y-2">
+                  {tool.cons.map((con) => (
+                    <li class={`${m.text.muted} text-sm flex gap-2`}>
+                      <span class="flex-shrink-0">✗</span>
+                      <span>{con}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* Why Choose Wiz Scheduler */}
+    <section class="max-w-3xl pb-24">
+      <SectionRule eyebrow="Why WizScheduler" title="The Key Differences" />
+      <div class="space-y-6">
+        <div>
+          <h3 class="font-semibold text-lg mb-2">AI That Understands Your Team</h3>
+          <p class={`${m.text.muted} text-base`}>
+            Other tools help you manually build schedules. Wiz Scheduler generates optimized schedules automatically, respecting availability, skills, team preferences, and Fair Workweek laws all at once. It learns from your team's affinities and seniority patterns.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-lg mb-2">Compliance by Default</h3>
+          <p class={`${m.text.muted} text-base`}>
+            Fair Workweek isn't a checkbox—it's built into every schedule. We don't just warn you, we block violations. The 11-hour rest rule, 14-day notice, and clopening restrictions are enforced automatically. No surprises, no fines.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-lg mb-2">Affordable at Scale</h3>
+          <p class={`${m.text.muted} text-base`}>
+            Most platforms charge per user, which gets expensive fast. Wiz Scheduler is $18/month per location. A 20-person team on 7shifts costs $60-140/month. Same team on Wiz Scheduler? $18. That's 75% cheaper.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-lg mb-2">Direct Integrations</h3>
+          <p class={`${m.text.muted} text-base`}>
+            Export schedules directly to 7shifts, Deputy, or Homebase. Keep using the tools your team already knows while getting AI-powered scheduling from Wiz.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-lg mb-2">Your Data Stays Yours</h3>
+          <p class={`${m.text.muted} text-base`}>
+            We don't train AI models on your data. No employee names sent to external APIs. Full transparency, full privacy. Your competitive advantage stays competitive.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    {/* CTA */}
+    <section class="max-w-3xl mb-16 pb-16 border-t border-gray-200">
+      <h2 class={`${m.text.display} text-2xl font-semibold mb-4 mt-12`}>Ready to Try AI Scheduling?</h2>
+      <p class={`${m.text.muted} text-base mb-8`}>
+        See how much time you can save. Sign up for free—no credit card required. Generate your first schedule in minutes.
+      </p>
+      <div class="flex flex-wrap items-center gap-4">
+        <a href={appLink("/register")} class={m.btn.primary}>Start Free</a>
+        <a href={L("/free-schedule-checker")} class={m.btn.link}>Try Compliance Checker</a>
+      </div>
+    </section>
+  </main>
+</Base>
