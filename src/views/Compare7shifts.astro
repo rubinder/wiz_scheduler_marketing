@@ -172,25 +172,25 @@ const description = "Compare Wiz Scheduler to 7shifts, Deputy, Homebase, and oth
         <table class="w-full text-sm">
           <thead>
             <tr class={`border-b ${m.rule.line}`}>
-              <th class="text-start font-semibold pb-3 pr-4">Tool</th>
+              <th class="text-start font-semibold pb-3 pe-4">Tool</th>
               <th class="text-center pb-3 px-2">AI Scheduling</th>
               <th class="text-center pb-3 px-2">Fair Workweek</th>
               <th class="text-center pb-3 px-2">Team Affinities</th>
               <th class="text-center pb-3 px-2">Skill Rotation</th>
               <th class="text-center pb-3 px-2">Payroll Integration</th>
-              <th class="text-end pb-3 pl-4">Pricing</th>
+              <th class="text-end pb-3 ps-4">Pricing</th>
             </tr>
           </thead>
           <tbody>
             {tools.map((tool) => (
               <tr class={`border-b ${m.rule.line}`}>
-                <td class="py-3 pr-4 font-medium">{tool.name}</td>
+                <td class="py-3 pe-4 font-medium">{tool.name}</td>
                 <td class="text-center py-3 px-2">{tool.aiScheduling ? "✓" : "—"}</td>
                 <td class="text-center py-3 px-2">{tool.fairWorkweek ? "✓" : "—"}</td>
                 <td class="text-center py-3 px-2">{tool.teamAffinities ? "✓" : "—"}</td>
                 <td class="text-center py-3 px-2">{tool.skillBasedRotation ? "✓" : "—"}</td>
                 <td class="text-center py-3 px-2">{tool.payrollIntegration ? "✓" : "—"}</td>
-                <td class="text-end py-3 pl-4 text-sm">{tool.pricing}</td>
+                <td class="text-end py-3 ps-4 text-sm">{tool.pricing}</td>
               </tr>
             ))}
           </tbody>
