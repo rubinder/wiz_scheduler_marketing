@@ -42,12 +42,12 @@ const hardInputs = [
   { title: t.landing.inputHourRestrictionsTitle, desc: t.landing.inputHourRestrictionsDesc },
   { title: t.landing.inputDayRulesTitle, desc: t.landing.inputDayRulesDesc },
   { title: t.landing.inputMinRestTitle, desc: t.landing.inputMinRestDesc },
-  { title: t.landing.inputAssociationTitle, desc: t.landing.inputAssociationDesc },
 ];
 const softInputs = [
   { title: t.landing.inputDayPrefsTitle, desc: t.landing.inputDayPrefsDesc },
   { title: t.landing.inputHourRangeTitle, desc: t.landing.inputHourRangeDesc },
   { title: t.landing.inputFreqCapsTitle, desc: t.landing.inputFreqCapsDesc },
+  { title: t.landing.inputAssociationTitle, desc: t.landing.inputAssociationDesc },
 ];
 const compliance = [
   { title: t.landing.compDataExportTitle, desc: t.landing.compDataExportDesc },
@@ -245,7 +245,8 @@ const title = `${t.common.appName} — ${t.landing.badge}`;
       </div>
     </div>
     <p class={`${m.text.muted} text-sm max-w-[60ch] mb-2`}>{t.landing.inputsTemplatesNote}</p>
-    <p class={`${m.text.meta} mb-24`}>{t.landing.inputsNotYet}</p>
+    <p class={`${m.text.meta} mb-2`}>{t.landing.inputsNotYetRule}</p>
+    <p class={`${m.text.meta} mb-24`}>{t.landing.inputsNotYetSignals}</p>
 
     <SectionRule id="pricing" eyebrow={t.home.eyebrowCost} title={t.landing.pricingTitle} />
     <p class={`${m.text.muted} max-w-[60ch] mb-10`}>{t.landing.pricingDesc}</p>
