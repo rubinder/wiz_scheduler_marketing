@@ -33,7 +33,7 @@ about, contact, the NYC Fair Workweek page, the free schedule checker, the
 | mr | मराठी | Devanagari | ltr |
 | ta | தமிழ் | Tamil | ltr |
 | te | తెలుగు | Telugu | ltr |
-| pcm | Naijá | Latin | ltr |
+| pcm | Naijá Píjin | Latin | ltr |
 | id | Bahasa Indonesia | Latin | ltr |
 | vi | Tiếng Việt | Latin | ltr |
 | ja | 日本語 | Japanese | ltr |
@@ -209,13 +209,18 @@ export function dir(locale: Locale): "ltr" | "rtl";
 
 - **Coverage:** Archivo and Source Sans 3 cover Latin, Cyrillic and
   Vietnamese only.
-- **Other scripts:** Arabic, Devanagari, Bengali, Tamil, Telugu, Japanese
-  and Chinese render in the system fallback.
-- **Fallback stack:** the Tailwind `fontFamily` stacks gain a system
-  fallback (`system-ui, sans-serif`) after the brand fonts, so the browser
-  picks the platform's font for each script.
+- **Already handled:** `src/styles/type.css` switches the font role
+  variables with `:root:lang(...)` to a per-script system stack for `ru`,
+  `ar`/`ur`, `hi`/`mr`, `bn`, `ta`, `te`, `ja` and `zh`. It also cancels
+  condensing and negative tracking there. These rules have been dormant
+  because no page carried those `lang` values.
+- **Change needed:** none beyond `<html lang={locale}>`, which `Base.astro`
+  already sets. The build check (§9) asserts the `lang` value.
 - **Out of scope:** self-hosting Noto fonts, which would add several MB per
   script. That is a follow-up if the look matters.
+
+(Revised 2026-10-20 during planning: the earlier draft proposed adding
+`system-ui` fallbacks to the Tailwind stacks, which already exist.)
 
 ## 9. Testing
 
