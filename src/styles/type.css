@@ -20,46 +20,55 @@
 /* Scripts with no self-hosted coverage fall through to per-script
    system stacks. Condensing and negative tracking are cancelled:
    they damage legibility in these scripts. Readability outranks
-   identity — never the reverse. */
+   identity — never the reverse. The data role uses the body stack too:
+   a generic monospace renders these scripts badly, and .font-data keeps
+   figures aligned through tabular-nums. */
 :root:lang(ar), :root:lang(ur) {
   --font-display: "SF Arabic", "Geeza Pro", "Segoe UI", "Noto Sans Arabic", sans-serif;
   --font-body: "SF Arabic", "Geeza Pro", "Segoe UI", "Noto Sans Arabic", sans-serif;
+  --font-data: "SF Arabic", "Geeza Pro", "Segoe UI", "Noto Sans Arabic", sans-serif;
   --display-stretch: 100%;
   --display-tracking: 0;
 }
 :root:lang(hi), :root:lang(mr) {
   --font-display: "Kohinoor Devanagari", "Nirmala UI", "Noto Sans Devanagari", sans-serif;
   --font-body: "Kohinoor Devanagari", "Nirmala UI", "Noto Sans Devanagari", sans-serif;
+  --font-data: "Kohinoor Devanagari", "Nirmala UI", "Noto Sans Devanagari", sans-serif;
   --display-stretch: 100%;
   --display-tracking: 0;
 }
 :root:lang(bn) {
   --font-display: "Kohinoor Bangla", "Nirmala UI", "Noto Sans Bengali", sans-serif;
   --font-body: "Kohinoor Bangla", "Nirmala UI", "Noto Sans Bengali", sans-serif;
+  --font-data: "Kohinoor Bangla", "Nirmala UI", "Noto Sans Bengali", sans-serif;
   --display-stretch: 100%;
   --display-tracking: 0;
 }
 :root:lang(ta) {
   --font-display: "Tamil Sangam MN", "Nirmala UI", "Noto Sans Tamil", sans-serif;
   --font-body: "Tamil Sangam MN", "Nirmala UI", "Noto Sans Tamil", sans-serif;
+  --font-data: "Tamil Sangam MN", "Nirmala UI", "Noto Sans Tamil", sans-serif;
   --display-stretch: 100%;
   --display-tracking: 0;
 }
 :root:lang(te) {
   --font-display: "Kohinoor Telugu", "Nirmala UI", "Noto Sans Telugu", sans-serif;
   --font-body: "Kohinoor Telugu", "Nirmala UI", "Noto Sans Telugu", sans-serif;
+  --font-data: "Kohinoor Telugu", "Nirmala UI", "Noto Sans Telugu", sans-serif;
   --display-stretch: 100%;
   --display-tracking: 0;
 }
 :root:lang(ja) {
   --font-display: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
   --font-body: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+  --font-data: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
   --display-stretch: 100%;
   --display-tracking: 0;
 }
 :root:lang(zh) {
   --font-display: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   --font-body: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --font-data: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   --display-stretch: 100%;
   --display-tracking: 0;
 }
