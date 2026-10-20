@@ -29,12 +29,12 @@ const links = [
       {links.map((l) => <a href={l.href} class={`${m.btn.link} text-sm`}>{l.label}</a>)}
     </div>
     <div class="flex items-center gap-3 sm:gap-5 shrink-0">
-<details class="relative group">
+      <details class="relative group">
         <summary
           class={`${m.text.meta} list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none px-2 py-1 border ${m.rule.line} hover:!text-ink flex items-center gap-1.5`}
-          aria-label={t.nav.language}
         >
-          <span lang={locale}>{ENDONYMS[locale]}</span>
+          <span class="sr-only">{t.nav.language}: </span>
+          <span lang={locale} class="normal-case tracking-normal">{ENDONYMS[locale]}</span>
           <span aria-hidden="true" class="transition-transform group-open:rotate-180">▾</span>
         </summary>
         <ul
