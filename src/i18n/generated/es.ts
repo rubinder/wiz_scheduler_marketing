@@ -81,7 +81,7 @@ export default {
     "featHourCapsTitle": "Tope de horas por empleado",
     "featHourCapsDesc": "Establece un tope máximo de horas semanales para cada empleado. El programador aplica el tope en todas las ubicaciones dentro de una misma ejecución — sin necesidad de seguimiento manual.",
     "featDayRulesTitle": "Reglas de días bloqueados",
-    "featDayRulesDesc": "Block out recurring time ranges per day of week when an employee must not be scheduled. For example, no Mondays 8 PM-10 PM — enforced automatically every week.",
+    "featDayRulesDesc": "Bloquea franjas horarias recurrentes por día de la semana en las que un empleado no debe ser programado. Por ejemplo, «nunca los lunes de 20:00 a 22:00» — se aplica automáticamente cada semana.",
     "featDeputyTitle": "Integración con Deputy",
     "featDeputyDesc": "Importa ubicaciones, áreas, empleados y la indisponibilidad desde Deputy. La indisponibilidad se invierte automáticamente en ventanas de disponibilidad para la programación.",
     "feat7shiftsTitle": "Integración con 7shifts",
@@ -163,7 +163,7 @@ export default {
       },
       "locations": {
         "title": "Ubicaciones",
-        "desc": "Gestiona cada sitio físico para el que planificas. Cada ubicación tiene su propia zona horaria, dirección, región y lista de empleados elegibles — y la IA la planifica de forma independiente."
+        "desc": "Gestiona cada sitio físico para el que planificas. Cada ubicación tiene su propia zona horaria, dirección, región y lista de empleados elegibles — y el algoritmo de planificación la programa de forma independiente."
       },
       "roles": {
         "title": "Roles del equipo",
@@ -171,7 +171,7 @@ export default {
       },
       "role-equivalents": {
         "title": "Equivalencias de rol",
-        "desc": "Vincula roles que pueden cubrirse entre sí. Permite que el planificador trate \"Barista\" y \"Baker\" como intercambiables al cubrir un turno, respetando las diferencias de nivel de habilidad."
+        "desc": "Vincula roles que pueden cubrirse entre sí. Permite que el algoritmo de planificación trate \"Barista\" y \"Baker\" como intercambiables al cubrir un turno, respetando las diferencias de nivel de habilidad."
       },
       "employees": {
         "title": "Empleados",
@@ -181,13 +181,9 @@ export default {
         "title": "Equipo",
         "desc": "Invita a otros gerentes para que ayuden a administrar la cuenta. Sigue las invitaciones pendientes y quién ya las aceptó, todo en un solo lugar."
       },
-      "quick-entry": {
-        "title": "Entrada rápida",
-        "desc": "Consolida los flujos de gerente comunes en un solo formulario. Rápidamente agrega empleados, registra conflictos, configura relaciones de tutoría y actualiza preferencias sin navegar entre pantallas."
-      },
       "hour-restrictions": {
         "title": "Restricciones de horas",
-        "desc": "Aplica topes y mínimos semanales por empleado. Útil para visas de estudiante, acuerdos a tiempo parcial y presupuestos de horas extras. La IA nunca planificará fuera de estos límites."
+        "desc": "Aplica topes y mínimos semanales por empleado. Útil para visas de estudiante, acuerdos a tiempo parcial y presupuestos de horas extras. El algoritmo de planificación nunca programará fuera de estos límites."
       },
       "day-blackouts": {
         "title": "Días bloqueados",
@@ -215,11 +211,11 @@ export default {
       },
       "employee-association": {
         "title": "Asociación de empleados",
-        "desc": "Marca qué empleados trabajan bien juntos (o no deberían emparejarse). La IA usa estas afinidades como preferencias suaves al asignar turnos."
+        "desc": "Marca qué empleados trabajan bien juntos (o no deberían emparejarse). El algoritmo de planificación usa estas afinidades como preferencias suaves al asignar turnos."
       },
       "shift-templates": {
         "title": "Plantillas de turnos",
-        "desc": "Define el patrón semanal recurrente de cada ubicación: qué roles se necesitan, cuántos de cada uno, en qué días y a qué horas. El plano que la IA rellena."
+        "desc": "Define el patrón semanal recurrente de cada ubicación: qué roles se necesitan, cuántos de cada uno, en qué días y a qué horas. El plano que rellena el algoritmo de planificación."
       },
       "check-in-qr": {
         "title": "Código de registro",
