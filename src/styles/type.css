@@ -76,3 +76,13 @@
 .font-data, .tabular {
   font-variant-numeric: tabular-nums;
 }
+
+/* Letter-spacing breaks cursive joining in Arabic-script text (and splits
+   Indic conjuncts), so the tracked mono eyebrows and labels are untracked
+   in those scripts. */
+:root:lang(ar) [class*="tracking-"], :root:lang(ur) [class*="tracking-"],
+:root:lang(hi) [class*="tracking-"], :root:lang(mr) [class*="tracking-"],
+:root:lang(bn) [class*="tracking-"], :root:lang(ta) [class*="tracking-"],
+:root:lang(te) [class*="tracking-"] {
+  letter-spacing: 0;
+}
