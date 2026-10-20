@@ -2,7 +2,7 @@
 import { m } from "../theme";
 import { getCopy } from "../i18n";
 import { appLink } from "../lib/site";
-import { LOCALES, localePath, type Locale } from "../lib/links";
+import { ENDONYMS, dir, localePath, localesFor, type Locale } from "../lib/links";
 
 interface Props {
   locale: Locale;
@@ -10,7 +10,7 @@ interface Props {
 }
 const { locale, path } = Astro.props;
 const t = getCopy(locale);
-const langName: Record<Locale, string> = { en: t.nav.english, es: t.nav.spanish };
+const available = localesFor(path);
 const links = [
   { href: localePath(locale, "/nyc-fair-workweek-scheduling"), label: t.nav.nyc },
   { href: localePath(locale, "/free-schedule-checker"), label: t.nav.checker },
@@ -29,24 +29,33 @@ const links = [
       {links.map((l) => <a href={l.href} class={`${m.btn.link} text-sm`}>{l.label}</a>)}
     </div>
     <div class="flex items-center gap-3 sm:gap-5 shrink-0">
-      <ul class="flex items-center gap-1" aria-label={t.nav.language}>
-        {LOCALES.map((l) => (
-          <li>
-            <a
-              href={localePath(l, path)}
-              hreflang={l}
-              lang={l}
-              title={langName[l]}
-              aria-current={l === locale ? "page" : undefined}
-              class={`${m.text.meta} px-2 py-1 border transition-colors ${
-                l === locale ? "border-ink !text-ink" : `${m.rule.line} hover:!text-ink`
-              }`}
-            >
-              {l.toUpperCase()}
-            </a>
-          </li>
-        ))}
-      </ul>
+<details class="relative group">
+        <summary
+          class={`${m.text.meta} list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none px-2 py-1 border ${m.rule.line} hover:!text-ink flex items-center gap-1.5`}
+          aria-label={t.nav.language}
+        >
+          <span lang={locale}>{ENDONYMS[locale]}</span>
+          <span aria-hidden="true" class="transition-transform group-open:rotate-180">▾</span>
+        </summary>
+        <ul
+          class={`absolute end-0 top-full mt-1 z-50 min-w-[11rem] max-h-[70vh] overflow-y-auto bg-newsprint border ${m.rule.line} py-1 shadow-sm`}
+        >
+          {available.map((l) => (
+            <li>
+              <a
+                href={localePath(l, path)}
+                hreflang={l}
+                lang={l}
+                dir={dir(l)}
+                aria-current={l === locale ? "page" : undefined}
+                class={`block px-3 py-1.5 text-sm text-start ${l === locale ? "font-semibold text-ink" : "text-ink/70 hover:text-ink"}`}
+              >
+                {ENDONYMS[l]}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </details>
       <a href={appLink("/login")} class={`${m.btn.link} text-sm hidden sm:inline`}>{t.login.signIn}</a>
       <a href={appLink("/register")} class={`${m.btn.primary} !px-4 !py-2 text-sm`}>{t.register.registerBtn}</a>
     </div>
