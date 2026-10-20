@@ -181,10 +181,6 @@ export default {
         "title": "Team",
         "desc": "Invite other managers to help run the account. Track pending invites and see who has already accepted, all in one place."
       },
-      "quick-entry": {
-        "title": "Quick Entry",
-        "desc": "Consolidate common manager workflows into a single form. Quickly add employees, record conflicts, set up mentoring relationships, and update preferences without navigating between screens."
-      },
       "hour-restrictions": {
         "title": "Hour Restrictions",
         "desc": "Enforce per-employee weekly hour caps and minimums. Useful for student visas, part-time agreements, and overtime budgets. The scheduling algorithm will never schedule outside these bounds."

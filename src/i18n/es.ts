@@ -1,17 +1,10 @@
 import generated from "./generated/es";
+import chrome from "./chrome/es";
 import type { Copy } from "./en";
 
 const es: Copy = {
   ...generated,
-  nav: {
-    features: "Funciones",
-    nyc: "Fair Workweek NYC",
-    checker: "Verificador de horarios gratis",
-    compare: "Comparar con 7shifts",
-    language: "Idioma",
-    english: "English",
-    spanish: "Español",
-  },
+  ...chrome,
   notFound: {
     title: "Página no encontrada",
     desc: "Ese enlace no lleva a ninguna parte. La página de inicio sí.",
@@ -112,23 +105,6 @@ const es: Copy = {
     checkedOn: "Datos del competidor verificados el",
     ctaSignup: "Regístrate gratis",
     ctaHome: "Volver al inicio",
-  },
-  home: {
-    eyebrowCapability: "01 — Capacidad",
-    eyebrowProof: "02 — Prueba",
-    eyebrowMethod: "03 — Método",
-    eyebrowInputs: "04 — Entradas",
-    eyebrowCost: "05 — Costo",
-    eyebrowAssurance: "06 — Garantías",
-    meterRuns: "EJECUCIONES",
-    meterData: "DATOS",
-    meterTeam: "EQUIPO",
-    meterAi: "AI",
-    runsIncluded: "50 / mes",
-    aiOverage: "Costo x 130%",
-    rotaShifts: "turnos",
-    rotaPeople: "personas",
-    rotaViolations: "infracciones de descanso",
   },
   checker: {
     metaTitle: "Verificador gratuito de horarios Fair Workweek NYC",

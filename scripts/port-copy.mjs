@@ -1,11 +1,12 @@
-// Regenerates src/i18n/generated/{en,es}.ts from the app repo's locale files.
+// Regenerates src/i18n/generated/<locale>.ts for all 19 locales from the app repo's locale files.
 // Run: npm run port:copy      (APP_REPO overrides the sibling-checkout default)
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const APP_REPO = process.env.APP_REPO ?? resolve(process.cwd(), "../wiz_scheduler");
-const LOCALES = ["en", "es"];
+const LOCALES = ["en", "es", "fr", "de", "pt", "ru", "tr", "ar", "ur", "hi",
+  "bn", "mr", "ta", "te", "pcm", "id", "vi", "ja", "zh"]; // = src/lib/links.ts LOCALES
 const OUT_DIR = resolve(process.cwd(), "src/i18n/generated");
 
 function pick(t) {

@@ -2,15 +2,15 @@
 import Base from "../layouts/Base.astro";
 import SectionRule from "../components/SectionRule.astro";
 import { m } from "../theme";
-import { getCopy } from "../i18n";
+import { getSiteCopy } from "../i18n";
 import { appLink, NYC_PRESET } from "../lib/site";
-import { localePath, type Locale } from "../lib/links";
+import { localePath, type SiteLocale } from "../lib/links";
 
 interface Props {
-  locale: Locale;
+  locale: SiteLocale;
 }
 const { locale } = Astro.props;
-const t = getCopy(locale);
+const t = getSiteCopy(locale);
 const n = t.nyc;
 /** Date the legal summary below was last checked against DCWP material. Update when the copy changes. */
 const REVIEWED_ON = "2026-09-22";

@@ -1,16 +1,16 @@
 ---
 import Base from "../layouts/Base.astro";
 import { m } from "../theme";
-import { getCopy } from "../i18n";
+import { getSiteCopy } from "../i18n";
 import { getLegal, type LegalKind } from "../lib/legal";
-import { localePath, type Locale } from "../lib/links";
+import { localePath, type SiteLocale } from "../lib/links";
 
 interface Props {
-  locale: Locale;
+  locale: SiteLocale;
   kind: LegalKind;
 }
 const { locale, kind } = Astro.props;
-const t = getCopy(locale);
+const t = getSiteCopy(locale);
 const titles: Record<LegalKind, string> = {
   "privacy-policy": t.gdpr.privacyPolicy,
   terms: t.gdpr.termsOfService,

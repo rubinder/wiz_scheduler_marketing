@@ -1,0 +1,11 @@
+---
+import Home from "../../views/Home.astro";
+import { DEFAULT_LOCALE, LOCALES, type Locale } from "../../lib/links";
+
+export function getStaticPaths() {
+  return LOCALES.filter((locale) => locale !== DEFAULT_LOCALE).map((locale) => ({ params: { locale } }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+---
+<Home locale={locale} />

@@ -2,23 +2,28 @@ import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 
+// = src/lib/links.ts LOCALES (astro.config.mjs cannot import the TS module)
+const LOCALES = ["en", "es", "fr", "de", "pt", "ru", "tr", "ar", "ur", "hi",
+  "bn", "mr", "ta", "te", "pcm", "id", "vi", "ja", "zh"];
+const HOME_URLS = new Set(LOCALES.map((l) => (l === "en" ? "https://wizscheduler.com/" : `https://wizscheduler.com/${l}`)));
+
 export default defineConfig({
   site: "https://wizscheduler.com",
   trailingSlash: "never",
   build: { format: "directory" },
   i18n: {
     defaultLocale: "en",
-    locales: ["en", "es"],
+    locales: LOCALES,
     routing: { prefixDefaultLocale: false },
   },
   integrations: [
     react(),
     sitemap({
-      i18n: { defaultLocale: "en", locales: { en: "en", es: "es" } },
+      i18n: { defaultLocale: "en", locales: Object.fromEntries(LOCALES.map((l) => [l, l])) },
       filter: (page) => !page.endsWith("/404"),
       serialize: (item) => {
         // Home page: highest priority, changes weekly
-        if (item.url === "https://wizscheduler.com/" || item.url === "https://wizscheduler.com/es") {
+        if (HOME_URLS.has(item.url)) {
           return {
             ...item,
             changefreq: "weekly",

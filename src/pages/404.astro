@@ -1,9 +1,9 @@
 ---
 import Base from "../layouts/Base.astro";
-import { getCopy } from "../i18n";
+import { getSiteCopy } from "../i18n";
 import { m } from "../theme";
 
-const t = getCopy("en");
+const t = getSiteCopy("en");
 ---
 <Base locale="en" title={`${t.notFound.title} | ${t.common.appName}`} description={t.notFound.desc} path="/404" noindex>
   <main class="max-w-[92rem] mx-auto px-6 py-24">

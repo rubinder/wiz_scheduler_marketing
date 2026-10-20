@@ -2,16 +2,16 @@
 import { getEntry, render } from "astro:content";
 import Base from "../layouts/Base.astro";
 import { m } from "../theme";
-import { getCopy } from "../i18n";
+import { getSiteCopy } from "../i18n";
 import { appLink } from "../lib/site";
-import { localePath, type Locale } from "../lib/links";
+import { localePath, type SiteLocale } from "../lib/links";
 
 interface Props {
-  locale: Locale;
+  locale: SiteLocale;
   slug: string;
 }
 const { locale, slug } = Astro.props;
-const t = getCopy(locale);
+const t = getSiteCopy(locale);
 const entry = await getEntry("compare", `${locale}/${slug}`);
 if (!entry) throw new Error(`compare entry missing: ${locale}/${slug}`);
 const { Content } = await render(entry);

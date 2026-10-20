@@ -2,15 +2,15 @@
 import Base from "../layouts/Base.astro";
 import Checker from "../islands/Checker";
 import { m } from "../theme";
-import { getCopy } from "../i18n";
+import { getSiteCopy } from "../i18n";
 import { API_URL, appLink, CHECKER_ENABLED, NYC_PRESET } from "../lib/site";
-import type { Locale } from "../lib/links";
+import type { SiteLocale } from "../lib/links";
 
 interface Props {
-  locale: Locale;
+  locale: SiteLocale;
 }
 const { locale } = Astro.props;
-const t = getCopy(locale);
+const t = getSiteCopy(locale);
 const c = t.checker;
 ---
 <Base locale={locale} title={`${c.metaTitle} | ${t.common.appName}`} description={c.metaDesc} path="/free-schedule-checker">
