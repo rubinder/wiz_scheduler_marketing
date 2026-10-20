@@ -1,6 +1,6 @@
 ---
 import { SITE_URL } from "../lib/site";
-import { alternates, localePath, type Locale } from "../lib/links";
+import { OG_LOCALE, alternates, localePath, type Locale } from "../lib/links";
 
 interface Props {
   locale: Locale;
@@ -11,7 +11,7 @@ interface Props {
 }
 const { locale, title, description, path, noindex = false } = Astro.props;
 const canonical = `${SITE_URL}${localePath(locale, path)}`;
-const ogLocale = locale === "es" ? "es_US" : "en_US";
+const ogLocale = OG_LOCALE[locale];
 ---
 <title>{title}</title>
 <meta name="description" content={description} />

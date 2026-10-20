@@ -3,7 +3,7 @@ import "../styles/global.css";
 import Seo from "../components/Seo.astro";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
-import type { Locale } from "../lib/links";
+import { dir, type Locale } from "../lib/links";
 
 interface Props {
   locale: Locale;
@@ -15,7 +15,7 @@ interface Props {
 const { locale, title, description, path, noindex } = Astro.props;
 ---
 <!doctype html>
-<html lang={locale}>
+<html lang={locale} dir={dir(locale)}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
