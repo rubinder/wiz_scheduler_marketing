@@ -94,6 +94,22 @@ export default {
     "featRoleEquivDesc": "Benzer rolleri gruplayın, böylece çalışanlar eşdeğer pozisyonlardaki vardiyaları otomatik olarak doldurabilir.",
     "featLangsTitle": "19 Dil",
     "featLangsDesc": "İngilizce, Çince, Hintçe, İspanyolca, Fransızca, Arapça, Japonca ve 12 dil daha ile tam UI yerelleştirmesi.",
+    "featManagersTitle": "Birden Fazla Yönetici",
+    "featManagersDesc": "Tüm şirketi yöneten adminleri ve yalnızca kendi şubelerini görüp düzenleyen şube yöneticilerini davet edin. Diğer şubelerle paylaşılan çalışanlar onlar için salt okunur kalır.",
+    "featConcurrentTitle": "Yoğun Ekipler İçin Tasarlandı",
+    "featConcurrentDesc": "Birden fazla yönetici aynı anda çizelge oluşturabilir, onaylayabilir ve düzenleyebilir. Yalnızca ilgili şubeler ve onlarla personel paylaşanlar kilitlenir; böylece kimse başkasının işinin üzerine yazmaz ve kimse iki vardiyaya birden atanmaz.",
+    "featPrefRequestsTitle": "Tercih Talepleri",
+    "featPrefRequestsDesc": "Çalışanlar tercih ettikleri günleri, saatleri ve iş arkadaşlarını önerir; bir yönetici her talebi onaylar ya da reddeder. Karar çalışana e-postayla bildirilir. Siz açana kadar kapalıdır.",
+    "featOpenShiftsTitle": "Açık Vardiyalar",
+    "featOpenShiftsDesc": "Kimsenin dolduramadığı bir yer çizelgede açık vardiya olarak kalır, menüde işaretlenir ve müsait, yetkin ve henüz atanmamış kişilerin sıralı bir listesiyle gösterilir.",
+    "featSafeEditsTitle": "Güvenli Çizelge Düzenleme",
+    "featSafeEditsDesc": "Onaylanmış bir çizelgeyi düzenlerken biri müsait değilse, başka bir yerde zaten atanmışsa ya da vardiya zaten 7shifts'e gönderilmişse uyarılırsınız. Birinin giriş yaptığı bir vardiya değiştirilemez.",
+    "featPayRecordsTitle": "Yedi Yıllık Ödeme Kayıtları",
+    "featPayRecordsDesc": "Ödeme kayıtları yedi yıl saklanır ve iptal ettikten sonraki 90 gün dahil, istediğiniz zaman eksiksiz dışa aktarılabilir. Eski kayıtlar silinmeden önce adminler uyarılır.",
+    "featArchiveTitle": "Arşivle, Asla Silme",
+    "featArchiveDesc": "Çalışanları, şubeleri ve rolleri silmek yerine arşivleyin. Geçmiş çizelgeler, dışa aktarımlar ve bordro bozulmadan kalır; arşivlenen her şey geri yüklenebilir.",
+    "featMobileTitle": "Telefonunuzda Çalışır",
+    "featMobileDesc": "Uygulama, kayan menüsüyle telefon ekranına uyum sağlar ve sağdan sola yazılan Arapça ve Urduca dahil 19 dilin hepsinde çalışır.",
     "stratRotation": "Rotasyon",
     "stratRotationTag": "ÜCRETSİZ",
     "stratRotationDesc": "Mevcut program içinde çalışanlar arasında vardiyaları eşit dağıtır. Aynı role tekrarlanan atamaları cezalandırır. Çalışan uyumlarını dikkate alır: katı kısıtlamalar uygulanır, esnek tercihler puanlamayı etkiler.",
@@ -175,11 +191,11 @@ export default {
       },
       "employees": {
         "title": "Çalışanlar",
-        "desc": "Ana çalışan listesi. Her kişinin atanmış rollerini, beceri seviyesini, çalışabileceği şubeleri, saat sınırlarını ve uygunluğunu ayarlayın. Satır içi düzenleme toplu güncellemeleri hızlandırır."
+        "desc": "Ana çalışan listesi. Her kişinin atanmış rollerini, beceri seviyesini, çalışabileceği şubeleri, saat sınırlarını ve uygunluğunu ayarlayın. Satır içi düzenleme toplu güncellemeleri hızlandırır. Ayrılan kişileri silmek yerine arşivleyin: geçmişleri korunur ve geri yüklenebilirler."
       },
       "team": {
         "title": "Ekip",
-        "desc": "Hesabı yönetmeye yardımcı olması için başka yöneticileri davet edin. Bekleyen davetleri takip edin ve kimin zaten kabul ettiğini tek bir yerden görün."
+        "desc": "Hesabı yönetmeye yardımcı olması için başka yöneticileri davet edin: her şeyi yöneten adminler ya da seçtiğiniz şubelerle sınırlı şube yöneticileri. Bekleyen davetleri takip edin ve kimin zaten kabul ettiğini tek bir yerden görün."
       },
       "hour-restrictions": {
         "title": "Saat kısıtlamaları",
@@ -191,7 +207,7 @@ export default {
       },
       "day-preferences": {
         "title": "Gün tercihleri",
-        "desc": "Her çalışanın haftanın hangi günlerinde çalışmayı tercih ettiğini 0 ile 1 arasında ağırlıklandırın. Çizelgeleyici o çalışanı o gündeki vardiyalar için daha güçlü şekilde tercih eder — başka kimse müsait değilse geri çekilen esnek bir tercihtir."
+        "desc": "Her çalışanın haftanın hangi günlerinde çalışmayı tercih ettiğini 0 ile 1 arasında ağırlıklandırın. Çizelgeleyici o çalışanı o gündeki vardiyalar için daha güçlü şekilde tercih eder — başka kimse müsait değilse geri çekilen esnek bir tercihtir. Tercih taleplerini açtığınızda çalışanlar kendi tercihlerini önerebilir, bir yönetici de onaylar."
       },
       "hour-range-preferences": {
         "title": "Saat aralığı tercihleri",
@@ -227,7 +243,7 @@ export default {
       },
       "payroll": {
         "title": "Bordro",
-        "desc": "Onaylanmış ve giriş yapılmış vardiyaları otomatik olarak ödenebilir saatlere dönüştürün. Kimsenin okutmadığı nadir vardiyayı onaylayın, bir ödeme dönemini onaylayın ve doğrudan CSV olarak dışa aktarın."
+        "desc": "Onaylanmış ve giriş yapılmış vardiyaları otomatik olarak ödenebilir saatlere dönüştürün. Kimsenin okutmadığı nadir vardiyayı onaylayın, bir ödeme dönemini onaylayın ve doğrudan CSV olarak dışa aktarın. Ödeme kayıtları yedi yıl saklanır ve tüm geçmiş istediğiniz zaman dışa aktarılabilir."
       },
       "special-hours": {
         "title": "Özel saatler",
@@ -235,7 +251,7 @@ export default {
       },
       "schedule": {
         "title": "Çizelge",
-        "desc": "Tek tıkla optimize edilmiş haftalık çizelgeler oluşturun. Algoritmik strateji (Rotasyon, Maks Saat, Rastgele) veya AI seçin. Şube başına sonuçları inceleyin, satır içi düzenleyin ve yayınlayın."
+        "desc": "Tek tıkla optimize edilmiş haftalık çizelgeler oluşturun. Algoritmik strateji (Rotasyon, Maks Saat, Rastgele) veya AI seçin. Şube başına sonuçları inceleyin, satır içi düzenleyin ve yayınlayın. Birden fazla yönetici aynı anda çizelge hazırlayabilir: yalnızca üzerinde çalışılan şubeler ve onlarla personel paylaşanlar kilitlenir."
       },
       "export-schedules": {
         "title": "Çizelge dışa aktarımı",
@@ -243,7 +259,7 @@ export default {
       },
       "approved-schedules": {
         "title": "Onaylanmış çizelgeler",
-        "desc": "Geçmişteki herhangi bir haftayı, onaylandığı andaki haliyle tam olarak inceleyin — bordro dahil uygulamanın geri kalanının üzerine kurulduğu kalıcı kayıt."
+        "desc": "Geçmişteki herhangi bir haftanın onaylanmış çizelgesini inceleyin — bordro dahil uygulamanın geri kalanının üzerine kurulduğu kayıt. Doldurulamayan yerler, onları kimin alabileceğini gösteren sıralı bir listeyle açık vardiya olarak görünür; düzenlemeler sizi uygunluk ve çift atama konusunda uyarır."
       },
       "data-privacy": {
         "title": "Veri gizliliği",
