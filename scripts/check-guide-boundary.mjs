@@ -46,16 +46,32 @@ const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 // bidi overrides, zero-width marks; ZWNJ/ZWJ stay allowed because Indic and Urdu text needs them).
 const BAD_STRING = /[<>{}`\\]|(?:^|[^a-zA-Z0-9+.-])[a-zA-Z][a-zA-Z0-9+.-]*:(?=\S)|(?![\u200c\u200d])[\p{Cc}\p{Cf}\p{Co}\p{Cn}\u2028\u2029]/u;
 
+// Plain (unquoted) scalars that YAML would type as something other than a string: null, booleans
+// (YAML 1.1's yes/no/on/off/y/n too, in case a stricter parser ever reads the file), numbers in
+// any base or sexagesimal form, and timestamps. Quote the value to keep it a string.
+const NON_STRING_PLAIN = [
+  /^(?:~|null)$/i,
+  /^(?:true|false|yes|no|on|off|y|n)$/i,
+  /^[-+]?(?:[0-9][0-9_:]*(?:\.[0-9_]*)?|\.[0-9][0-9_]*)(?:e[-+]?[0-9]+)?$/i,
+  /^[-+]?(?:0x[0-9a-f_]+|0o[0-7_]+|0b[01_]+|\.inf|\.nan)$/i,
+];
+const TIMESTAMP = /^\d{4}-\d{1,2}-\d{1,2}(?:$|[Tt\s])/;
+
+// One YAML scalar, restricted to forms a plain parser reads the same way js-yaml does:
+//   "double quoted" with no `"` or `\` inside (so no escape sequences),
+//   'single quoted' whose only escape is `''`,
+//   or plain, with no `: `, trailing `:` or ` #` (a mapping or comment would change the value).
+// Returns { value, quoted }, or null when the text is outside that subset.
 function scalar(raw) {
   const v = raw.trim();
   if (v === "" || /^[-?:](?:\s|$)/.test(v) || /^[&*!|>%@#,\[\]{}]/.test(v)) return null;
-  const q = v[0];
-  if (q === '"' || q === "'") {
-    return v.length >= 2 && v.endsWith(q) && !v.slice(1, -1).includes(q) ? v.slice(1, -1) : null;
-  }
-  if (/\s#/.test(v)) return null; // a YAML comment would silently change the value
-  return v;
+  if (v[0] === '"') return /^"[^"\\]*"$/.test(v) ? { value: v.slice(1, -1), quoted: true } : null;
+  if (v[0] === "'") return /^'(?:[^']|'')*'$/.test(v) ? { value: v.slice(1, -1).replace(/''/g, "'"), quoted: true } : null;
+  if (/:(?:\s|$)/.test(v) || /\s#/.test(v)) return null;
+  return { value: v, quoted: false };
 }
+
+const isNonStringPlain = (s) => !s.quoted && NON_STRING_PLAIN.some((re) => re.test(s.value));
 
 // Splits front matter exactly where Astro does (@astrojs/internal-helpers/frontmatter: the block
 // ends at the first line starting with --- or +++), but accepts only the plain shape: the file
@@ -89,17 +105,22 @@ function frontMatterLineProblems(lines, locales) {
     if (key === "related") {
       const l = rawValue.trim().match(/^\[(.*)\]$/);
       const items = l ? (l[1].trim() === "" ? [] : l[1].split(",").map(scalar)) : null;
-      if (!items || items.some((i) => i === null || !SLUG.test(i))) problems.push("front matter: related must be a list of slugs");
+      if (!items || items.some((i) => i === null || isNonStringPlain(i) || !SLUG.test(i.value))) {
+        problems.push("front matter: related must be a list of slugs");
+      }
       continue;
     }
-    const value = scalar(rawValue);
-    if (value === null) {
-      problems.push(`front matter: cannot parse ${key}`);
+    const s = scalar(rawValue);
+    const value = s?.value;
+    if (s === null) {
+      problems.push(`front matter: cannot parse ${key} (quote a value containing ": " or " #")`);
     } else if (key === "publishedOn" || key === "updatedOn") {
       const ok = /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)) && new Date(value).toISOString().startsWith(value);
       if (!ok) problems.push(`front matter: ${key} must be YYYY-MM-DD`);
     } else if (key === "sourceLocale") {
       if (!locales.includes(value)) problems.push("front matter: sourceLocale is not a site locale");
+    } else if (isNonStringPlain(s) || (!s.quoted && TIMESTAMP.test(value))) {
+      problems.push(`front matter: ${key} would not load as a string; quote it`);
     } else if (BAD_STRING.test(value)) {
       problems.push(`front matter: ${key} contains markup, a URL or invisible characters`);
     }
@@ -122,6 +143,10 @@ const ELEMENTS = new Set([
   "em", "strong", "del", "table", "thead", "tbody", "tr", "th", "td", "hr", "br", "span",
 ]);
 const VOID = new Set(["img", "hr", "br"]);
+// Every class the renderer emits for this site's configuration (shiki, github-dark theme), observed by
+// rendering fenced code in many languages. Exact values only: Tailwind scans .md files, so an extra
+// token such as `hidden`, `sr-only`, `opacity-0` or `text-transparent` would get real CSS.
+const CLASSES = { pre: "astro-code github-dark", span: "line" };
 const COLOR = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 // Highlighter styles: opaque hex colours and a few enumerated values, nothing that can hide text.
 // Backgrounds only on the <pre>; spans get a foreground that must contrast with it.
@@ -228,16 +253,16 @@ function attrProblem(el, name, value, ctx) {
     case "title": return null;
     case "id": return /^h[1-6]$/.test(el) && /^[\p{L}\p{N}\p{M}_-]+$/u.test(value) ? null : "bad id";
     case "class":
-      if (el === "pre") return /^astro-code(?: [\w-]+)*$/.test(value) ? null : "bad class";
-      return el === "span" && ctx.inPre && value === "line" ? null : "bad class";
+      if (el === "span" && !ctx.inPre) return "bad class";
+      return Object.hasOwn(CLASSES, el) && value === CLASSES[el] ? null : "bad class";
     case "tabindex": return el === "pre" && value === "0" ? null : "bad tabindex";
     case "data-language": return el === "pre" && /^[\w+#.-]{1,40}$/.test(value) ? null : "bad data-language";
     case "__astro_image_": return el === "img" ? null : "not allowed here"; // value checked separately
     case "style":
       // Exactly what the renderer emits for table alignment.
       if (el === "th" || el === "td") return /^text-align: (?:left|center|right)$/.test(value) ? null : "bad table style";
-      // Other styles exist only inside a highlighter <pre class="astro-code ...">; anywhere else they could cloak text.
-      if (el === "pre") return /^astro-code(?: |$)/.test(ctx.attrs.class ?? "") && parseStyle(value, PRE_STYLE) ? null : "bad style";
+      // Other styles exist only inside a highlighter <pre class="astro-code github-dark">; anywhere else they could cloak text.
+      if (el === "pre") return ctx.attrs.class === CLASSES.pre && parseStyle(value, PRE_STYLE) ? null : "bad style";
       if (el === "span" && ctx.inPre) return parseStyle(value, SPAN_STYLE) ? null : "bad style";
       return "style not allowed here";
     default: return "attribute not allowed";

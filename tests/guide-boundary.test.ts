@@ -14,6 +14,10 @@ import {
 } from "../scripts/check-guide-boundary.mjs";
 import { LOCALES } from "../src/lib/links";
 
+// js-yaml is astro's own front matter parser (a transitive dependency without type declarations here).
+const JS_YAML: string = "js-yaml";
+const { load: loadYaml } = (await import(JS_YAML)) as { load: (text: string) => unknown };
+
 describe("guide PR boundary", () => {
   it("allows guide content and guide assets", () => {
     expect(outsideBoundary(["src/content/guides/en/x.md", "src/content/guides/ar/x.md", "public/guides/x/hero.webp"])).toEqual([]);
@@ -157,7 +161,7 @@ describe("front matter (item 6)", () => {
   it("accepts the plain shape", () => {
     expect(frontMatterProblems(FM + "Body", locales)).toEqual([]);
     ok('title: "Rota tips: how to plan"\ndescription: \'Quoted, plainly\'\nrelated: [shift-swaps, "rota-basics"]');
-    ok("title: Rota tips: how to plan"); // colon then space is not a scheme
+    ok("title: 'it''s fine: really'"); // single quotes escape only by doubling
     ok("title: جدول المناوبات\ndescription: シフト表の作り方\ntargetKeyword: café résumé\nsourceLocale: ar");
     ok("title: हिन्दी\u200d पाठ"); // ZWJ is needed by Indic scripts
     ok("updatedOn: 2024-02-29");
@@ -193,7 +197,8 @@ describe("front matter (item 6)", () => {
       "title:",
       "- item",
       "? complex",
-      "title: 'it''s'",
+      "title: 'it's'", // lone quote inside single quotes
+      "title: \"say \"hi\"\"", // unescaped double quote inside double quotes
       "title: \"open",
       "title: a\u202eb", // bidi override
       "title: a\u200bb", // zero-width space
@@ -221,6 +226,52 @@ describe("front matter (item 6)", () => {
     // the renderer would silently drop a second block at the top of the body: refuse it
     expect(await contentProblems(FM + "---\nx: <script>alert(1)</script>\n---\n")).not.toEqual([]);
     expect(await contentProblems(FM + "+++\nx = 1\n+++\n\nHi")).not.toEqual([]);
+  });
+});
+
+describe("YAML scalar rules (items 14, 15)", () => {
+  const locales = [...LOCALES];
+  const fm = (lines: string) => `---\n${lines}\n---\n\nBody`;
+  // Each case is also loaded with js-yaml (what Astro uses), so the rule is checked against the real parser.
+  const loaded = (lines: string) => {
+    try {
+      return loadYaml(lines) as Record<string, unknown>;
+    } catch {
+      return null;
+    }
+  };
+
+  it("fails unquoted values that YAML reads as a mapping or a comment, passes them quoted", () => {
+    for (const lines of ["title: Rota tips: how to plan", "description: Note:", "targetKeyword: rota #1 tips", "description: a:\tb"]) {
+      expect(frontMatterProblems(fm(lines), locales), lines).not.toEqual([]);
+    }
+    for (const lines of ['title: "Rota tips: how to plan"', "title: 'Rota tips: how to plan'", 'targetKeyword: "rota #1 tips"', "description: 'Rota tips: it''s easy'"]) {
+      expect(frontMatterProblems(fm(lines), locales), lines).toEqual([]);
+      expect(typeof loaded(lines)?.[lines.split(":")[0]], lines).toBe("string");
+    }
+    expect(loaded("title: Rota tips: how to plan")).toBeNull(); // js-yaml throws: the build would break
+  });
+
+  it("fails string fields that YAML would type as numbers, booleans, null or dates", () => {
+    const values = ["123", "-1.5", ".5", "1e3", "0x1F", "0o17", "1_000", ".inf", "-.Inf", ".NaN", "true", "False", "yes", "No", "on", "OFF", "y", "null", "Null", "~", "2026-11-04", "2026-11-04T10:00:00Z", "1:30"];
+    for (const key of ["title", "description", "targetKeyword"]) {
+      for (const v of values) {
+        expect(frontMatterProblems(fm(`${key}: ${v}`), locales), `${key}: ${v}`).not.toEqual([]);
+        expect(frontMatterProblems(fm(`${key}: "${v}"`), locales), `${key}: "${v}"`).toEqual([]);
+      }
+    }
+    for (const v of ["123", "true", "null", "~", "2026-11-04", ".5"]) expect(typeof loaded(`title: ${v}`)?.title, v).not.toBe("string");
+    for (const lines of ["related: [123]", "related: [true, rota-basics]", "related: [null]"]) {
+      expect(frontMatterProblems(fm(lines), locales), lines).not.toEqual([]);
+    }
+    expect(frontMatterProblems(fm('related: ["123", rota-basics]'), locales)).toEqual([]);
+  });
+
+  it("keeps strings that only start like a number, and real dates in date fields", () => {
+    for (const lines of ["title: 10 rota tips", "title: 2026 rota guide", "description: Plan 24/7 cover", "title: Yesterday", "title: Online rotas", "publishedOn: 2026-11-04"]) {
+      expect(frontMatterProblems(fm(lines), locales), lines).toEqual([]);
+    }
+    for (const lines of ["title: 10 rota tips", "title: 2026 rota guide", "title: Online rotas"]) expect(typeof loaded(lines)?.title, lines).toBe("string");
   });
 });
 
@@ -265,6 +316,47 @@ describe("cloaking styles (item 8)", () => {
       '<pre><code><span style="color:#ffffff">x</span></code></pre>', // unstyled pre, coloured span
       '<pre class="evil" style="background-color:#000;color:#fff"><code>x</code></pre>',
     ]) expect(htmlProblems(html), html).not.toEqual([]);
+  });
+});
+
+describe("highlighter classes (item 13)", () => {
+  const dark = "background-color:#24292e;color:#e1e4e8; overflow-x: auto;";
+  const block = (preClass: string, spanClass = "line") =>
+    `<pre class="${preClass}" style="${dark}" tabindex="0" data-language="js"><code><span class="${spanClass}"><span style="color:#F97583">const</span></span></code></pre>`;
+
+  it("accepts exactly the classes the renderer emits", () => {
+    expect(htmlProblems(block("astro-code github-dark"))).toEqual([]);
+  });
+
+  it("fails any extra or substituted class token, on the pre or a span", () => {
+    for (const probe of ["hidden", "sr-only", "opacity-0", "text-transparent"]) {
+      for (const html of [
+        block(`astro-code github-dark ${probe}`),
+        block(`astro-code ${probe}`),
+        block(`${probe} astro-code github-dark`),
+        block("astro-code github-dark", `line ${probe}`),
+        block("astro-code github-dark", probe),
+        `<p><code class="${probe}">x</code></p>`,
+        `<p><span class="${probe}">x</span></p>`,
+        `<ul><li class="${probe}">x</li></ul>`,
+      ]) expect(htmlProblems(html), html).not.toEqual([]);
+    }
+    for (const html of [block("astro-code"), block("astro-code github-light"), block("astro-code  github-dark"), block("astro-code github-dark", "")]) {
+      expect(htmlProblems(html), html).not.toEqual([]);
+    }
+  });
+
+  it("fails the probes written as raw markdown HTML", async () => {
+    for (const probe of ["hidden", "sr-only", "opacity-0", "text-transparent"]) {
+      await fails(`<pre class="astro-code github-dark ${probe}" style="${dark}"><code>x</code></pre>`);
+    }
+  });
+
+  it("passes real fenced code in js, ts, diff, bash, json and plain text", async () => {
+    await passes(
+      "```js\nconst x = 1; // c\n```\n\n```ts\nconst n: number = 1;\n```\n\n```diff\n- old\n+ new\n```\n\n" +
+        "```bash\necho \"$HOME\" | grep x\n```\n\n```json\n{\"k\": [true, null, 1]}\n```\n\n```text\nplain text\n```\n\n```\nno language\n```\n",
+    );
   });
 });
 
