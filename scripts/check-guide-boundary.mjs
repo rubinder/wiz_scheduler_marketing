@@ -273,11 +273,30 @@ function attrProblem(el, name, value, ctx) {
 
 const DEFAULT_FILE = "src/content/guides/en/guide.md";
 
+// The front matter's invisible-character class, applied to everything the body renders to (text, alt,
+// title, code). Allowed: tab and newline, ZWNJ/ZWJ (Indic and Urdu need them) and the directional
+// marks LRM, RLM and ALM (Arabic and Urdu text mixed with numbers or Latin needs them). Bidi
+// overrides and isolates, zero-width spaces, tag characters, BOM and soft hyphen all fail.
+const INVISIBLE = /(?![\t\n\u200c\u200d\u200e\u200f\u061c])[\p{Cc}\p{Cf}\p{Co}\p{Cn}\p{Cs}\u2028\u2029]/u;
+// Numeric character references decoded the way a browser would, so `&#x202E;` is judged as U+202E.
+const decodeNumericRefs = (html) =>
+  html.replace(/&#(?:[xX]([0-9a-fA-F]+)|([0-9]+));/g, (_, hex, dec) => {
+    const cp = hex ? parseInt(hex, 16) : parseInt(dec, 10);
+    return cp <= 0x10ffff ? String.fromCodePoint(cp) : "\ufffd";
+  });
+
+function invisibleProblem(html) {
+  const m = INVISIBLE.exec(decodeNumericRefs(html));
+  return m ? `invisible character U+${m[0].codePointAt(0).toString(16).toUpperCase().padStart(4, "0")}` : null;
+}
+
 // The renderer escapes `<` in text, so every `<` in its output must open a well-formed tag.
 // Anything else (comments, doctype, CDATA, a malformed tag) cannot be classified: fail closed.
 // `file` is the guide's path, against which relative images resolve.
 export function htmlProblems(html, file = DEFAULT_FILE) {
   const problems = [];
+  const invisible = invisibleProblem(html);
+  if (invisible) problems.push(invisible);
   const stack = [];
   const preBg = []; // background colour of each open <pre> (null when it has no highlighter style)
   let i = 0;

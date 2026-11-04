@@ -462,6 +462,25 @@ describe("diff structure (item 11)", () => {
   });
 });
 
+describe("invisible characters in the body", () => {
+  it("fails bidi controls, zero-width and tag characters wherever the body renders them", async () => {
+    for (const ch of ["\u202e", "\u202d", "\u2066", "\u2069", "\u200b", "\u2060", "\ufeff", "\u00ad", "\u{e0041}", "\u0007", "\u2028"]) {
+      for (const md of [`a${ch}b`, `## a${ch}b`, `\`a${ch}b\``, `\`\`\`js\nconst a = "${ch}";\n\`\`\``, `![a${ch}](/guides/x/a.png)`, `[l](/x "t${ch}")`, `| a${ch} |\n|-|\n| b |`]) {
+        await fails(md);
+      }
+    }
+  });
+  it("fails them written as character references", async () => {
+    for (const md of ["a&#x202E;b", "a&#8203;b", "a&ZeroWidthSpace;b", "a&shy;b", "a&#xE0041;b"]) await fails(md);
+    expect(htmlProblems("<p>a&#x202e;b</p>")).toEqual(["invisible character U+202E"]);
+    expect(htmlProblems("<p>a&#8238;b</p>")).toEqual(["invisible character U+202E"]);
+  });
+  it("passes the joiners and directional marks real scripts need", async () => {
+    await passes("क्\u200dष and क्\u200cष\n\nکتاب\u200c‌ها\n\nالسعر \u200f25\u200f ريال، و\u061c10\n\nabc \u200eשלום\u200e def");
+    await passes("## हिन्दी शीर्षक\n\nPlain\ttab and\nnew line.");
+  });
+});
+
 describe("branch under check", () => {
   it("reads the PR head on pull_request runs and the pushed branch on push runs", () => {
     expect(headRef({ GITHUB_EVENT_NAME: "pull_request", GITHUB_HEAD_REF: "content/guide-a", GITHUB_REF_NAME: "12/merge" })).toBe("content/guide-a");
