@@ -105,7 +105,7 @@ function frontMatterLineProblems(lines, locales) {
     if (key === "related") {
       const l = rawValue.trim().match(/^\[(.*)\]$/);
       const items = l ? (l[1].trim() === "" ? [] : l[1].split(",").map(scalar)) : null;
-      if (!items || items.some((i) => i === null || isNonStringPlain(i) || !SLUG.test(i.value))) {
+      if (!items || items.some((i) => i === null || isNonStringPlain(i) || (!i.quoted && TIMESTAMP.test(i.value)) || !SLUG.test(i.value))) {
         problems.push("front matter: related must be a list of slugs");
       }
       continue;
@@ -115,8 +115,10 @@ function frontMatterLineProblems(lines, locales) {
     if (s === null) {
       problems.push(`front matter: cannot parse ${key} (quote a value containing ": " or " #")`);
     } else if (key === "publishedOn" || key === "updatedOn") {
+      // Unquoted, YAML reads a date as a Date and the string schema rejects it: the build breaks.
       const ok = /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)) && new Date(value).toISOString().startsWith(value);
       if (!ok) problems.push(`front matter: ${key} must be YYYY-MM-DD`);
+      else if (!s.quoted) problems.push(`front matter: ${key} must be quoted ("${value}")`);
     } else if (key === "sourceLocale") {
       if (!locales.includes(value)) problems.push("front matter: sourceLocale is not a site locale");
     } else if (isNonStringPlain(s) || (!s.quoted && TIMESTAMP.test(value))) {

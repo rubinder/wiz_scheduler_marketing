@@ -54,7 +54,7 @@ describe("guide PR boundary", () => {
   });
 });
 
-const FM = "---\ntitle: Rota tips\ndescription: How to plan a rota\ntargetKeyword: rota tips\nsourceLocale: en\npublishedOn: 2026-11-04\nupdatedOn: 2026-11-04\nrelated: []\n---\n\n";
+const FM = "---\ntitle: Rota tips\ndescription: How to plan a rota\ntargetKeyword: rota tips\nsourceLocale: en\npublishedOn: \"2026-11-04\"\nupdatedOn: \"2026-11-04\"\nrelated: []\n---\n\n";
 // Bodies get valid front matter, so a failure can only come from the rendered body.
 const fails = async (body: string) => expect(await contentProblems(FM + body), body).not.toEqual([]);
 const passes = async (body: string) => expect(await contentProblems(FM + body), body).toEqual([]);
@@ -165,7 +165,8 @@ describe("front matter (item 6)", () => {
     ok("title: 'it''s fine: really'"); // single quotes escape only by doubling
     ok("title: جدول المناوبات\ndescription: シフト表の作り方\ntargetKeyword: café résumé\nsourceLocale: ar");
     ok("title: हिन्दी\u200d पाठ"); // ZWJ is needed by Indic scripts
-    ok("updatedOn: 2024-02-29");
+    ok('updatedOn: "2024-02-29"');
+    ok("updatedOn: '2024-02-29'");
   });
 
   it("rejects every other shape", async () => {
@@ -179,9 +180,11 @@ describe("front matter (item 6)", () => {
       "description: javascript:alert(1)",
       "description: see https://evil.com",
       "description: ok #comment", // YAML comment changes the value
-      "publishedOn: 2026-13-01",
-      "publishedOn: 2026-02-30",
-      "publishedOn: 26-11-04",
+      'publishedOn: "2026-13-01"',
+      'publishedOn: "2026-02-30"',
+      'publishedOn: "26-11-04"',
+      "publishedOn: 2026-11-04", // unquoted: YAML reads a Date
+      "updatedOn: 2026-11-04",
       "sourceLocale: xx",
       "related: [Shift_Swaps]",
       "related: [a,,b]",
@@ -268,8 +271,25 @@ describe("YAML scalar rules (items 14, 15)", () => {
     expect(frontMatterProblems(fm('related: ["123", rota-basics]'), locales)).toEqual([]);
   });
 
+  it("requires quoted dates, since the schema only takes strings", () => {
+    for (const key of ["publishedOn", "updatedOn"]) {
+      expect(frontMatterProblems(fm(`${key}: 2026-11-04`), locales)).toEqual([`front matter: ${key} must be quoted ("2026-11-04")`]);
+      expect(frontMatterProblems(fm(`${key}: "2026-11-04"`), locales)).toEqual([]);
+    }
+    expect(loaded("publishedOn: 2026-11-04")?.publishedOn).toBeInstanceOf(Date);
+    expect(loaded('publishedOn: "2026-11-04"')?.publishedOn).toBe("2026-11-04");
+  });
+
+  it("rejects date-like unquoted related items", () => {
+    for (const lines of ["related: [2026-11-04]", "related: [rota-basics, 2026-1-4]"]) {
+      expect(frontMatterProblems(fm(lines), locales), lines).not.toEqual([]);
+    }
+    expect((loaded("related: [2026-11-04]")?.related as unknown[])[0]).toBeInstanceOf(Date);
+    expect(frontMatterProblems(fm('related: ["2026-11-04", rota-basics]'), locales)).toEqual([]);
+  });
+
   it("keeps strings that only start like a number, and real dates in date fields", () => {
-    for (const lines of ["title: 10 rota tips", "title: 2026 rota guide", "description: Plan 24/7 cover", "title: Yesterday", "title: Online rotas", "publishedOn: 2026-11-04"]) {
+    for (const lines of ["title: 10 rota tips", "title: 2026 rota guide", "description: Plan 24/7 cover", "title: Yesterday", "title: Online rotas", 'publishedOn: "2026-11-04"']) {
       expect(frontMatterProblems(fm(lines), locales), lines).toEqual([]);
     }
     for (const lines of ["title: 10 rota tips", "title: 2026 rota guide", "title: Online rotas"]) expect(typeof loaded(lines)?.title, lines).toBe("string");

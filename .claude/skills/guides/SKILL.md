@@ -70,8 +70,8 @@ title: "How to handle shift swaps without a group chat"
 description: "A short summary of the guide for search results."
 targetKeyword: "shift swap policy"
 sourceLocale: en
-publishedOn: 2026-11-05
-updatedOn: 2026-11-05
+publishedOn: "2026-11-05"
+updatedOn: "2026-11-05"
 related: [another-guide-slug, third-guide-slug]
 ---
 ```
@@ -83,8 +83,8 @@ Rules (these mirror `scripts/check-guide-boundary.mjs` and `src/lib/guides.ts`):
 - Quote every string value that contains `: `, ` #`, a trailing `:`, or anything YAML would read as something other than a string: numbers, `yes`/`no`/`on`/`off`/`true`/`false`/`null`, anything date-like. Quote the title and description always; it is the safe default. Quoted values use plain `"..."` with no backslash and no inner `"` (use a `'...'` string if the value contains a `"`, doubling any `'` inside it).
 - String values may not contain `<`, `>`, `{`, `}`, backticks, backslashes, invisible or control characters, or a `scheme:` followed by text (so no URLs and no `word:word`). Keep markup out of front matter.
 - `sourceLocale` is the locale of the source guide, the same in every locale's file for that slug. It is a site locale code.
-- `publishedOn` and `updatedOn` are real calendar dates, `YYYY-MM-DD`, in UTC, and `publishedOn` is not after `updatedOn`. When localizing, copy both dates from the source. When editing an existing guide for interlinking, set `updatedOn` to today (UTC) and leave `publishedOn` unchanged.
-- `related` is a flow list of slugs on one line, `[a, b]`, or `[]`. Each is a lowercase-hyphenated slug of an existing guide, contains at least one letter, and is not a bare number or one of `yes`/`no`/`true`/`false`/`on`/`off`/`null`. Never a path, URL or title.
+- `publishedOn` and `updatedOn` are real calendar dates, `YYYY-MM-DD`, in UTC, always in double quotes (`"2026-11-05"`; unquoted, YAML reads a date and the build fails), and `publishedOn` is not after `updatedOn`. When localizing, copy both dates from the source. When editing an existing guide for interlinking, set `updatedOn` to today (UTC) and leave `publishedOn` unchanged.
+- `related` is a flow list of slugs on one line, `[a, b]`, or `[]`. Each is a lowercase-hyphenated slug of an existing guide, contains at least one letter, and is not a bare number, a date, or one of `yes`/`no`/`true`/`false`/`on`/`off`/`null`. Never a path, URL or title.
 - `targetKeyword` is the keyword in that locale's language.
 
 ## Claims
