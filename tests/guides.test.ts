@@ -46,7 +46,8 @@ describe("guideSchema", () => {
   const bad = (over: Record<string, unknown>) => guideSchema.safeParse({ ...ok, ...over }).success;
   it("accepts a valid guide and defaults related", () => {
     expect(guideSchema.parse(ok).related).toEqual(["other-guide"]);
-    const { related: _r, ...rest } = ok;
+    const rest: Record<string, unknown> = { ...ok };
+    delete rest.related;
     expect(guideSchema.parse(rest).related).toEqual([]);
   });
   it("rejects extra keys, including URL-shaped ones", () => {
@@ -68,6 +69,10 @@ describe("guideSchema", () => {
   it("rejects bad locales, dates and ordering", () => {
     expect(bad({ sourceLocale: "xx" })).toBe(false);
     expect(bad({ publishedOn: "2026-02-30" })).toBe(false);
+    for (const d of ["2026-13-01", "2026-00-10"]) {
+      expect(() => bad({ publishedOn: d, updatedOn: d }), d).not.toThrow();
+      expect(bad({ publishedOn: d, updatedOn: d }), d).toBe(false);
+    }
     expect(bad({ updatedOn: "11/02/2026" })).toBe(false);
     expect(bad({ publishedOn: "2026-11-03" })).toBe(false);
     expect(bad({ publishedOn: "2026-11-02" })).toBe(true);

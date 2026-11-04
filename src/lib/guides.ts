@@ -40,10 +40,13 @@ export function guideAlternates(entries: { id: string }[], slug: string): { loca
 const DATE = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/)
-  .refine((v) => new Date(v).toISOString().startsWith(v), "not a real calendar date");
+  .refine((v) => !Number.isNaN(Date.parse(v)) && new Date(v).toISOString().startsWith(v), "not a real calendar date");
 const TEXT = (max: number) => z.string().trim().min(1).max(max);
 
-/** Front matter of a guide. Strict: no URL-shaped or other extra fields. */
+/**
+ * Front matter of a guide. Strict: no URL-shaped or other extra fields. This is the looser layer
+ * (it loads what the site can render); scripts/check-guide-boundary.mjs is the strict PR guard.
+ */
 export const guideSchema = z
   .object({
     title: TEXT(120),
