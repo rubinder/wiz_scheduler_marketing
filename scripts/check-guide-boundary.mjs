@@ -423,8 +423,14 @@ function gitDiff() {
   return parseRawDiff(out);
 }
 
+// The branch under check: a pull_request run names it in GITHUB_HEAD_REF; a push run leaves that
+// empty and names the pushed branch in GITHUB_REF_NAME. Any other event checks nothing.
+export function headRef(env) {
+  return env.GITHUB_HEAD_REF || (env.GITHUB_EVENT_NAME === "push" ? env.GITHUB_REF_NAME || "" : "");
+}
+
 async function main() {
-  const head = process.env.GITHUB_HEAD_REF ?? "";
+  const head = headRef(process.env);
   if (!head.startsWith("content/guide-")) {
     console.log(`not a guide PR (${head || "no head ref"}); skipping`);
     return 0;

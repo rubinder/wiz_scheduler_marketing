@@ -7,6 +7,7 @@ import {
   contentProblems,
   diffProblems,
   frontMatterProblems,
+  headRef,
   htmlProblems,
   outsideBoundary,
   parseRawDiff,
@@ -438,6 +439,20 @@ describe("diff structure (item 11)", () => {
       entry("000000", "120000", "A", "public/guides/x/a.png"), // symlink
       entry("100644", "100644", "U", "src/content/guides/en/x.md"), // unmerged
     ]) expect(diffProblems(parseRawDiff(raw)), raw).not.toEqual([]);
+  });
+});
+
+describe("branch under check", () => {
+  it("reads the PR head on pull_request runs and the pushed branch on push runs", () => {
+    expect(headRef({ GITHUB_EVENT_NAME: "pull_request", GITHUB_HEAD_REF: "content/guide-a", GITHUB_REF_NAME: "12/merge" })).toBe("content/guide-a");
+    // Actions sets GITHUB_HEAD_REF to "" on push runs
+    expect(headRef({ GITHUB_EVENT_NAME: "push", GITHUB_HEAD_REF: "", GITHUB_REF_NAME: "content/guide-a" })).toBe("content/guide-a");
+    expect(headRef({ GITHUB_EVENT_NAME: "push", GITHUB_REF_NAME: "content/guide-a" })).toBe("content/guide-a");
+  });
+  it("checks nothing for other events or a missing ref", () => {
+    expect(headRef({ GITHUB_EVENT_NAME: "workflow_dispatch", GITHUB_HEAD_REF: "", GITHUB_REF_NAME: "content/guide-a" })).toBe("");
+    expect(headRef({ GITHUB_EVENT_NAME: "push" })).toBe("");
+    expect(headRef({})).toBe("");
   });
 });
 
