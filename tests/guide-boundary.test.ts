@@ -45,6 +45,30 @@ describe("guide PR boundary", () => {
     const bad = ["src/content/guides/en/x.mdx", "src/content/guides/en/x.mdoc", "src/content/guides/en/x.html", "public/guides/x/a.svg", "public/guides/x/a.html", "public/guides/x/a.js", "public/guides/x/a"];
     expect(outsideBoundary(bad)).toEqual(bad);
   });
+  it("holds image and guide names to the shared lowercase policy", () => {
+    expect(outsideBoundary(["public/guides/shift-swaps/rota-week-1.webp", "public/guides/a/b-c/d.jpeg", "public/guides/2026/x1.avif"])).toEqual([]);
+    const bad = [
+      "public/guides/a.png", // no folder
+      "public/guides/x/A.png",
+      "public/guides/X/a.png",
+      "public/guides/x/a.PNG",
+      "public/guides/x/a.Png",
+      "public/guides/x/a_b.png",
+      "public/guides/x/a b.png",
+      "public/guides/x/a--b.png",
+      "public/guides/x/-a.png",
+      "public/guides/x/a.png.png",
+      "public/guides/x/a.js.png",
+      "public/guides/x/.a.png",
+      "public/guides/.x/a.png",
+      "public/guides/x//a.png",
+      "public/guides/x/a.",
+      "public/guides/x/é.png",
+      "src/content/guides/en/x.MD",
+      "src/content/guides/EN/x.md",
+    ];
+    expect(outsideBoundary(bad)).toEqual(bad);
+  });
   it("detects symlinks", () => {
     const dir = mkdtempSync(join(tmpdir(), "guide-"));
     mkdirSync(join(dir, "d"));

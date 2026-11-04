@@ -8,10 +8,13 @@ import { pathToFileURL } from "node:url";
 
 const CONTENT_PREFIX = "src/content/guides/";
 const ASSET_PREFIX = "public/guides/";
-const ASSET_EXTENSIONS = [".png", ".jpg", ".jpeg", ".webp", ".avif"];
 const ALLOWED_HOSTS = new Set(["wizscheduler.com", "app.wizscheduler.com"]);
 // The collection is `src/content/guides/<locale>/<slug>.md`; relative image checks rely on that depth.
 const GUIDE_FILE = /^src\/content\/guides\/([a-z]{2,3})\/[a-z0-9]+(?:-[a-z0-9]+)*\.md$/;
+// The shared image-name policy (the factory's merge-time check uses the same one):
+// public/guides/<seg>/.../<name>.<ext>, one or more folders, every folder and the name a lowercase
+// hyphenated word, the extension a lowercase raster type. No dotfiles, double extensions or capitals.
+const ASSET_FILE = /^public\/guides\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\/)+[a-z0-9]+(?:-[a-z0-9]+)*\.(?:png|jpg|jpeg|webp|avif)$/;
 
 function pathIsSuspect(f) {
   // eslint-disable-next-line no-control-regex
@@ -20,7 +23,7 @@ function pathIsSuspect(f) {
 
 function allowedFile(f) {
   if (f.startsWith(CONTENT_PREFIX)) return GUIDE_FILE.test(f);
-  if (f.startsWith(ASSET_PREFIX)) return ASSET_EXTENSIONS.some((e) => f.endsWith(e));
+  if (f.startsWith(ASSET_PREFIX)) return ASSET_FILE.test(f);
   return false;
 }
 
@@ -461,7 +464,7 @@ async function main() {
   const bad = outsideBoundary(files);
   if (bad.length) {
     console.error(
-      "Guide PRs may only touch src/content/guides/<locale>/<slug>.md and public/guides/** images (png, jpg, jpeg, webp, avif):\n" +
+      "Guide PRs may only touch src/content/guides/<locale>/<slug>.md and public/guides/<folder>/<name>.<png|jpg|jpeg|webp|avif>, all lowercase-hyphenated:\n" +
         bad.join("\n"),
     );
     return 1;

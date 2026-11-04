@@ -54,13 +54,13 @@ The CI check renders the markdown and rejects anything that is not plain output.
 
 - No raw HTML at all (no tags, comments, iframes, scripts, styles). Write markdown only.
 - Links are relative paths, or absolute to `wizscheduler.com` or `app.wizscheduler.com` only. No other host, no `mailto:`, no `javascript:`, no ports, no credentials in a URL.
-- Images only `.png`, `.jpg`, `.jpeg`, `.webp`, `.avif`, stored only under `public/guides/` and referenced as `/guides/<path>`. Images never go in `src/content/guides/` (only `.md` files are allowed there). No query or fragment in the path. Prefer no images unless one carries real information.
+- Images only `.png`, `.jpg`, `.jpeg`, `.webp`, `.avif`, stored only at `public/guides/<folder>/.../<name>.<ext>` (at least one folder, normally the guide's slug) and referenced as `/guides/<folder>/.../<name>.<ext>`. Every folder and the name are lowercase words of `a-z` and `0-9` joined by single hyphens; the extension is lowercase; no dotfiles, no double extensions. Images never go in `src/content/guides/` (only `.md` files are allowed there). No query or fragment in the path. Prefer no images unless one carries real information.
 - No footnotes and no task lists (`- [ ]`); both render to markup the check rejects.
 - Fenced code blocks are allowed. Tables, lists, blockquotes, bold, italics and strikethrough are fine.
 
 ## Front matter
 
-File path: `src/content/guides/<locale>/<slug>.md`, with `<locale>` a code from `LOCALES` and `<slug>` the shared ASCII slug (at most 80 characters).
+File path: `src/content/guides/<locale>/<slug>.md`, all lowercase (`.md`, never `.MD`), with `<locale>` a code from `LOCALES` and `<slug>` the shared ASCII slug (at most 80 characters).
 
 The file starts with `---` on the very first line, a block of one `key: value` per line, and a closing `---` on its own line. No CRLF line endings. Allowed keys only, each at most once:
 
