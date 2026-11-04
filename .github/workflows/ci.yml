@@ -15,11 +15,14 @@ jobs:
       LEGAL_SOURCE: fixture
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - run: node scripts/check-guide-boundary.mjs
       - run: npm run check
       - run: npm test
       - run: npm run build
