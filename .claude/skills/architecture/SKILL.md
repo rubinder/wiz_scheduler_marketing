@@ -98,7 +98,7 @@ Logical-direction Tailwind only: `text-start`, `ms-*`, `pe-*`, `border-s`,
 `rounded-e`, `start-0`; never `text-left`, `ml-*`, `pr-*`, `border-l`,
 `rounded-r`, `left-0` and kin. `ar` and `ur` render right-to-left, and
 physical utilities break there. `tests/logical-direction.test.ts` scans
-`src/**/*.{astro,tsx,ts}` (skipping `src/i18n/generated/`) and fails on any
+`src/**/*.{astro,tsx,ts,css}` (skipping `src/i18n/generated/`) and fails on any
 offender.
 
 ## 7. Claims (`claims-backed`)

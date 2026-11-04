@@ -1,7 +1,8 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  content: ["./src/**/*.{astro,html,md,mdx,ts,tsx}"],
+  // Guide markdown is written from untrusted input and auto-merges: its words must never become CSS.
+  content: ["./src/**/*.{astro,html,md,mdx,ts,tsx}", "!./src/content/guides/**"],
   theme: {
     extend: {
       fontFamily: {
