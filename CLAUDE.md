@@ -33,7 +33,7 @@ npm run snapshot:legal         # refresh src/content/legal/fixture.json from the
 
 ### Directory Structure
 
-- `src/pages/` — Astro page routes (auto-routed)
+- `src/pages/` — Astro page routes (auto-routed); `src/pages/[locale]/` serves home and features for the non-default locales, `src/pages/es/` the Spanish copies of the en/es-only pages
 - `src/views/` — Reusable page components (Pricing.astro, Home.astro, etc.)
 - `src/components/` — Reusable UI components
 - `src/layouts/` — Page layout wrappers
@@ -44,7 +44,7 @@ npm run snapshot:legal         # refresh src/content/legal/fixture.json from the
 
 ### Localization
 
-Copy for home and features in all 19 locales lives in `src/i18n/generated/<locale>.ts`, written by `npm run port:copy` from the app repo. Never hand-edit it; change the app's locale file and re-port. Pages import `getCopy(locale)` (any locale) or `getSiteCopy(locale)` (en/es pages). Never hardcode user-facing text. Locale lists and URLs come only from `src/lib/links.ts` (`LOCALES`, `SITE_LOCALES`, `ALL_LOCALE_PATHS`, `RTL_LOCALES`, `localePath`).
+Copy for home and features in all 19 locales lives in `src/i18n/generated/<locale>.ts`, written by `npm run port:copy` from the app repo. Never hand-edit it; change the app's locale file and re-port. Pages import `getCopy(locale)` (any locale) or `getSiteCopy(locale)` (en/es pages). Never hardcode user-facing text in translated copy (`src/i18n`); `src/views/Pricing.astro` still has English-only strings. Locale lists and URLs come only from `src/lib/links.ts` (`LOCALES`, `SITE_LOCALES`, `ALL_LOCALE_PATHS`, `RTL_LOCALES`, `localePath`).
 
 ### Styling
 
@@ -94,8 +94,8 @@ Daily guides live in the guides collection (`src/content/guides`, added by the g
 
 - All timestamps use UTC (no local timezones in marketing copy)
 - Pricing information is kept in sync with backend config
-- Feature descriptions never hardcode product names — use localization keys
-- Legal documents (Privacy, Terms, DPA) are versioned in `src/content/legal/`
+- In translated copy (`src/i18n`), feature descriptions never hardcode product names; use localization keys. `src/views/Pricing.astro` still has English-only strings.
+- Legal text is a protected snapshot (`src/content/legal/fixture.json`, refreshed by `npm run snapshot:legal` from the app's GDPR endpoints); never hand-edit it.
 - No env-specific secrets in code; all config via environment variables
 
 ## Related Projects
