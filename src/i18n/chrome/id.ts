@@ -28,6 +28,17 @@ const chrome: Chrome = {
     rotaPeople: "orang",
     rotaViolations: "pelanggaran istirahat",
   },
+  footer: {
+    guides: "Panduan",
+  },
+  guides: {
+    indexTitle: "Panduan penjadwalan shift",
+    indexIntro: "Panduan praktis dengan bahasa sederhana untuk manajer yang menyusun jadwal shift.",
+    readMore: "Baca juga",
+    ctaSignup: "Daftar gratis",
+    ctaHome: "Kembali ke beranda",
+    updated: "Diperbarui",
+  },
 };
 
 export default chrome;

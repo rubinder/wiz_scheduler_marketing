@@ -28,6 +28,17 @@ const chrome: Chrome = {
     rotaPeople: "人",
     rotaViolations: "休息違反",
   },
+  footer: {
+    guides: "ガイド",
+  },
+  guides: {
+    indexTitle: "シフト作成ガイド",
+    indexIntro: "シフト表を作る店長・マネージャーのための、わかりやすい実践ガイドです。",
+    readMore: "あわせて読みたい",
+    ctaSignup: "無料で登録",
+    ctaHome: "ホームに戻る",
+    updated: "更新日",
+  },
 };
 
 export default chrome;

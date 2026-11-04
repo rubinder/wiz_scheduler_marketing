@@ -1,0 +1,83 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import Base from "../layouts/Base.astro";
+import { m } from "../theme";
+import { getCopy } from "../i18n";
+import { SITE_URL, appLink } from "../lib/site";
+import { localePath, type Locale } from "../lib/links";
+import { guideAlternates, guidePath, splitId } from "../lib/guides";
+
+interface Props {
+  locale: Locale;
+  entry: CollectionEntry<"guides">;
+}
+const { locale, entry } = Astro.props;
+const t = getCopy(locale);
+const { slug } = splitId(entry.id);
+const all = await getCollection("guides");
+const d = entry.data;
+const canonical = `${SITE_URL}${guidePath(locale, slug)}`;
+const alternates = guideAlternates(all, slug);
+const { Content } = await render(entry);
+
+// Related guides that exist in this locale; a slug with no version here is skipped, never linked.
+const here = new Map(
+  all
+    .map((e) => ({ e, ...splitId(e.id) }))
+    .filter((g) => g.locale === locale)
+    .map((g) => [g.slug, g.e] as const),
+);
+const related = d.related
+  .filter((s) => s !== slug && here.has(s))
+  .map((s) => ({ href: guidePath(locale, s), title: here.get(s)!.data.title }));
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: d.title,
+  description: d.description,
+  inLanguage: locale,
+  datePublished: d.publishedOn,
+  dateModified: d.updatedOn,
+  mainEntityOfPage: canonical,
+  publisher: { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: t.common.appName, url: SITE_URL },
+};
+---
+<Base
+  locale={locale}
+  title={`${d.title} | ${t.common.appName}`}
+  description={d.description}
+  path={`/guides/${slug}`}
+  alternates={alternates}
+  jsonLd={jsonLd}
+>
+  <main class="max-w-[92rem] mx-auto px-6">
+    <section class="pt-16 pb-10 max-w-[62ch]">
+      <p class={`${m.text.meta} mb-6`}>
+        <a href={localePath(locale, "/guides")} class={m.btn.link}>{t.guides.indexTitle}</a>
+      </p>
+      <h1 class={`${m.text.display} font-display text-5xl sm:text-6xl font-semibold leading-[0.95] mb-6`}>{d.title}</h1>
+      <p class={`${m.text.muted} text-lg leading-relaxed`}>{d.description}</p>
+      <p class={`${m.text.meta} mt-6`}>
+        {t.guides.updated} <time datetime={d.updatedOn}>{d.updatedOn}</time>
+      </p>
+    </section>
+    <article class="prose-rota max-w-4xl">
+      <Content />
+    </article>
+    {related.length > 0 && (
+      <section class="mt-16 max-w-[62ch]">
+        <h2 class={`${m.text.meta} mb-4`}>{t.guides.readMore}</h2>
+        <ul class="flex flex-col gap-3">
+          {related.map((r) => (
+            <li><a href={r.href} class={m.btn.link}>{r.title}</a></li>
+          ))}
+        </ul>
+      </section>
+    )}
+    <div class="flex flex-wrap items-center gap-6 mt-12 mb-16">
+      <a href={appLink("/register")} class={m.btn.primary}>{t.guides.ctaSignup}</a>
+      <a href={localePath(locale, "/")} class={m.btn.link}>{t.guides.ctaHome}</a>
+    </div>
+  </main>
+</Base>

@@ -28,6 +28,17 @@ const chrome: Chrome = {
     rotaPeople: "người",
     rotaViolations: "vi phạm nghỉ ngơi",
   },
+  footer: {
+    guides: "Hướng dẫn",
+  },
+  guides: {
+    indexTitle: "Hướng dẫn xếp lịch ca",
+    indexIntro: "Hướng dẫn thực tế, dễ hiểu dành cho quản lý xếp lịch ca làm việc.",
+    readMore: "Đọc thêm",
+    ctaSignup: "Đăng ký miễn phí",
+    ctaHome: "Về trang chủ",
+    updated: "Cập nhật",
+  },
 };
 
 export default chrome;

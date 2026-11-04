@@ -27,6 +27,17 @@ const chrome = {
     rotaPeople: "people",
     rotaViolations: "rest violations",
   },
+  footer: {
+    guides: "Guides",
+  },
+  guides: {
+    indexTitle: "Scheduling guides",
+    indexIntro: "Practical, plain-language guides for managers who build shift schedules.",
+    readMore: "Read more",
+    ctaSignup: "Sign up free",
+    ctaHome: "Back to home",
+    updated: "Updated",
+  },
 };
 
 export default chrome;

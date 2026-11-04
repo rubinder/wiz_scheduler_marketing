@@ -28,6 +28,17 @@ const chrome: Chrome = {
     rotaPeople: "أشخاص",
     rotaViolations: "مخالفات الراحة",
   },
+  footer: {
+    guides: "الأدلة",
+  },
+  guides: {
+    indexTitle: "أدلة جدولة المناوبات",
+    indexIntro: "أدلة عملية بلغة واضحة للمديرين الذين يُعدّون جداول المناوبات.",
+    readMore: "اقرأ أيضًا",
+    ctaSignup: "سجّل مجانًا",
+    ctaHome: "العودة إلى الرئيسية",
+    updated: "آخر تحديث",
+  },
 };
 
 export default chrome;

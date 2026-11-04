@@ -30,6 +30,14 @@ export default defineConfig({
             priority: 1.0,
           };
         }
+        // Guides: one page per guide, and the index that lists them. Ahead of the
+        // substring rules below, so a guide slug such as "features-explained" stays a guide.
+        if (item.url.includes("/guides/")) {
+          return { ...item, changefreq: "monthly", priority: 0.7 };
+        }
+        if (item.url.endsWith("/guides")) {
+          return { ...item, changefreq: "weekly", priority: 0.6 };
+        }
         // Key pages: high priority, change monthly
         if (
           item.url.includes("/features") ||

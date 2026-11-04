@@ -28,6 +28,17 @@ const chrome: Chrome = {
     rotaPeople: "Personen",
     rotaViolations: "Ruhezeitverstöße",
   },
+  footer: {
+    guides: "Ratgeber",
+  },
+  guides: {
+    indexTitle: "Ratgeber zur Schichtplanung",
+    indexIntro: "Praxisnahe Ratgeber in klarer Sprache für alle, die Dienstpläne erstellen.",
+    readMore: "Weiterlesen",
+    ctaSignup: "Kostenlos registrieren",
+    ctaHome: "Zur Startseite",
+    updated: "Aktualisiert am",
+  },
 };
 
 export default chrome;

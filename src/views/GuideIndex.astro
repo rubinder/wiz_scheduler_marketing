@@ -1,0 +1,43 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import { m } from "../theme";
+import { getCopy } from "../i18n";
+import { type Locale } from "../lib/links";
+import { guidePath, splitId } from "../lib/guides";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getCopy(locale);
+// Newest first; same-day guides by title so the order is stable between builds.
+const guides = (await getCollection("guides"))
+  .map((e) => ({ ...splitId(e.id), data: e.data }))
+  .filter((g) => g.locale === locale)
+  .sort((a, b) => b.data.publishedOn.localeCompare(a.data.publishedOn) || a.data.title.localeCompare(b.data.title))
+  .map((g) => ({ href: guidePath(locale, g.slug), ...g.data }));
+---
+<Base locale={locale} title={`${t.guides.indexTitle} | ${t.common.appName}`} description={t.guides.indexIntro} path="/guides">
+  <main class="max-w-[92rem] mx-auto px-6">
+    <section class="pt-16 pb-10 max-w-[62ch]">
+      <h1 class={`${m.text.display} font-display text-5xl sm:text-6xl font-semibold leading-[0.95] mb-6`}>{t.guides.indexTitle}</h1>
+      <p class={`${m.text.muted} text-lg leading-relaxed`}>{t.guides.indexIntro}</p>
+    </section>
+    {guides.length > 0 && (
+      <ul class={`flex flex-col max-w-4xl mb-16 border-t ${m.rule.line}`}>
+        {guides.map((g) => (
+          <li class={`py-6 border-b ${m.rule.line}`}>
+            <h2 class="font-display text-2xl font-semibold mb-2">
+              <a href={g.href} class={m.btn.link}>{g.title}</a>
+            </h2>
+            <p class={`${m.text.muted} leading-relaxed max-w-[62ch]`}>{g.description}</p>
+            <p class={`${m.text.meta} mt-3`}>
+              {t.guides.updated} <time datetime={g.updatedOn}>{g.updatedOn}</time>
+            </p>
+          </li>
+        ))}
+      </ul>
+    )}
+  </main>
+</Base>
