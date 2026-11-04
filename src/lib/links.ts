@@ -13,7 +13,7 @@ export const DEFAULT_LOCALE: Locale = "en";
 export const RTL_LOCALES: readonly Locale[] = ["ar", "ur"];
 
 /** Paths that exist in every Locale; every other path exists only in SITE_LOCALES. */
-export const ALL_LOCALE_PATHS = ["/", "/features"] as const;
+export const ALL_LOCALE_PATHS = ["/", "/features", "/guides"] as const;
 
 /** Each language in its own name, as the app's LANGUAGES[].nativeLabel. */
 export const ENDONYMS: Record<Locale, string> = {
