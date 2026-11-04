@@ -153,6 +153,21 @@ const en = {
     fixDesc: "WizScheduler builds schedules that respect the 11-hour rule from the start.",
     fixCta: "Sign up free",
   },
+  calculator: {
+    title: "What would it cost for your team?",
+    locations: "Locations",
+    employeesPerLocation: "Employees per location",
+    plan: "Plan",
+    perMonth: "per month",
+    doesNotFit: "Doesn't fit your team",
+    contactSales: "Contact sales",
+    autoYes: "Auto-scheduling: yes",
+    autoBeta: "Auto-scheduling: beta",
+    autoNo: "Auto-scheduling: no",
+    footnote:
+      "List prices on monthly billing, in US dollars. Taxes, add-ons and annual discounts are not included. Prices checked on {date}; vendors change them, so confirm on their pricing pages.",
+    sevenShiftsBeta: "7shifts' auto-scheduler is a beta that is rolling out to selected accounts.",
+  },
 };
 
 export default en;

@@ -154,6 +154,21 @@ const es: Copy = {
     fixDesc: "WizScheduler construye horarios que respetan la regla de 11 horas desde el inicio.",
     fixCta: "Regístrate gratis",
   },
+  calculator: {
+    title: "¿Cuánto costaría para tu equipo?",
+    locations: "Ubicaciones",
+    employeesPerLocation: "Empleados por ubicación",
+    plan: "Plan",
+    perMonth: "al mes",
+    doesNotFit: "No se ajusta a tu equipo",
+    contactSales: "Contactar a ventas",
+    autoYes: "Programación automática: sí",
+    autoBeta: "Programación automática: beta",
+    autoNo: "Programación automática: no",
+    footnote:
+      "Precios de lista con facturación mensual, en dólares estadounidenses. No incluyen impuestos, complementos ni descuentos anuales. Precios verificados el {date}; los proveedores los cambian, así que confírmalos en sus páginas de precios.",
+    sevenShiftsBeta: "El programador automático de 7shifts está en beta y se está habilitando en cuentas seleccionadas.",
+  },
 };
 
 export default es;
