@@ -4,7 +4,7 @@ import Base from "../layouts/Base.astro";
 import { m } from "../theme";
 import { getCopy } from "../i18n";
 import { type Locale } from "../lib/links";
-import { guidePath, splitId } from "../lib/guides";
+import { guideIndexAlternates, guidePath, splitId } from "../lib/guides";
 
 interface Props {
   locale: Locale;
@@ -12,13 +12,23 @@ interface Props {
 const { locale } = Astro.props;
 const t = getCopy(locale);
 // Newest first; same-day guides by title so the order is stable between builds.
-const guides = (await getCollection("guides"))
+const all = await getCollection("guides");
+const guides = all
   .map((e) => ({ ...splitId(e.id), data: e.data }))
   .filter((g) => g.locale === locale)
   .sort((a, b) => b.data.publishedOn.localeCompare(a.data.publishedOn) || a.data.title.localeCompare(b.data.title))
   .map((g) => ({ href: guidePath(locale, g.slug), ...g.data }));
+// An index with nothing listed stays out of search, and out of the other indexes' hreflang.
+const empty = guides.length === 0;
 ---
-<Base locale={locale} title={`${t.guides.indexTitle} | ${t.common.appName}`} description={t.guides.indexIntro} path="/guides">
+<Base
+  locale={locale}
+  title={`${t.guides.indexTitle} | ${t.common.appName}`}
+  description={t.guides.indexIntro}
+  path="/guides"
+  noindex={empty}
+  alternates={empty ? undefined : guideIndexAlternates(all)}
+>
   <main class="max-w-[92rem] mx-auto px-6">
     <section class="pt-16 pb-10 max-w-[62ch]">
       <h1 class={`${m.text.display} font-display text-5xl sm:text-6xl font-semibold leading-[0.95] mb-6`}>{t.guides.indexTitle}</h1>

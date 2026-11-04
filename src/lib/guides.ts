@@ -1,5 +1,5 @@
 import { z } from "astro/zod";
-import { LOCALES, type Locale, isLocale } from "./links";
+import { LOCALES, type Locale, isLocale, localePath } from "./links";
 
 /** The one slug shape: scripts/check-guide-boundary.mjs enforces the same pattern on file names and `related`. */
 export const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -35,6 +35,15 @@ export function guideLocales(entries: { id: string }[], slug: string): Locale[] 
 
 export function guideAlternates(entries: { id: string }[], slug: string): { locale: Locale; href: string }[] {
   return guideLocales(entries, slug).map((locale) => ({ locale, href: guidePath(locale, slug) }));
+}
+
+/**
+ * The guide index's versions: only locales with at least one guide. An index with no guides is
+ * an empty page, so it is noindex and listed by no other index's hreflang.
+ */
+export function guideIndexAlternates(entries: { id: string }[]): { locale: Locale; href: string }[] {
+  const have = new Set(entries.map((e) => splitId(e.id).locale));
+  return LOCALES.filter((l) => have.has(l)).map((locale) => ({ locale, href: localePath(locale, "/guides") }));
 }
 
 const DATE = z

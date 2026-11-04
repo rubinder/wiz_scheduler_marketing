@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { guideAlternates, guideLocales, guidePath, guideSchema, splitId } from "../src/lib/guides";
+import { guideAlternates, guideIndexAlternates, guideLocales, guidePath, guideSchema, splitId } from "../src/lib/guides";
 
 const entries = [{ id: "en/shift-swaps" }, { id: "ar/shift-swaps" }, { id: "ja/shift-swaps" }, { id: "en/other" }];
 
@@ -13,6 +13,15 @@ describe("guides", () => {
   });
   it("alternates skip dropped locales", () => {
     expect(guideAlternates(entries, "shift-swaps").map((a) => a.href)).toEqual(["/guides/shift-swaps", "/ar/guides/shift-swaps", "/ja/guides/shift-swaps"]);
+  });
+  it("index alternates list only locales with a guide", () => {
+    expect(guideIndexAlternates(entries)).toEqual([
+      { locale: "en", href: "/guides" },
+      { locale: "ar", href: "/ar/guides" },
+      { locale: "ja", href: "/ja/guides" },
+    ]);
+    expect(guideIndexAlternates([{ id: "es/a" }])).toEqual([{ locale: "es", href: "/es/guides" }]);
+    expect(guideIndexAlternates([])).toEqual([]);
   });
   it("splits glob ids", () => {
     expect(splitId("pcm/shift-swaps")).toEqual({ locale: "pcm", slug: "shift-swaps" });

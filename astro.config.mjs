@@ -1,10 +1,16 @@
 import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
+import { existsSync, readdirSync } from "node:fs";
 
 // = src/lib/links.ts LOCALES (astro.config.mjs cannot import the TS module)
 const LOCALES = ["en", "es", "fr", "de", "pt", "ru", "tr", "ar", "ur", "hi",
   "bn", "mr", "ta", "te", "pcm", "id", "vi", "ja", "zh"];
+// A guide index with no guide in its locale is noindex (src/views/GuideIndex.astro), so the sitemap leaves it out.
+const hasGuides = (l) => existsSync(`src/content/guides/${l}`) && readdirSync(`src/content/guides/${l}`).some((f) => f.endsWith(".md"));
+const EMPTY_GUIDE_INDEXES = new Set(
+  LOCALES.filter((l) => !hasGuides(l)).map((l) => (l === "en" ? "https://wizscheduler.com/guides" : `https://wizscheduler.com/${l}/guides`)),
+);
 const HOME_URLS = new Set(LOCALES.map((l) => (l === "en" ? "https://wizscheduler.com/" : `https://wizscheduler.com/${l}`)));
 
 export default defineConfig({
@@ -20,7 +26,7 @@ export default defineConfig({
     react(),
     sitemap({
       i18n: { defaultLocale: "en", locales: Object.fromEntries(LOCALES.map((l) => [l, l])) },
-      filter: (page) => !page.endsWith("/404"),
+      filter: (page) => !page.endsWith("/404") && !EMPTY_GUIDE_INDEXES.has(page.replace(/\/$/, "")),
       serialize: (item) => {
         // Home page: highest priority, changes weekly
         if (HOME_URLS.has(item.url)) {
