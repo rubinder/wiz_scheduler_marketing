@@ -1,5 +1,8 @@
+// @vitest-environment node
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import { experimental_AstroContainer as AstroContainer } from "astro/container";
+import Faq from "../src/components/Faq.astro";
+import { compareSchema } from "../src/lib/compareSchema";
 import { faqJsonLd } from "../src/lib/faq";
 
 describe("faqJsonLd", () => {
@@ -19,17 +22,37 @@ describe("faqJsonLd", () => {
 });
 
 describe("Faq component", () => {
-  const src = readFileSync("src/components/Faq.astro", "utf8");
-  it("renders nothing for an empty list and emits JSON-LD otherwise", () => {
-    expect(src).toMatch(/items\.length\s*>\s*0/);
-    expect(src).toContain("application/ld+json");
-    expect(src).toContain("faqJsonLd");
+  it("renders nothing for an empty list", async () => {
+    const c = await AstroContainer.create();
+    expect((await c.renderToString(Faq, { props: { items: [], title: "FAQ" } })).trim()).toBe("");
+  });
+
+  it("renders questions and escaped FAQPage JSON-LD", async () => {
+    const c = await AstroContainer.create();
+    const html = await c.renderToString(Faq, {
+      props: { items: [{ q: "Why?", a: "Because </script><b>x</b>" }], title: "FAQ" },
+    });
+    expect(html).toContain("Why?");
+    const m = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+    expect(m).not.toBeNull();
+    expect(m![1]).not.toContain("<");
+    const data = JSON.parse(m![1]);
+    expect(data["@type"]).toBe("FAQPage");
+    expect(data.mainEntity[0].acceptedAnswer.text).toBe("Because </script><b>x</b>");
   });
 });
 
 describe("compare schema", () => {
-  const cfg = readFileSync("src/content.config.ts", "utf8");
-  it("declares the new frontmatter fields", () => {
-    for (const f of ["faq:", "calculator:", "toolId:", "qualifier:"]) expect(cfg).toContain(f);
+  it("defaults the new fields for legacy frontmatter", () => {
+    const r = compareSchema.parse({
+      title: "t",
+      description: "d",
+      competitor: "7shifts",
+      competitorUrl: "https://www.7shifts.com",
+      checkedOn: "2026-11-01",
+    });
+    expect(r.faq).toEqual([]);
+    expect(r.calculator).toBe(false);
+    expect(r.toolId).toBeUndefined();
   });
 });
