@@ -149,8 +149,9 @@ const ELEMENTS = new Set([
 ]);
 const VOID = new Set(["img", "hr", "br"]);
 // Every class the renderer emits for this site's configuration (shiki, github-dark theme), observed by
-// rendering fenced code in many languages. Exact values only: Tailwind scans .md files, so an extra
-// token such as `hidden`, `sr-only`, `opacity-0` or `text-transparent` would get real CSS.
+// rendering fenced code in many languages. Exact values only: an extra token such as `hidden`,
+// `sr-only`, `opacity-0` or `text-transparent` has real CSS whenever any page uses it (Tailwind
+// does not scan guide markdown, but the class can still match a rule built from other files).
 const CLASSES = { pre: "astro-code github-dark", span: "line" };
 const COLOR = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 // Highlighter styles: opaque hex colours and a few enumerated values, nothing that can hide text.

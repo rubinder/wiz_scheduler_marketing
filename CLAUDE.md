@@ -33,7 +33,7 @@ npm run snapshot:legal         # refresh src/content/legal/fixture.json from the
 
 ### Directory Structure
 
-- `src/pages/` — Astro page routes (auto-routed); `src/pages/[locale]/` serves home and features for the non-default locales, `src/pages/es/` the Spanish copies of the en/es-only pages
+- `src/pages/` — Astro page routes (auto-routed); `src/pages/[locale]/` serves home, features and guides (index and guide pages) for the non-default locales, `src/pages/es/` the Spanish copies of the en/es-only pages
 - `src/views/` — Reusable page components (Pricing.astro, Home.astro, etc.)
 - `src/components/` — Reusable UI components
 - `src/layouts/` — Page layout wrappers
@@ -54,7 +54,7 @@ Copy for home and features in all 19 locales lives in `src/i18n/generated/<local
 
 ### Guides
 
-Daily guides live in the guides collection (`src/content/guides`, added by the guides-line PR). Guide PRs (`content/guide-*`) may touch only `src/content/guides/**` and `public/guides/**`, with no raw HTML, script, or links outside wizscheduler.com and app.wizscheduler.com. See `.claude/skills/architecture/SKILL.md` for the boundary and the named patterns reviewers cite.
+Daily guides live in the guides collection (`src/content/guides/<locale>/<slug>.md`, front matter dates quoted). Guide PRs (`content/guide-*`) may touch only `src/content/guides/**` and `public/guides/**`, with no raw HTML, script, h1, or links other than https to wizscheduler.com and app.wizscheduler.com. `npm run check:dist` verifies the built guide pages. See `.claude/skills/architecture/SKILL.md` for the boundary and the named patterns reviewers cite.
 
 ## Pricing & Product Information
 

@@ -48,7 +48,7 @@ Never hardcode user-facing text in a page.
 `src/lib/links.ts` is the only source of truth:
 
 - `LOCALES`: the 19 locales the app ships.
-- `ALL_LOCALE_PATHS`: `/` and `/features`, which exist in every locale.
+- `ALL_LOCALE_PATHS`: `/`, `/features` and `/guides` (the guide index), which exist in every locale. Guide pages themselves exist only in the locales that have the guide's file.
 - `SITE_LOCALES`: `en` and `es`; every other page exists only in these.
 - `RTL_LOCALES`: `ar`, `ur`.
 
@@ -68,7 +68,11 @@ comment. Changing `LOCALES` means changing all three, and
 - `compare` (`src/content/compare/<locale>/*.md`): competitor comparison
   pages, schema-checked (`title`, `description`, `competitor`,
   `competitorUrl`, `checkedOn`).
-- the guides collection (`src/content/guides`, added by this PR).
+- `guides` (`src/content/guides/<locale>/<slug>.md`): the daily guides,
+  schema-checked by `guideSchema` in `src/lib/guides.ts` (dates are quoted
+  `"YYYY-MM-DD"` strings). Pages live under `src/pages/guides/` and
+  `src/pages/[locale]/guides/`, rendered by `src/views/Guide.astro` and
+  `GuideIndex.astro`; `npm run check:dist` verifies the built pages.
 
 Legal text is not a collection. `src/content/legal/fixture.json` is a
 snapshot of the app's public GDPR endpoints, refreshed with
@@ -84,12 +88,16 @@ Daily guide PRs (branches `content/guide-*`) may touch only
 `.claude`, `src/content/legal`) is out of bounds.
 
 The boundary is enforced twice: by CI (`scripts/check-guide-boundary.mjs`,
-added in Task 22 of the factory plan) and again at merge time by the
-factory. Do not rely on either; stay inside it.
+on pull_request runs and on push runs of `content/guide-*` branches) and
+again at merge time by the factory. Do not rely on either; stay inside it.
+Both use one name policy: `src/content/guides/<locale>/<slug>.md` and
+`public/guides/<seg>/.../<name>.<png|jpg|jpeg|webp|avif>`, every segment
+lowercase-hyphenated, extensions lowercase.
 
-Guide markdown also may not contain raw HTML or script, or links to hosts
-other than `wizscheduler.com` and `app.wizscheduler.com`. Images go in
-`public/guides/**`. Changing how guides render is a normal feature PR on a
+Guide markdown also may not contain raw HTML or script, an `h1`, invisible
+characters, or links other than `https://` to `wizscheduler.com` and
+`app.wizscheduler.com`. Images go in `public/guides/**`. Tailwind does not
+scan `src/content/guides/**`, so guide text never becomes CSS. Changing how guides render is a normal feature PR on a
 `feat/` branch, never a guide PR.
 
 ## 6. Styling (`logical-direction`)
