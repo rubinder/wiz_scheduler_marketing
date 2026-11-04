@@ -3,6 +3,8 @@ name: Deploy
 on:
   push:
     branches: [main]
+  # Lets a deploy be re-run by hand when GitHub drops the push event.
+  workflow_dispatch:
 
 permissions:
   contents: read
