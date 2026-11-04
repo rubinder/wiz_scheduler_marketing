@@ -85,7 +85,7 @@ const passes = async (body: string) => expect(await contentProblems(FM + body), 
 
 describe("guide markdown content (rendered output)", () => {
   it("passes plain prose, formatting, tables, code and same-site links", async () => {
-    await passes("# Heading\n\nSee [pricing](/pricing), [frag](#top), [rel](../x) and [app](https://app.wizscheduler.com/login) or [home](HTTPS://WizScheduler.com/).\n\n**bold** *em* ~~del~~ `code`\n\n- a\n- b\n\n1. one\n\n> quote\n\n---\n\n|a|b|\n|-|-|\n|1|2|\n\n![alt](/guides/x/hero.webp)\n\n<https://wizscheduler.com/features>\n\n```html\n<script>alert(1)</script>\n```\n");
+    await passes("## Heading\n\nSee [pricing](/pricing), [frag](#top), [rel](../x) and [app](https://app.wizscheduler.com/login) or [home](HTTPS://WizScheduler.com/).\n\n**bold** *em* ~~del~~ `code`\n\n- a\n- b\n\n1. one\n\n> quote\n\n---\n\n|a|b|\n|-|-|\n|1|2|\n\n![alt](/guides/x/hero.webp)\n\n<https://wizscheduler.com/features>\n\n```html\n<script>alert(1)</script>\n```\n");
   });
 
   it("does not trip on prose that merely looks risky", async () => {
@@ -165,7 +165,7 @@ describe("guide file layout", () => {
 
 describe("heading ids (item 5)", () => {
   it("accepts Unicode slugs the renderer produces", async () => {
-    await passes("# مرحبا بكم\n\n### 日本語の見出し\n\n#### Café résumé\n\n## हिन्दी शीर्षक\n\n## What's new — C++ & 50% off?\n");
+    await passes("## مرحبا بكم\n\n### 日本語の見出し\n\n#### Café résumé\n\n## हिन्दी शीर्षक\n\n## What's new — C++ & 50% off?\n");
   });
 
   it("rejects ids with spaces, quotes or on non-headings", () => {
@@ -483,6 +483,18 @@ describe("diff structure (item 11)", () => {
       entry("000000", "120000", "A", "public/guides/x/a.png"), // symlink
       entry("100644", "100644", "U", "src/content/guides/en/x.md"), // unmerged
     ]) expect(diffProblems(parseRawDiff(raw)), raw).not.toEqual([]);
+  });
+});
+
+describe("body headings and schemes", () => {
+  it("fails an h1 in the body, in either markdown form", async () => {
+    for (const md of ["# Title", "Intro\n\n# Title\n\nMore", "Title\n=====", "> # Quoted title"]) await fails(md);
+    expect(htmlProblems('<h1 id="t">t</h1>')).toContain("h1 in the body (the page renders the title as the only h1; use ##)");
+    await passes("## Section\n\n### Sub\n\n#### Subsub\n\n##### Five\n\n###### Six");
+  });
+  it("fails plain http even to the site's own hosts", async () => {
+    for (const md of ["[x](http://wizscheduler.com/)", "[x](HTTP://app.wizscheduler.com/register)", "<http://wizscheduler.com/features>", "[x]: http://wizscheduler.com\n\n[x]", "![a](http://wizscheduler.com/guides/x/a.png)"]) await fails(md);
+    await passes("[x](https://wizscheduler.com/) and [y](https://app.wizscheduler.com/register)");
   });
 });
 

@@ -144,7 +144,7 @@ export function frontMatterProblems(markdown, locales) {
 // ---- rendered-HTML policy -------------------------------------------------------------
 
 const ELEMENTS = new Set([
-  "p", "a", "img", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "pre", "code", "blockquote",
+  "p", "a", "img", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "pre", "code", "blockquote",
   "em", "strong", "del", "table", "thead", "tbody", "tr", "th", "td", "hr", "br", "span",
 ]);
 const VOID = new Set(["img", "hr", "br"]);
@@ -222,7 +222,7 @@ function urlProblem(raw, el, file) {
   } catch {
     return "unparseable URL";
   }
-  if (u.protocol !== "https:" && u.protocol !== "http:") return `scheme ${u.protocol}`;
+  if (u.protocol !== "https:") return `scheme ${u.protocol} (https only)`;
   if (u.username || u.password) return "credentials in URL";
   if (!ALLOWED_HOSTS.has(u.hostname)) return `off-site host ${u.hostname}`;
   if (u.port) return "port in URL";
@@ -256,7 +256,7 @@ function attrProblem(el, name, value, ctx) {
     case "src":
     case "alt": return el === "img" ? null : "not allowed here";
     case "title": return null;
-    case "id": return /^h[1-6]$/.test(el) && /^[\p{L}\p{N}\p{M}_-]+$/u.test(value) ? null : "bad id";
+    case "id": return /^h[2-6]$/.test(el) && /^[\p{L}\p{N}\p{M}_-]+$/u.test(value) ? null : "bad id";
     case "class":
       if (el === "span" && !ctx.inPre) return "bad class";
       return Object.hasOwn(CLASSES, el) && value === CLASSES[el] ? null : "bad class";
@@ -313,7 +313,7 @@ export function htmlProblems(html, file = DEFAULT_FILE) {
     const [, closing, rawName, attrText] = m;
     const el = rawName.toLowerCase();
     if (!ELEMENTS.has(el)) {
-      problems.push(`element <${el}> not allowed`);
+      problems.push(el === "h1" ? "h1 in the body (the page renders the title as the only h1; use ##)" : `element <${el}> not allowed`);
       continue;
     }
     if (closing) {

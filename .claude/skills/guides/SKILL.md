@@ -48,12 +48,13 @@ Write the source guide in the language of the gap keyword.
 - Tone of the compare page: plain, honest, willing to say what WizScheduler does not do. Do not oversell.
 - State labor-law specifics only with the jurisdiction named and an as-of date, and never as definitive legal advice.
 - Link to the homepage (relative, `/` or `/<locale>/`) and to sign-up (`https://app.wizscheduler.com/register`). The page template also adds calls to action; the body still carries one of each.
-- Do not repeat the title as an `h1`; the page renders the title. Start the body with prose, then `##` sections.
+- No `h1` in the body at all (`# ...` or an `===` underline); the page renders the title as the only `h1`, and CI rejects another. Start the body with prose, then `##` sections (down to `######`).
 
 The CI check renders the markdown and rejects anything that is not plain output. In the body:
 
 - No raw HTML at all (no tags, comments, iframes, scripts, styles). Write markdown only.
-- Links are relative paths, or absolute to `wizscheduler.com` or `app.wizscheduler.com` only. No other host, no `mailto:`, no `javascript:`, no ports, no credentials in a URL.
+- No invisible characters: no bidi overrides or isolates, zero-width spaces, BOM, soft hyphens, tag or control characters, written raw or as `&#...;` references. ZWNJ and ZWJ (Indic scripts, Urdu) and the marks LRM, RLM and ALM are allowed where the language needs them.
+- Links are relative paths, or absolute `https://` URLs to `wizscheduler.com` or `app.wizscheduler.com` only (never `http://`). No other host, no `mailto:`, no `javascript:`, no ports, no credentials in a URL.
 - Images only `.png`, `.jpg`, `.jpeg`, `.webp`, `.avif`, stored only at `public/guides/<folder>/.../<name>.<ext>` (at least one folder, normally the guide's slug) and referenced as `/guides/<folder>/.../<name>.<ext>`. Every folder and the name are lowercase words of `a-z` and `0-9` joined by single hyphens; the extension is lowercase; no dotfiles, no double extensions. Images never go in `src/content/guides/` (only `.md` files are allowed there). No query or fragment in the path. Prefer no images unless one carries real information.
 - No footnotes and no task lists (`- [ ]`); both render to markup the check rejects.
 - Fenced code blocks are allowed. Tables, lists, blockquotes, bold, italics and strikethrough are fine.
