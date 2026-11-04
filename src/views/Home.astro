@@ -2,6 +2,7 @@
 import Base from "../layouts/Base.astro";
 import SectionRule from "../components/SectionRule.astro";
 import RotaHero from "../islands/RotaHero";
+import FlowFieldStory from "../islands/FlowFieldStory";
 import { m } from "../theme";
 import { getCopy } from "../i18n";
 import { appLink } from "../lib/site";
@@ -167,6 +168,8 @@ const title = `${t.common.appName} — ${t.landing.badge}`;
     registerUrl={appLink("/register")}
     rota={{ shifts: t.home.rotaShifts, people: t.home.rotaPeople, violations: t.home.rotaViolations }}
   />
+
+  <FlowFieldStory client:visible />
 
   <main class="max-w-[92rem] mx-auto px-6">
     <SectionRule eyebrow={t.home.eyebrowCapability} title={t.landing.featuresTitle} />
