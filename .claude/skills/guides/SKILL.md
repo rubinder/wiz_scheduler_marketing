@@ -37,7 +37,7 @@ Pick exactly one. Record why, with the numbers, in the local run notes only (see
 
 Fallback when no Search Console candidate qualifies: choose an on-topic keyword from Keyword Planner seeded from shift-scheduling terms and existing guide topics. When on-topic keywords run out, move to tangential topics (labor costs, staff retention, restaurant operations, payroll basics) still aimed at shift-based managers. If Keyword Planner is not available, or nothing at all qualifies, skip the day and alert: return BLOCKED with the reason. Never write a guide on a keyword you cannot defend.
 
-The slug is English, ASCII, lowercase words joined by single hyphens, derived from the topic even when the keyword is not English. It is shared by every locale and never changes after publishing.
+The slug is English, ASCII, lowercase words joined by single hyphens, at most 80 characters, derived from the topic even when the keyword is not English. It is shared by every locale and never changes after publishing.
 
 ## Writing
 
@@ -54,13 +54,13 @@ The CI check renders the markdown and rejects anything that is not plain output.
 
 - No raw HTML at all (no tags, comments, iframes, scripts, styles). Write markdown only.
 - Links are relative paths, or absolute to `wizscheduler.com` or `app.wizscheduler.com` only. No other host, no `mailto:`, no `javascript:`, no ports, no credentials in a URL.
-- Images only `.png`, `.jpg`, `.jpeg`, `.webp`, `.avif`, stored under `public/guides/` or in the guide's folder. No query or fragment in the path. Prefer no images unless one carries real information.
+- Images only `.png`, `.jpg`, `.jpeg`, `.webp`, `.avif`, stored only under `public/guides/` and referenced as `/guides/<path>`. Images never go in `src/content/guides/` (only `.md` files are allowed there). No query or fragment in the path. Prefer no images unless one carries real information.
 - No footnotes and no task lists (`- [ ]`); both render to markup the check rejects.
 - Fenced code blocks are allowed. Tables, lists, blockquotes, bold, italics and strikethrough are fine.
 
 ## Front matter
 
-File path: `src/content/guides/<locale>/<slug>.md`, with `<locale>` a code from `LOCALES` and `<slug>` the shared ASCII slug.
+File path: `src/content/guides/<locale>/<slug>.md`, with `<locale>` a code from `LOCALES` and `<slug>` the shared ASCII slug (at most 80 characters).
 
 The file starts with `---` on the very first line, a block of one `key: value` per line, and a closing `---` on its own line. No CRLF line endings. Allowed keys only, each at most once:
 
@@ -80,11 +80,11 @@ Rules (these mirror `scripts/check-guide-boundary.mjs` and `src/lib/guides.ts`):
 
 - Keys: `title`, `description`, `targetKeyword`, `sourceLocale`, `publishedOn`, `updatedOn`, `related`. Anything else fails.
 - Lengths: `title` at most 120 characters, `description` at most 300, `targetKeyword` at most 120. None may be empty.
-- Quote every string value that contains `: `, ` #`, a trailing `:`, or anything YAML would read as something other than a string: numbers, `yes`/`no`/`on`/`off`/`true`/`false`/`null`, anything date-like. Quote the title and description always; it is the safe default. Quoted values use plain `"..."` with no backslash and no inner `"` (use `'...'` with `''` for an apostrophe if you need a double quote).
+- Quote every string value that contains `: `, ` #`, a trailing `:`, or anything YAML would read as something other than a string: numbers, `yes`/`no`/`on`/`off`/`true`/`false`/`null`, anything date-like. Quote the title and description always; it is the safe default. Quoted values use plain `"..."` with no backslash and no inner `"` (use a `'...'` string if the value contains a `"`, doubling any `'` inside it).
 - String values may not contain `<`, `>`, `{`, `}`, backticks, backslashes, invisible or control characters, or a `scheme:` followed by text (so no URLs and no `word:word`). Keep markup out of front matter.
 - `sourceLocale` is the locale of the source guide, the same in every locale's file for that slug. It is a site locale code.
 - `publishedOn` and `updatedOn` are real calendar dates, `YYYY-MM-DD`, in UTC, and `publishedOn` is not after `updatedOn`. When localizing, copy both dates from the source. When editing an existing guide for interlinking, set `updatedOn` to today (UTC) and leave `publishedOn` unchanged.
-- `related` is a flow list of slugs on one line, `[a, b]`, or `[]`. Each is a lowercase-hyphenated slug of an existing guide. Never a path, URL or title.
+- `related` is a flow list of slugs on one line, `[a, b]`, or `[]`. Each is a lowercase-hyphenated slug of an existing guide, contains at least one letter, and is not a bare number or one of `yes`/`no`/`true`/`false`/`on`/`off`/`null`. Never a path, URL or title.
 - `targetKeyword` is the keyword in that locale's language.
 
 ## Claims
@@ -101,15 +101,15 @@ Adapt, do not translate. For each locale other than the source, write the guide 
 - Use the right script and direction. Arabic and Urdu are right-to-left; write them naturally and do not mix in forced left-to-right text. Do not romanize a language that has its own script.
 - Same slug, same structure of advice, same facts; one file per locale at `src/content/guides/<locale>/<slug>.md`.
 - Front matter follows the rules above: translate `title`, `description` and `targetKeyword`; copy `sourceLocale`, `publishedOn`, `updatedOn` and `related` from the source.
-- The content rules in "Writing" apply to every locale: no raw HTML, only relative or wizscheduler.com / app.wizscheduler.com links (relative links use the locale prefix, `/<locale>/...`, except `en`), the same image types and folders, no footnotes, no task lists.
+- The content rules in "Writing" apply to every locale: no raw HTML, only relative or wizscheduler.com / app.wizscheduler.com links (relative links use the locale prefix, `/<locale>/...`, except `en`), the same image types, stored only under `public/guides/` and referenced as `/guides/<path>`, no footnotes, no task lists.
 - Machine-literal output fails. If a locale cannot be written well, leave it out; the gate drops it and the run still ships the rest.
 
 ## Quality bar
 
 A guide fails if it:
 
-- is thin or padded: fewer than about 1,200 words in the source language, repetitive sections, filler intros, or generic advice not specific to shift scheduling
-- makes any claim about WizScheduler (price, plan limits, features, integrations) that is not backed by this repo's copy or by the app repo's `backend/config.py`, as checked out that run; when unsure, leave the claim out
+- is thin or padded: fewer than ~1,200 words in the source language, repetitive sections, filler intros, or generic advice not specific to shift scheduling
+- makes **any claim about WizScheduler** (price, plan limits, features, integrations) that is not backed by this repo's copy or by the app repo's `backend/config.py`, as checked out that run. When unsure, it leaves the claim out.
 - states labor-law specifics without naming the jurisdiction and an as-of date, or presents legal advice as definitive
 - in a localized version: is not natural in that language, mistranslates key terms, or uses the wrong script or direction
 - breaks the build, the `logicalDirection` test or `astro check`
