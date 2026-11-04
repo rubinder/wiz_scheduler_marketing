@@ -5,12 +5,13 @@
 import { execFileSync } from "node:child_process";
 import { lstatSync, readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
-import { createSatteriMarkdownProcessor } from "@astrojs/markdown-satteri";
 
 const CONTENT_PREFIX = "src/content/guides/";
 const ASSET_PREFIX = "public/guides/";
 const ASSET_EXTENSIONS = [".png", ".jpg", ".jpeg", ".webp", ".avif"];
 const ALLOWED_HOSTS = new Set(["wizscheduler.com", "app.wizscheduler.com"]);
+// The collection is `src/content/guides/<locale>/<slug>.md`; relative image checks rely on that depth.
+const GUIDE_FILE = /^src\/content\/guides\/([a-z]{2,3})\/[a-z0-9]+(?:-[a-z0-9]+)*\.md$/;
 
 function pathIsSuspect(f) {
   // eslint-disable-next-line no-control-regex
@@ -18,7 +19,7 @@ function pathIsSuspect(f) {
 }
 
 function allowedFile(f) {
-  if (f.startsWith(CONTENT_PREFIX)) return f.endsWith(".md");
+  if (f.startsWith(CONTENT_PREFIX)) return GUIDE_FILE.test(f);
   if (f.startsWith(ASSET_PREFIX)) return ASSET_EXTENSIONS.some((e) => f.endsWith(e));
   return false;
 }
@@ -37,58 +38,157 @@ export function symlinks(files, lstat = lstatSync) {
   });
 }
 
+// ---- front matter ---------------------------------------------------------------------
+
+const FM_KEYS = new Set(["title", "description", "targetKeyword", "sourceLocale", "publishedOn", "updatedOn", "related"]);
+const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+// Markup, template and escape characters, a `scheme:` prefix, and invisible characters (controls,
+// bidi overrides, zero-width marks; ZWNJ/ZWJ stay allowed because Indic and Urdu text needs them).
+const BAD_STRING = /[<>{}`\\]|(?:^|[^a-zA-Z0-9+.-])[a-zA-Z][a-zA-Z0-9+.-]*:(?=\S)|(?![\u200c\u200d])[\p{Cc}\p{Cf}\p{Co}\p{Cn}\u2028\u2029]/u;
+
+function scalar(raw) {
+  const v = raw.trim();
+  if (v === "" || /^[-?:](?:\s|$)/.test(v) || /^[&*!|>%@#,\[\]{}]/.test(v)) return null;
+  const q = v[0];
+  if (q === '"' || q === "'") {
+    return v.length >= 2 && v.endsWith(q) && !v.slice(1, -1).includes(q) ? v.slice(1, -1) : null;
+  }
+  if (/\s#/.test(v)) return null; // a YAML comment would silently change the value
+  return v;
+}
+
+// Splits front matter exactly where Astro does (@astrojs/internal-helpers/frontmatter: the block
+// ends at the first line starting with --- or +++), but accepts only the plain shape: the file
+// starts with `---\n`, and the closing delimiter is a line of its own. `body` is what Astro renders.
+export function splitFrontMatter(markdown) {
+  if (!markdown.startsWith("---\n")) return null;
+  const m = /^---([\s\S]*?\n)(---|\+\+\+)/.exec(markdown);
+  if (!m || m[2] !== "---") return null;
+  const rest = markdown.slice(m[0].length);
+  if (rest !== "" && !rest.startsWith("\n")) return null;
+  return { lines: m[1].split("\n").slice(1, -1), body: rest.trim() };
+}
+
+function frontMatterLineProblems(lines, locales) {
+  const problems = [];
+  const seen = new Set();
+  for (const line of lines) {
+    if (line === "") continue;
+    const m = line.match(/^([A-Za-z][A-Za-z0-9]*):[ ]+(\S.*)$/);
+    if (!m) {
+      problems.push(`front matter: cannot parse line: ${JSON.stringify(line.slice(0, 40))}`);
+      continue;
+    }
+    const [, key, rawValue] = m;
+    if (!FM_KEYS.has(key)) {
+      problems.push(`front matter: key ${key} not allowed`);
+      continue;
+    }
+    if (seen.has(key)) problems.push(`front matter: duplicate key ${key}`);
+    seen.add(key);
+    if (key === "related") {
+      const l = rawValue.trim().match(/^\[(.*)\]$/);
+      const items = l ? (l[1].trim() === "" ? [] : l[1].split(",").map(scalar)) : null;
+      if (!items || items.some((i) => i === null || !SLUG.test(i))) problems.push("front matter: related must be a list of slugs");
+      continue;
+    }
+    const value = scalar(rawValue);
+    if (value === null) {
+      problems.push(`front matter: cannot parse ${key}`);
+    } else if (key === "publishedOn" || key === "updatedOn") {
+      const ok = /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)) && new Date(value).toISOString().startsWith(value);
+      if (!ok) problems.push(`front matter: ${key} must be YYYY-MM-DD`);
+    } else if (key === "sourceLocale") {
+      if (!locales.includes(value)) problems.push("front matter: sourceLocale is not a site locale");
+    } else if (BAD_STRING.test(value)) {
+      problems.push(`front matter: ${key} contains markup, a URL or invisible characters`);
+    }
+  }
+  return problems;
+}
+
+// A strict subset of YAML: `key: scalar` and `key: [a, b]`, one per line. Anything else fails closed.
+export function frontMatterProblems(markdown, locales) {
+  if (markdown.includes("\r")) return ["front matter: carriage return in file"];
+  const fm = splitFrontMatter(markdown);
+  if (!fm) return ["front matter: missing or not a plain --- block at the very start"];
+  return frontMatterLineProblems(fm.lines, locales);
+}
+
 // ---- rendered-HTML policy -------------------------------------------------------------
 
 const ELEMENTS = new Set([
   "p", "a", "img", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "pre", "code", "blockquote",
   "em", "strong", "del", "table", "thead", "tbody", "tr", "th", "td", "hr", "br", "span",
 ]);
-// Attributes any allowed element may carry.
-const COMMON_ATTRS = new Set(["href", "src", "alt", "title"]);
-// Renderer-emitted attributes, valid only on the element and value shape the highlighter/slugger
-// produces. Raw author HTML with other shapes therefore fails.
-const SHAPED_ATTRS = {
-  id: { on: /^h[1-6]$/, value: /^[\w-]+$/ },
-  class: {
-    pre: /^astro-code(?: [\w-]+)*$/,
-    span: /^line$/,
-  },
-  style: { on: /^(?:pre|span)$/, value: null }, // checked by safeStyle
-  tabindex: { on: /^pre$/, value: /^0$/ },
-  "data-language": { on: /^pre$/, value: /^[\w+#.-]{1,40}$/ },
+const VOID = new Set(["img", "hr", "br"]);
+const COLOR = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+// Highlighter styles: opaque hex colours and a few enumerated values, nothing that can hide text.
+// Backgrounds only on the <pre>; spans get a foreground that must contrast with it.
+const PRE_STYLE = {
+  color: (v) => COLOR.test(v),
+  "background-color": (v) => COLOR.test(v),
+  "overflow-x": (v) => v === "auto",
 };
-const STYLE_PROPS = new Set(["color", "background-color", "overflow-x", "font-style", "font-weight", "text-decoration"]);
+const SPAN_STYLE = {
+  color: (v) => COLOR.test(v),
+  "font-style": (v) => v === "italic" || v === "normal",
+  "font-weight": (v) => /^(?:bold|normal|[1-9]00)$/.test(v),
+  "text-decoration": (v) => v === "underline" || v === "line-through" || v === "none",
+  "user-select": (v) => v === "none", // diff markers
+};
+// github-dark's dimmest token (comments, #6a737d) is 3.05:1 on its background.
+const MIN_CONTRAST = 2.5;
 
-function safeStyle(v) {
+function parseStyle(v, allowed) {
   const decls = v.split(";").map((d) => d.trim()).filter(Boolean);
-  if (!decls.length) return false;
-  return decls.every((d) => {
+  if (!decls.length) return null;
+  const out = {};
+  for (const d of decls) {
     const m = d.match(/^([a-z-]+)\s*:\s*([#a-zA-Z0-9 .%-]+)$/);
-    return m !== null && STYLE_PROPS.has(m[1]);
-  });
-}
-
-function attrAllowed(el, name, value) {
-  if (COMMON_ATTRS.has(name)) {
-    if (name === "href" && el !== "a") return false;
-    if (name === "src" && el !== "img") return false;
-    if (name === "alt" && el !== "img") return false;
-    return true;
+    if (!m || !Object.hasOwn(allowed, m[1]) || !allowed[m[1]](m[2].trim()) || m[1] in out) return null;
+    out[m[1]] = m[2].trim().toLowerCase();
   }
-  const rule = SHAPED_ATTRS[name];
-  if (!rule) return false;
-  if (name === "class") return rule[el] !== undefined && rule[el].test(value);
-  if (!rule.on.test(el)) return false;
-  return name === "style" ? safeStyle(value) : rule.value.test(value);
+  return out;
 }
 
-function urlProblem(raw) {
+function luminance(hex) {
+  let h = hex.slice(1);
+  if (h.length === 3) h = [...h].map((c) => c + c).join("");
+  const [r, g, b] = [0, 2, 4]
+    .map((i) => parseInt(h.slice(i, i + 2), 16) / 255)
+    .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+export function contrast(a, b) {
+  const [x, y] = [luminance(a), luminance(b)];
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+}
+
+const BASE = "https://wizscheduler.com/";
+const isRelative = (v) => !/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(v) && !/^[\\/]{2}/.test(v);
+const IMAGE_PATH = /^[A-Za-z0-9_./-]+\.(?:png|jpe?g|webp|avif)$/;
+
+// A relative image resolves against the guide file (as Astro does) and must stay inside the
+// guide folders or public/guides, with a plain path: no query (`?raw`), fragment or escapes.
+function relativeImageOk(v, file) {
+  if (!isRelative(v) || !IMAGE_PATH.test(v)) return false;
+  try {
+    const p = new URL(v, `https://wizscheduler.com/${file}`).pathname;
+    return p.startsWith("/guides/") || p.startsWith("/public/guides/") || p.startsWith("/src/content/guides/");
+  } catch {
+    return false;
+  }
+}
+
+function urlProblem(raw, el, file) {
   // Only `&amp;` is a legitimate entity in an emitted URL; any other `&` could hide a scheme.
   const v = raw.replace(/&amp;/g, "&");
   if (/&[#a-zA-Z]/.test(v)) return "entity in URL";
   let u;
   try {
-    u = new URL(v.trim(), "https://wizscheduler.com/");
+    u = new URL(v.trim(), BASE);
   } catch {
     return "unparseable URL";
   }
@@ -96,22 +196,69 @@ function urlProblem(raw) {
   if (u.username || u.password) return "credentials in URL";
   if (!ALLOWED_HOSTS.has(u.hostname)) return `off-site host ${u.hostname}`;
   if (u.port) return "port in URL";
+  if (el === "img" && isRelative(v.trim()) && !relativeImageOk(v, file)) return "relative image outside guide folders";
+  return null;
+}
+
+// Astro's image marker: JSON describing a local image, which Astro swaps for the processed asset.
+function imageMarkerProblem(raw, srcAttr, file) {
+  if (/&(?!(?:amp|quot|#34|#x22);)/i.test(raw)) return "entity in image marker";
+  let o;
+  try {
+    o = JSON.parse(raw.replace(/&(?:quot|#34|#x22);/gi, '"').replace(/&amp;/g, "&"));
+  } catch {
+    return "unparseable image marker";
+  }
+  if (o === null || typeof o !== "object" || Array.isArray(o)) return "bad image marker";
+  if (Object.keys(o).some((k) => !["src", "alt", "title", "index"].includes(k))) return "unexpected image marker key";
+  if (!Number.isInteger(o.index) || ["alt", "title"].some((k) => k in o && typeof o[k] !== "string")) return "bad image marker";
+  if (typeof o.src !== "string" || !relativeImageOk(o.src, file)) return "image marker src outside guide folders";
+  if (srcAttr !== undefined) return "image marker next to a src";
   return null;
 }
 
 const TAG = /^<(\/?)([a-zA-Z][a-zA-Z0-9]*)((?:\s+[a-zA-Z_:][-\w:.]*(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s"'=<>`]+))?)*)\s*\/?>/;
 const ATTR = /\s+([a-zA-Z_:][-\w:.]*)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/y;
 
+function attrProblem(el, name, value, ctx) {
+  switch (name) {
+    case "href": return el === "a" ? null : "not allowed here";
+    case "src":
+    case "alt": return el === "img" ? null : "not allowed here";
+    case "title": return null;
+    case "id": return /^h[1-6]$/.test(el) && /^[\p{L}\p{N}\p{M}_-]+$/u.test(value) ? null : "bad id";
+    case "class":
+      if (el === "pre") return /^astro-code(?: [\w-]+)*$/.test(value) ? null : "bad class";
+      return el === "span" && ctx.inPre && value === "line" ? null : "bad class";
+    case "tabindex": return el === "pre" && value === "0" ? null : "bad tabindex";
+    case "data-language": return el === "pre" && /^[\w+#.-]{1,40}$/.test(value) ? null : "bad data-language";
+    case "__astro_image_": return el === "img" ? null : "not allowed here"; // value checked separately
+    case "style":
+      // Exactly what the renderer emits for table alignment.
+      if (el === "th" || el === "td") return /^text-align: (?:left|center|right)$/.test(value) ? null : "bad table style";
+      // Other styles exist only inside a highlighter <pre class="astro-code ...">; anywhere else they could cloak text.
+      if (el === "pre") return /^astro-code(?: |$)/.test(ctx.attrs.class ?? "") && parseStyle(value, PRE_STYLE) ? null : "bad style";
+      if (el === "span" && ctx.inPre) return parseStyle(value, SPAN_STYLE) ? null : "bad style";
+      return "style not allowed here";
+    default: return "attribute not allowed";
+  }
+}
+
+const DEFAULT_FILE = "src/content/guides/en/guide.md";
+
 // The renderer escapes `<` in text, so every `<` in its output must open a well-formed tag.
 // Anything else (comments, doctype, CDATA, a malformed tag) cannot be classified: fail closed.
-export function htmlProblems(html) {
+// `file` is the guide's path, against which relative images resolve.
+export function htmlProblems(html, file = DEFAULT_FILE) {
   const problems = [];
+  const stack = [];
+  const preBg = []; // background colour of each open <pre> (null when it has no highlighter style)
   let i = 0;
   while ((i = html.indexOf("<", i)) !== -1) {
     const m = TAG.exec(html.slice(i));
     if (!m) {
       problems.push(`unclassifiable markup: ${html.slice(i, i + 30).replace(/\s+/g, " ")}`);
-      break;
+      return problems;
     }
     i += m[0].length;
     const [, closing, rawName, attrText] = m;
@@ -122,48 +269,133 @@ export function htmlProblems(html) {
     }
     if (closing) {
       if (attrText.trim()) problems.push(`attributes on closing </${el}>`);
+      if (stack[stack.length - 1] !== el) problems.push(`unbalanced closing </${el}>`);
+      else {
+        stack.pop();
+        if (el === "pre") preBg.pop();
+      }
       continue;
     }
+    const attrs = {};
     ATTR.lastIndex = 0;
-    const seen = new Set();
     let a;
+    let ok = true;
     while (ATTR.lastIndex < attrText.length && (a = ATTR.exec(attrText)) !== null) {
       const name = a[1].toLowerCase();
-      const value = a[2] ?? a[3] ?? a[4] ?? "";
-      if (seen.has(name)) problems.push(`duplicate attribute ${name} on <${el}>`);
-      seen.add(name);
-      if (!attrAllowed(el, name, value)) {
-        problems.push(`attribute ${name} not allowed on <${el}>`);
-        continue;
+      if (name in attrs) {
+        problems.push(`duplicate attribute ${name} on <${el}>`);
+        ok = false;
       }
-      if (name === "href" || name === "src") {
-        const why = urlProblem(value);
-        if (why) problems.push(`${name} on <${el}>: ${why}`);
+      attrs[name] = a[2] ?? a[3] ?? a[4] ?? "";
+    }
+    if (ATTR.lastIndex !== attrText.length) {
+      problems.push(`unparseable attributes on <${el}>`);
+      ok = false;
+    }
+    const inPre = stack.includes("pre");
+    const ctx = { inPre, attrs };
+    for (const [name, value] of Object.entries(attrs)) {
+      const why = attrProblem(el, name, value, ctx);
+      if (why) {
+        problems.push(`attribute ${name} on <${el}>: ${why}`);
+        ok = false;
+      } else if (name === "href" || name === "src") {
+        const u = urlProblem(value, el, file);
+        if (u) problems.push(`${name} on <${el}>: ${u}`);
+      } else if (name === "__astro_image_") {
+        const u = imageMarkerProblem(value, attrs.src, file);
+        if (u) problems.push(`${name}: ${u}`);
       }
     }
+    if (el === "pre") {
+      // A styled <pre> (real or forged) must set both colours, readable on each other.
+      const st = ok && attrs.style ? parseStyle(attrs.style, PRE_STYLE) : null;
+      if (st && (!st.color || !st["background-color"] || contrast(st.color, st["background-color"]) < MIN_CONTRAST)) {
+        problems.push("highlighted block text is not readable on its background");
+      }
+      preBg.push(st?.["background-color"] ?? null);
+    }
+    if (ok && el === "span" && inPre && attrs.style) {
+      const c = parseStyle(attrs.style, SPAN_STYLE)?.color;
+      const bg = preBg[preBg.length - 1];
+      if (c && !bg) problems.push("coloured text in a block without a background");
+      else if (c && contrast(c, bg) < MIN_CONTRAST) problems.push("highlighted text is not readable on its background");
+    }
+    if (!VOID.has(el)) stack.push(el);
   }
+  if (stack.length) problems.push(`unclosed <${stack[stack.length - 1]}>`);
   return problems;
 }
 
-let processor;
-export async function contentProblems(markdown) {
-  processor ??= await createSatteriMarkdownProcessor({});
+// Both modules are transitive or local; tests pin the renderer version (see guide-boundary.test.ts).
+const defaultLoad = async () => {
+  const { createSatteriMarkdownProcessor } = await import("@astrojs/markdown-satteri");
+  const { LOCALES } = await import("../src/lib/links.ts");
+  return { processor: await createSatteriMarkdownProcessor({}), locales: [...LOCALES] };
+};
+
+let loaded;
+// Fails closed: if the renderer (or the locale list) cannot be loaded, that is itself a problem.
+// The body is split off the front matter the way Astro does, and rendered on its own, as Astro renders it.
+export async function contentProblems(markdown, { file = DEFAULT_FILE, load = defaultLoad } = {}) {
+  let env;
+  try {
+    env = load === defaultLoad ? (loaded ??= await load()) : await load();
+    if (typeof env?.processor?.render !== "function" || !Array.isArray(env.locales) || !env.locales.length) {
+      throw new Error("renderer or locales missing");
+    }
+  } catch (e) {
+    return [`renderer unavailable: ${e instanceof Error ? e.message : String(e)}`];
+  }
+  const problems = frontMatterProblems(markdown, env.locales);
+  const folder = GUIDE_FILE.exec(file)?.[1];
+  if (!folder || !env.locales.includes(folder)) problems.push(`guide path ${file} is not src/content/guides/<locale>/<slug>.md`);
+  const fm = splitFrontMatter(markdown);
+  if (!fm) return problems; // nothing reliable to render; the front matter problem already fails the check
+  // The renderer strips a front matter block of its own at the top of the body, unseen by this check.
+  if (/^(?:---|\+\+\+)/.test(fm.body)) problems.push("body starts with a second front matter delimiter");
   let html;
   try {
-    html = (await processor.render(markdown)).code;
+    html = (await env.processor.render(fm.body)).code;
   } catch (e) {
-    return [`markdown failed to render: ${e instanceof Error ? e.message : String(e)}`];
+    return [...problems, `markdown failed to render: ${e instanceof Error ? e.message : String(e)}`];
   }
-  return htmlProblems(html);
+  return [...problems, ...htmlProblems(html, file)];
 }
 
 // ---- CLI -------------------------------------------------------------------------------
 
-function gitDiff(extraArgs) {
-  const out = execFileSync("git", ["diff", "--name-only", "--no-renames", "-z", ...extraArgs, "origin/main...HEAD"], {
-    encoding: "utf8",
-  });
-  return out.split("\0").filter(Boolean);
+const SUBMODULE = "160000";
+const SYMLINK = "120000";
+
+// Parses `git diff --raw -z --no-renames --no-abbrev`: ":<old mode> <new mode> <old sha> <new sha> <status>\0<path>\0".
+export function parseRawDiff(out) {
+  const parts = out.split("\0");
+  if (parts[parts.length - 1] === "") parts.pop();
+  if (parts.length % 2) throw new Error("unparseable git diff output");
+  const entries = [];
+  for (let i = 0; i < parts.length; i += 2) {
+    const m = parts[i].match(/^:(\d{6}) (\d{6}) [0-9a-f]+ [0-9a-f]+ ([A-Z])\d*$/);
+    if (!m) throw new Error(`unparseable git diff entry: ${parts[i]}`);
+    entries.push({ oldMode: m[1], newMode: m[2], status: m[3], path: parts[i + 1] });
+  }
+  return entries;
+}
+
+export function diffProblems(entries) {
+  const problems = [];
+  for (const e of entries) {
+    if (e.status === "D") problems.push(`${e.path}: deletes or renames away an existing file`);
+    else if (!["A", "M", "T"].includes(e.status)) problems.push(`${e.path}: unsupported change ${e.status}`);
+    if (e.newMode === SUBMODULE || e.oldMode === SUBMODULE) problems.push(`${e.path}: submodule entry`);
+    if (e.newMode === SYMLINK) problems.push(`${e.path}: symlink`);
+  }
+  return problems;
+}
+
+function gitDiff() {
+  const out = execFileSync("git", ["diff", "--raw", "--no-renames", "--no-abbrev", "-z", "origin/main...HEAD"], { encoding: "utf8" });
+  return parseRawDiff(out);
 }
 
 async function main() {
@@ -172,16 +404,22 @@ async function main() {
     console.log(`not a guide PR (${head || "no head ref"}); skipping`);
     return 0;
   }
-  const files = gitDiff([]);
+  const entries = gitDiff();
+  const files = entries.map((e) => e.path);
   const bad = outsideBoundary(files);
   if (bad.length) {
     console.error(
-      "Guide PRs may only touch src/content/guides/**/*.md and public/guides/** images (png, jpg, jpeg, webp, avif):\n" +
+      "Guide PRs may only touch src/content/guides/<locale>/<slug>.md and public/guides/** images (png, jpg, jpeg, webp, avif):\n" +
         bad.join("\n"),
     );
     return 1;
   }
-  const live = gitDiff(["--diff-filter=AMT"]);
+  const structural = diffProblems(entries);
+  if (structural.length) {
+    console.error("Guide PRs may only add or modify regular files:\n" + structural.join("\n"));
+    return 1;
+  }
+  const live = entries.filter((e) => ["A", "M", "T"].includes(e.status)).map((e) => e.path);
   const links = symlinks(live);
   if (links.length) {
     console.error("Guide PRs may not contain symlinks:\n" + links.join("\n"));
@@ -190,10 +428,10 @@ async function main() {
   const failures = [];
   for (const f of live) {
     if (!f.startsWith(CONTENT_PREFIX)) continue;
-    for (const p of await contentProblems(readFileSync(f, "utf8"))) failures.push(`${f}: ${p}`);
+    for (const p of await contentProblems(readFileSync(f, "utf8"), { file: f })) failures.push(`${f}: ${p}`);
   }
   if (failures.length) {
-    console.error("Guide markdown must render to plain HTML linking only to wizscheduler.com:\n" + failures.join("\n"));
+    console.error("Guide markdown must have plain front matter and render to plain HTML linking only to wizscheduler.com:\n" + failures.join("\n"));
     return 1;
   }
   console.log(`guide boundary ok (${files.length} files)`);
