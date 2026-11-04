@@ -186,6 +186,14 @@ publishing and records the date.
 - **Pricing comparisons never overstate a competitor.** When a vendor's
   pricing is ambiguous, use the reading that makes the competitor cheaper,
   and say which reading was used.
+- **Show each competitor's plan options, not one number** (owner,
+  2026-11-04). Wherever we price a competitor (calculator, worked examples,
+  tables), list every published plan that fits the reader's size with its
+  price and what it adds or lacks (e.g. 7shifts Essentials vs Premium,
+  Deputy Lite vs Core vs Pro, Homebase Essentials vs Plus vs All-in-One),
+  and mark which ones include auto-scheduling. The cheapest plan with
+  auto-scheduling is the one highlighted for the comparison, not the only
+  one shown. Plans sold only by quote are listed as "contact sales".
 - **7shifts' tier depends on headcount per location** (owner, 2026-11-04):
   its caps ("up to 30" Essentials, "up to 60" Pro) sit inside the
   per-location price, so a location with 1–30 employees is on Essentials and
