@@ -3,6 +3,8 @@ name: Deploy
 on:
   push:
     branches: [main]
+  # Lets a deploy be re-run by hand when GitHub drops the push event.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -13,6 +15,8 @@ concurrency:
 
 jobs:
   deploy:
+    # A manual run can pick any branch; only main may reach production.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
       LEGAL_SOURCE: api
