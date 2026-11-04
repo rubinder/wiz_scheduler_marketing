@@ -83,7 +83,6 @@ export const TOOLS: Record<ToolId, Tool> = {
           "No POS integration or sales forecasting",
           "No tip pooling or payroll processing; check-in is by QR on the paid plan",
           "Fair Workweek support is limited to the rest rule",
-          "Newer product with a smaller user base",
         ],
       },
       es: {
@@ -103,7 +102,6 @@ export const TOOLS: Record<ToolId, Tool> = {
           "Sin integración con POS ni previsión de ventas",
           "Sin reparto de propinas ni procesamiento de nómina; el registro de entrada es por QR en el plan de pago",
           "El soporte de Fair Workweek se limita a la regla de descanso",
-          "Producto más nuevo, con menos usuarios",
         ],
       },
     },
@@ -126,7 +124,7 @@ export const TOOLS: Record<ToolId, Tool> = {
     ],
     text: {
       en: {
-        description: "Restaurant scheduling, time clock, tips and payroll",
+        description: "Per-location scheduling with a beta auto-scheduler and a payroll add-on",
         autoScheduling: "Auto-scheduler in beta, rolling out to selected accounts; drafts from at least six weeks of sales and schedule history",
         preferences: "Uses approved availability and time off. Its documentation does not mention shift or coworker preferences",
         fairWorkweek: "Yes: flags clopens, changes inside 14 days, and premium pay (paid plans)",
@@ -143,7 +141,7 @@ export const TOOLS: Record<ToolId, Tool> = {
         ],
       },
       es: {
-        description: "Horarios para restaurantes, reloj de fichaje, propinas y nómina",
+        description: "Horarios por ubicación con programador automático en beta y complemento de nómina",
         autoScheduling: "Programador automático en beta, que se está habilitando en cuentas seleccionadas; arma el borrador a partir de al menos seis semanas de ventas y horarios",
         preferences: "Usa la disponibilidad y los días libres aprobados. Su documentación no menciona preferencias de turnos ni de compañeros",
         fairWorkweek: "Sí: señala turnos de cierre y apertura seguidos, cambios dentro de 14 días y pagos con prima (planes de pago)",
@@ -179,7 +177,7 @@ export const TOOLS: Record<ToolId, Tool> = {
     ],
     text: {
       en: {
-        description: "Workforce management with scheduling, time and attendance",
+        description: "Per-user scheduling with auto-scheduling on the Core and Pro plans",
         autoScheduling: "Core and Pro plans; fills shifts by cost, equal hours, or learning from your past schedules",
         preferences: "Its auto-fill documentation does not mention employee shift or coworker preferences",
         fairWorkweek:
@@ -195,7 +193,7 @@ export const TOOLS: Record<ToolId, Tool> = {
         ],
       },
       es: {
-        description: "Gestión de personal con horarios, control de tiempo y asistencia",
+        description: "Horarios por usuario con programación automática en los planes Core y Pro",
         autoScheduling: "Planes Core y Pro; asigna turnos por costo, por igualdad de horas o aprendiendo de tus horarios anteriores",
         preferences: "Su documentación de asignación automática no menciona preferencias de turnos ni de compañeros",
         fairWorkweek:
@@ -231,7 +229,7 @@ export const TOOLS: Record<ToolId, Tool> = {
     ],
     text: {
       en: {
-        description: "Scheduling, time clock and payroll for small teams",
+        description: "Per-location scheduling with a free plan and an AI scheduling assistant from Plus",
         autoScheduling: "AI scheduling assistant from the Plus plan",
         preferences: "Its marketing says it uses availability and preferred shifts",
         fairWorkweek: "We could not find NYC Fair Workweek features",
@@ -246,7 +244,7 @@ export const TOOLS: Record<ToolId, Tool> = {
         ],
       },
       es: {
-        description: "Horarios, reloj de fichaje y nómina para equipos pequeños",
+        description: "Horarios por ubicación con un plan gratuito y un asistente de horarios con AI desde Plus",
         autoScheduling: "Asistente de horarios con AI desde el plan Plus",
         preferences: "Su publicidad dice que usa la disponibilidad y los turnos preferidos",
         fairWorkweek: "No encontramos funciones de Fair Workweek de Nueva York",
@@ -278,7 +276,7 @@ export const TOOLS: Record<ToolId, Tool> = {
     ],
     text: {
       en: {
-        description: "Scheduling and team messaging for hourly teams",
+        description: "Per-user scheduling with auto-assign on every plan",
         autoScheduling: "Auto-assign included on every plan",
         preferences: "Can require shifts to overlap at least 70% with an employee's preferred availability and respect max hours. No coworker preferences",
         fairWorkweek: "We could not find NYC Fair Workweek features",
@@ -294,7 +292,7 @@ export const TOOLS: Record<ToolId, Tool> = {
         ],
       },
       es: {
-        description: "Horarios y mensajería de equipo para personal por horas",
+        description: "Horarios por usuario con asignación automática en todos los planes",
         autoScheduling: "Asignación automática incluida en todos los planes",
         preferences: "Puede exigir que los turnos coincidan al menos en un 70% con la disponibilidad preferida del empleado y respetar las horas máximas. Sin preferencias de compañeros",
         fairWorkweek: "No encontramos funciones de Fair Workweek de Nueva York",
