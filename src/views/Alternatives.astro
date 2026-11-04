@@ -1,0 +1,234 @@
+---
+import Base from "../layouts/Base.astro";
+import SectionRule from "../components/SectionRule.astro";
+import Faq from "../components/Faq.astro";
+import CostCalculator from "../islands/CostCalculator.tsx";
+import { m } from "../theme";
+import { appLink } from "../lib/site";
+import { getSiteCopy, type Copy } from "../i18n";
+import { localePath, type SiteLocale } from "../lib/links";
+import { DEFAULT_TEAM, TOOLS, formatUsd, quotePlans, type ToolId } from "../data/competitors";
+
+/** Competitors with an alternatives page; widens as their copy is added. */
+export type AlternativesFocus = Extract<keyof Copy["alternatives"], "7shifts" | "deputy">;
+
+interface Props {
+  locale: SiteLocale;
+  focus: AlternativesFocus;
+}
+const { locale, focus } = Astro.props;
+const t = getSiteCopy(locale);
+const a = t.alternatives;
+const f = a[focus];
+const L = (p: string) => localePath(locale, p);
+const fill = (s: string, vars: Record<string, string | number>) =>
+  Object.entries(vars).reduce((acc, [k, v]) => acc.replaceAll(`{${k}}`, String(v)), s);
+
+// Wiz first, then the competitor this page is about, then the rest.
+const ids: ToolId[] = ["wiz", focus, ...(["7shifts", "deputy", "homebase", "wheniwork"] as const).filter((id) => id !== focus)];
+const tools = ids.map((id) => TOOLS[id]);
+const checkedOn = tools.map((tool) => tool.checkedOn).sort()[0] ?? "";
+
+// "/pricing" has no Spanish page, so internal sources keep their English URL
+// rather than resolving to an /es/ path that would 404.
+const isExternal = (href: string) => !href.startsWith("/");
+
+const team = DEFAULT_TEAM;
+const teamVars = { locations: team.locations, employees: team.employeesPerLocation, date: checkedOn };
+const autoLabel = { yes: t.calculator.autoYes, beta: t.calculator.autoBeta, no: t.calculator.autoNo };
+const example = tools.map((tool) => ({
+  tool,
+  rows: quotePlans(tool, team)
+    .map((q, i) => ({ q, plan: tool.plans[i] }))
+    .filter(({ q }) => q.fits)
+    .map(({ q, plan }) => ({
+      ...q,
+      price: q.monthlyUsd === null ? t.calculator.contactSales : formatUsd(q.monthlyUsd),
+      how:
+        plan.basis === "location"
+          ? fill(a.perLocation, { count: team.locations, price: formatUsd(plan.monthlyUsd ?? 0) })
+          : plan.basis === "user"
+            ? fill(a.perUser, { count: team.locations * team.employeesPerLocation, price: formatUsd(plan.monthlyUsd ?? 0) })
+            : plan.basis === "flat"
+              ? a.flat
+              : t.calculator.contactSales,
+    })),
+}));
+---
+<Base locale={locale} title={f.title} description={f.metaDescription} path={`/compare/${focus}-alternatives`}>
+  <main class="max-w-[92rem] mx-auto px-6">
+    <section class="pt-12 lg:pt-20 pb-16">
+      <div class="max-w-[62ch]">
+        <p class={`${m.text.meta} mb-6`}>{a.eyebrow}</p>
+        <h1 class={`${m.text.display} font-display text-5xl lg:text-6xl font-semibold leading-[0.95] mb-6`}>
+          {f.heading}
+        </h1>
+        <p class={`${m.text.display} text-2xl font-semibold mb-2`}>{a.heroHeadline}</p>
+        <p class={`${m.text.muted} text-base mb-6`}>{a.heroQualifier}</p>
+        <p class={`${m.text.muted} text-lg leading-relaxed`}>{f.intro}</p>
+        <p class={`${m.text.meta} mt-4`}>{fill(a.checkedOn, { date: checkedOn })}</p>
+      </div>
+    </section>
+
+    <section class="pb-24">
+      <SectionRule eyebrow={a.tableEyebrow} title={a.tableTitle} />
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class={`border-b ${m.rule.line}`}>
+              <th scope="col" class="text-start font-semibold pb-3 pe-4">{a.tableHeadings.tool}</th>
+              <th scope="col" class="text-start pb-3 px-2">{a.tableHeadings.autoScheduling}</th>
+              <th scope="col" class="text-start pb-3 px-2">{a.tableHeadings.preferences}</th>
+              <th scope="col" class="text-start pb-3 px-2">{a.tableHeadings.fairWorkweek}</th>
+              <th scope="col" class="text-start pb-3 ps-4">{a.tableHeadings.pricing}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tools.map((tool) => {
+              const text = tool.text[locale];
+              return (
+                <tr class={`border-b ${m.rule.line} align-top`}>
+                  <th scope="row" class="text-start py-3 pe-4 font-medium">{tool.name}</th>
+                  <td class="py-3 px-2">{text.autoScheduling}</td>
+                  <td class="py-3 px-2">{text.preferences}</td>
+                  <td class="py-3 px-2">{text.fairWorkweek}</td>
+                  <td class="py-3 ps-4">
+                    <a
+                      href={tool.pricingUrl}
+                      rel={isExternal(tool.pricingUrl) ? "noopener nofollow" : undefined}
+                      target={isExternal(tool.pricingUrl) ? "_blank" : undefined}
+                      class={m.btn.link}
+                    >{tool.sources[0]?.label[locale] ?? tool.name}</a>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="pb-24 max-w-4xl" data-worked-example>
+      <SectionRule eyebrow={a.exampleEyebrow} title={fill(a.exampleTitle, teamVars)} />
+      <p class={`${m.text.muted} text-base mb-8`}>{fill(a.exampleNote, teamVars)}</p>
+      <div class="space-y-8">
+        {example.map(({ tool, rows }) => (
+          <table class="w-full text-sm border-collapse">
+            <caption class={`${m.text.display} text-lg font-semibold text-start mb-2`}>{tool.name}</caption>
+            <thead>
+              <tr class={`border-b ${m.rule.heavy}`}>
+                <th scope="col" class={`${m.text.meta} py-2 pe-4 text-start`}>{a.exampleHeadings.plan}</th>
+                <th scope="col" class={`${m.text.meta} py-2 pe-4 text-end`}>{a.exampleHeadings.price}</th>
+                <th scope="col" class={`${m.text.meta} py-2 pe-4 text-start`}>{a.exampleHeadings.how}</th>
+                <th scope="col" class={`${m.text.meta} py-2 text-start`}>{a.exampleHeadings.autoScheduling}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr
+                  class={`border-b ${m.rule.line} ${row.highlighted ? "font-bold bg-marker/20" : ""}`}
+                  data-highlighted={row.highlighted || undefined}
+                >
+                  <th scope="row" class="py-3 pe-4 text-start font-[inherit]">
+                    {tool.name} {row.plan}
+                    {row.highlighted && (
+                      <span class={`${m.text.meta} ms-2 border ${m.rule.heavy} px-1.5 py-0.5 normal-case tracking-normal font-normal`}>
+                        {t.calculator.highlightedLabel}
+                      </span>
+                    )}
+                  </th>
+                  <td class={`${m.text.data} py-3 pe-4 text-end`}>{row.price}</td>
+                  <td class={`${m.text.muted} py-3 pe-4`}>{row.how}</td>
+                  <td class="py-3">{autoLabel[row.autoScheduling]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ))}
+      </div>
+      <p class={`${m.text.muted} text-sm mt-6`}>{fill(a.exampleSevenShifts, teamVars)} {t.calculator.sevenShiftsBeta}</p>
+      <p class={`${m.text.muted} text-sm mt-2`}>{a.exampleWiz}</p>
+    </section>
+
+    <section class="pb-24">
+      <CostCalculator client:visible copy={t.calculator} toolIds={ids} locale={locale} />
+    </section>
+
+    <section class="pb-24">
+      <SectionRule eyebrow={a.breakdownEyebrow} title={a.breakdownTitle} />
+      <div class="space-y-12">
+        {tools.map((tool) => {
+          const text = tool.text[locale];
+          return (
+            <div class={`${m.surface} border ${m.rule.line} p-8`}>
+              <h3 class={`${m.text.display} text-2xl font-semibold mb-1`}>{tool.name}</h3>
+              <p class={`${m.text.muted} text-sm mb-6`}>{text.description}</p>
+              <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h4 class="font-semibold mb-3 text-green-700">{a.strengths}</h4>
+                  <ul class="space-y-2">
+                    {text.strengths.map((s) => (
+                      <li class={`${m.text.muted} text-sm flex gap-2`}>
+                        <span class="flex-shrink-0" aria-hidden="true">✓</span>
+                        <span>{s}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h4 class="font-semibold mb-3 text-red-700">{a.limitations}</h4>
+                  <ul class="space-y-2">
+                    {text.limitations.map((s) => (
+                      <li class={`${m.text.muted} text-sm flex gap-2`}>
+                        <span class="flex-shrink-0" aria-hidden="true">✗</span>
+                        <span>{s}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <p class={`${m.text.meta} mt-6`}>
+                {a.sources}:{" "}
+                {tool.sources.map((s, i) => (
+                  <>
+                    {i > 0 && " · "}
+                    <a
+                      href={s.href}
+                      rel={isExternal(s.href) ? "noopener nofollow" : undefined}
+                      target={isExternal(s.href) ? "_blank" : undefined}
+                      class={m.btn.link}
+                    >{s.label[locale]}</a>
+                  </>
+                ))}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <section class="max-w-3xl pb-24">
+      <SectionRule eyebrow={a.differencesEyebrow} title={a.differencesTitle} />
+      <div class="space-y-6">
+        {a.differences.map((d) => (
+          <div>
+            <h3 class="font-semibold text-lg mb-2">{d.title}</h3>
+            <p class={`${m.text.muted} text-base`}>{d.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <Faq items={f.faq} title={a.faqTitle} />
+
+    <section class={`max-w-3xl mb-16 pb-16 border-t ${m.rule.line}`}>
+      <h2 class={`${m.text.display} text-2xl font-semibold mb-4 mt-12`}>{a.ctaTitle}</h2>
+      <p class={`${m.text.muted} text-base mb-8`}>{a.ctaBody}</p>
+      <div class="flex flex-wrap items-center gap-4">
+        <a href={appLink("/register")} class={m.btn.primary}>{a.ctaSignup}</a>
+        <a href={L(`/compare/${focus}`)} class={m.btn.link}>{f.compareLink}</a>
+        <a href={L("/free-schedule-checker")} class={m.btn.link}>{a.checkerLink}</a>
+      </div>
+    </section>
+  </main>
+</Base>

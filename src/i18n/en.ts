@@ -170,6 +170,107 @@ const en = {
       "List prices on monthly billing, in US dollars. Taxes, add-ons and annual discounts are not included. Prices checked on {date}; vendors change them, so confirm on their pricing pages.",
     sevenShiftsBeta: "7shifts' auto-scheduler is a beta that is rolling out to selected accounts.",
   },
+  alternatives: {
+    eyebrow: "Alternatives",
+    heroHeadline: "The schedule your team had a say in.",
+    heroQualifier:
+      "Managers can enter preferences for everyone. Employees can send their own once preference requests are turned on in Company Settings.",
+    checkedOn: "Prices and features checked on {date}. See the sources under each tool.",
+    tableEyebrow: "Side by side",
+    tableTitle: "Feature comparison",
+    tableHeadings: {
+      tool: "Tool",
+      autoScheduling: "Auto-scheduling",
+      preferences: "Employee preferences",
+      fairWorkweek: "NYC Fair Workweek",
+      pricing: "Pricing",
+    },
+    exampleEyebrow: "Worked example",
+    exampleTitle: "{locations} locations, {employees} employees per location",
+    exampleNote:
+      "Monthly list prices on {date} for {locations} locations with {employees} employees per location, before taxes, add-ons and annual discounts. Every plan that fits this team is listed; the marked one is each tool's cheapest plan with auto-scheduling.",
+    exampleSevenShifts:
+      "7shifts sets the plan by headcount per location. With {employees} employees per location, each location fits Essentials or Premium (up to 30 employees each), not Pro (31 to 60).",
+    exampleWiz: "Wiz Scheduler Pro is one base price for every location. AI Generate is paid from prepaid credits if you use it.",
+    exampleHeadings: { plan: "Plan", price: "Per month", how: "How it adds up", autoScheduling: "Auto-scheduling" },
+    perLocation: "{count} locations × {price}",
+    perUser: "{count} employees × {price}",
+    flat: "One price for all locations",
+    breakdownEyebrow: "Detailed",
+    breakdownTitle: "Tool by tool",
+    strengths: "Strengths",
+    limitations: "Limitations",
+    sources: "Sources",
+    differencesEyebrow: "Why Wiz Scheduler",
+    differencesTitle: "What is different",
+    differences: [
+      {
+        title: "Your team has a say",
+        body: "Managers can record each employee's preferred days, preferred hours, weekly hour limit, a weekly cap on shifts in a given time range, and who they work well with or should be kept apart from. Turn on preference requests in Company Settings and your employees can send their preferences for you to approve. The generator builds the week around them: a firm preference keeps someone off a shift entirely, a softer one makes them a less likely pick.",
+      },
+      {
+        title: "So you fix less",
+        body: "Because the preferences are already in the draft, there is less to rearrange after it is generated. When a preference can't be met, that shift is marked, so you see every compromise. A shift nobody can take without breaking a firm rule is left open rather than forced. You still review the week; you start from what your team asked for.",
+      },
+      {
+        title: "One price for every location",
+        body: "Pro is $18 a month for all your locations, with 500 employees, 50 manager seats and 25 schedule generations included, and small metered charges above those. 7shifts charges per location and Deputy per user. AI Generate is optional and paid from prepaid credits.",
+      },
+      {
+        title: "Rest between shifts, and where we stop",
+        body: "Set a minimum rest, such as 11 hours, on a location and no generated schedule will break it. The rule is off until you set it, and it is the extent of our Fair Workweek support: we don't track advance notice or premium pay. If you need those, 7shifts and Deputy do more here.",
+      },
+      {
+        title: "Bring your team over",
+        body: "The paid plan imports locations, roles, employees and availability from 7shifts or Deputy with an API token from your account there. Preferences and coworker relationships are not imported, so you add those in Wiz Scheduler.",
+      },
+      {
+        title: "Names stay private",
+        body: "Employee names are replaced with stand-ins before anything is sent to the AI model.",
+      },
+    ],
+    faqTitle: "Frequently asked questions",
+    ctaTitle: "Try it on your own team",
+    ctaBody:
+      "The free plan covers 2 locations and 25 employees, with one schedule per location a month. AI Generate is on Pro, paid from prepaid credits.",
+    ctaSignup: "Start free",
+    checkerLink: "Try the free schedule checker",
+    "7shifts": {
+      title: "7shifts Alternatives and 7shifts Pricing Compared | Wiz Scheduler",
+      metaDescription:
+        "7shifts pricing next to Deputy, Homebase, When I Work and Wiz Scheduler: every plan that fits your team, how each tool auto-schedules, whether it uses employee preferences, and NYC Fair Workweek support.",
+      heading: "7shifts alternatives",
+      intro:
+        "7shifts prices each location by its headcount, and its auto-scheduler, a beta for selected accounts, drafts from sales and schedule history. If you are weighing alternatives, here is how five tools compare on price, auto-scheduling, employee preferences and NYC Fair Workweek, with prices from each vendor's own site.",
+      compareLink: "Wiz Scheduler vs 7shifts",
+      faq: [
+        {
+          q: "How much does 7shifts cost?",
+          a: "7shifts charges per location per month, and the plan depends on headcount per location. Comp is free for one location with up to 15 employees. With 1 to 30 employees per location, Essentials is $49.99 and Premium $149.99. With 31 or more, Pro is $99.99 (up to 60 employees) and Premium $199.99. Annual billing takes 10% off. These are list prices from 7shifts' own pricing page.",
+        },
+        {
+          q: "Which 7shifts plan fits 13 employees per location?",
+          a: "Essentials ($49.99 per location a month) or Premium ($149.99), since both cover up to 30 employees per location. Three such locations come to $149.97 a month on Essentials.",
+        },
+        {
+          q: "Does 7shifts auto-schedule?",
+          a: "Its auto-scheduler is a beta that is rolling out to selected accounts. It drafts from at least six weeks of sales and schedule history and checks availability. Its documentation does not mention shift or coworker preferences.",
+        },
+        {
+          q: "Can employees give their own preferences in Wiz Scheduler?",
+          a: "Yes. Managers can enter preferences for everyone. Employees can send their own once preference requests are turned on in Company Settings, and a manager approves each request. Preference requests are off by default.",
+        },
+        {
+          q: "Is Wiz Scheduler a good fit for NYC Fair Workweek?",
+          a: "Only for the rest rule. Wiz Scheduler enforces a minimum rest between shifts, set per location and off until you set it. It does not track advance notice or premium pay. 7shifts flags clopens, changes inside 14 days and premium pay on its paid plans, and Deputy has the most complete support of the tools compared here.",
+        },
+        {
+          q: "Can I bring my data over from 7shifts?",
+          a: "On the paid plan, Wiz Scheduler imports companies, locations, departments, roles, employees and their assignments from 7shifts with an API token from your 7shifts account. A separate import brings over weekly availability, unavailability and approved time off. Preferences and coworker relationships are not imported.",
+        },
+      ],
+    },
+  },
 };
 
 export default en;
