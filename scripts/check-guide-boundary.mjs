@@ -314,7 +314,8 @@ export function htmlProblems(html, file = DEFAULT_FILE) {
     const [, closing, rawName, attrText] = m;
     const el = rawName.toLowerCase();
     if (!ELEMENTS.has(el)) {
-      problems.push(el === "h1" ? "h1 in the body (the page renders the title as the only h1; use ##)" : `element <${el}> not allowed`);
+      if (el !== "h1") problems.push(`element <${el}> not allowed`);
+      else if (!closing) problems.push("h1 in the body (the page renders the title as the only h1; use ##)");
       continue;
     }
     if (closing) {

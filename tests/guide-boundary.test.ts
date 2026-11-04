@@ -489,7 +489,7 @@ describe("diff structure (item 11)", () => {
 describe("body headings and schemes", () => {
   it("fails an h1 in the body, in either markdown form", async () => {
     for (const md of ["# Title", "Intro\n\n# Title\n\nMore", "Title\n=====", "> # Quoted title"]) await fails(md);
-    expect(htmlProblems('<h1 id="t">t</h1>')).toContain("h1 in the body (the page renders the title as the only h1; use ##)");
+    expect(htmlProblems('<h1 id="t">t</h1>')).toEqual(["h1 in the body (the page renders the title as the only h1; use ##)"]);
     await passes("## Section\n\n### Sub\n\n#### Subsub\n\n##### Five\n\n###### Six");
   });
   it("fails plain http even to the site's own hosts", async () => {
