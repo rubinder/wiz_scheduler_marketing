@@ -33,11 +33,11 @@ const plans = [
     description: "For growing teams",
     features: [
       "Unlimited locations",
-      "Unlimited employees",
-      "Unlimited schedule generations",
-      "All strategies (AI, Rotation, etc)",
+      "Unlimited employees (500 included)",
+      "Unlimited schedule generations (25 a month included)",
+      "Every strategy, plus AI Generate from prepaid credits",
       "Team preferences & affinities",
-      "Export to 7shifts, Deputy",
+      "Import from 7shifts and Deputy",
       "Priority support",
     ],
     cta: "Start Free Trial",
@@ -54,7 +54,7 @@ const meterRows = [
   { item: "Manager seats", included: "50", overage: "$5.00 per 50", cost: "$0.00" },
   { item: "Storage", included: "0.5 GB", overage: "$0.50 per GB", cost: "$0.00" },
   { item: "Schedules generated", included: "25/month", overage: "$0.10 per 25", cost: "$0.00" },
-  { item: "AI usage", included: "Included", overage: "Metered", cost: "Variable" },
+  { item: "AI Generate", included: "Not included", overage: "Prepaid credits", cost: "Variable" },
 ];
 ---
 <Base locale={locale} title={title} description={description} path={L("/pricing")}>
@@ -150,7 +150,7 @@ const meterRows = [
         </div>
       </div>
       <p class={`${m.text.muted} text-sm mt-6 max-w-[60ch]`}>
-        Most small teams stay under the free tiers and pay only $18/month. Larger teams with 1,000+ employees or high schedule generation may see additional charges.
+        Most small teams stay under the free tiers and pay only $18/month. Larger teams with more than 500 employees or high schedule generation may see additional charges.
       </p>
     </section>
 
@@ -167,7 +167,7 @@ const meterRows = [
         <div>
           <h3 class="font-semibold mb-2">How does billing work?</h3>
           <p class={`${m.text.muted} text-sm`}>
-            Pro plan has a $18/month base subscription. Included: 500 employees, 50 manager seats, 0.5 GB storage, and 25 schedule generations per month. Overages beyond those are billed separately. Most teams with under 500 employees and fewer than 50 managers see only the $18/month charge.
+            Pro plan has a $18/month base subscription. Included: 500 employees, 50 manager seats, 0.5 GB storage, and 25 schedule generations per month. Overages beyond those are billed separately. Most teams with under 500 employees and fewer than 50 managers see only the $18/month charge. AI Generate is optional and is paid from prepaid credit packs of $10, $25 or $50.
           </p>
         </div>
         <div>
