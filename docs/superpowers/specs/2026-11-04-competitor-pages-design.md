@@ -206,6 +206,14 @@ publishing and records the date.
   headcount and showing the matching tier. Same check for the "about $300"
   sentence on `/compare/7shifts` (it says "on 7shifts Pro", so it must say
   the locations have 31–60 employees each).
+- **Every size tier stays visible** (owner, 2026-11-04). In worked examples
+  and the calculator, list every plan of a competitor, including tiers that
+  don't fit the reader's team, each labelled with its headcount (and location)
+  range, e.g. 7shifts Essentials "1–30 per location", Pro "31–60 per
+  location", Premium "31+ per location". Plans that don't fit show what they
+  would cost for that number of locations, clearly marked as not fitting
+  (e.g. "for 31–60 per location"); only the fitting tiers are compared, and
+  the highlighted plan is still the cheapest fitting one with auto-scheduling.
 - **Calculator baseline:** each tool's cheapest plan that includes
   auto-scheduling, because that is what these pages compare. 7shifts: the
   tier for the per-location headcount (its auto-scheduler is a beta; say so).
