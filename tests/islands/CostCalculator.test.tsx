@@ -1,6 +1,7 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import { describe, expect, it, afterEach } from "vitest";
 import CostCalculator from "../../src/islands/CostCalculator";
+import { TOOLS } from "../../src/data/competitors";
 import en from "../../src/i18n/en";
 import es from "../../src/i18n/es";
 
@@ -48,5 +49,52 @@ describe("CostCalculator", () => {
     render(<CostCalculator {...props} copy={es.calculator} locale="es" />);
     expect(screen.getByLabelText(es.calculator.locations)).toBeInTheDocument();
     expect(screen.getByText(es.calculator.sevenShiftsBeta)).toBeInTheDocument();
+  });
+
+  it("marks exactly one plan per table as highlighted, with text", () => {
+    render(<CostCalculator {...props} />);
+    const expected: Record<string, string> = { "Wiz Scheduler": "Pro", "7shifts": "Essentials", Deputy: "Core" };
+    for (const table of screen.getAllByRole("table")) {
+      const name = within(table).getByRole("caption").textContent ?? "";
+      const flagged = within(table).getAllByText(en.calculator.highlightedLabel);
+      expect(flagged).toHaveLength(1);
+      expect(flagged[0].closest("th")?.textContent).toContain(expected[name]);
+    }
+  });
+
+  it("shows doesn't-fit for 7shifts Comp at the default team", () => {
+    render(<CostCalculator {...props} toolIds={["7shifts"]} />);
+    const row = screen.getByRole("row", { name: /Comp/ });
+    expect(within(row).getByText(en.calculator.doesNotFit)).toBeInTheDocument();
+  });
+
+  it("shows prices and the localized footnote in Spanish", () => {
+    const { container } = render(<CostCalculator {...props} copy={es.calculator} locale="es" />);
+    expect(screen.getByText("$149.97")).toBeInTheDocument();
+    expect(container.textContent).toContain("Precios de lista");
+    expect(container.textContent).toContain("2026-11-04");
+  });
+
+  it("floors fractional input and caps huge input without NaN", () => {
+    const { container } = render(<CostCalculator {...props} toolIds={["7shifts"]} />);
+    const input = screen.getByLabelText(en.calculator.locations);
+    fireEvent.change(input, { target: { value: "2.7" } });
+    expect(screen.getByText("$99.98")).toBeInTheDocument(); // 2 x 49.99
+    fireEvent.change(input, { target: { value: "100000" } });
+    expect(screen.getByText("$499,900.00")).toBeInTheDocument(); // capped at 10,000
+    expect(container.textContent).not.toContain("NaN");
+  });
+
+  describe("footnote date", () => {
+    const orig = TOOLS["7shifts"].checkedOn;
+    afterEach(() => {
+      TOOLS["7shifts"].checkedOn = orig;
+    });
+    it("uses the earliest checkedOn among shown tools", () => {
+      TOOLS["7shifts"].checkedOn = "2026-10-01";
+      const { container } = render(<CostCalculator {...props} />);
+      expect(container.textContent).toContain("2026-10-01");
+      expect(container.textContent).not.toContain("2026-11-04");
+    });
   });
 });

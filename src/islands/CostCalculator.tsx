@@ -17,7 +17,7 @@ export default function CostCalculator({ copy: c, toolIds, locale }: Props) {
   const [employees, setEmployees] = useState(String(DEFAULT_TEAM.employeesPerLocation));
   const team = clampTeam({ locations, employeesPerLocation: employees });
   const tools = toolIds.map((id) => TOOLS[id]);
-  const checkedOn = tools.map((t) => t.checkedOn).sort().at(-1) ?? "";
+  const checkedOn = tools.map((t) => t.checkedOn).sort()[0] ?? "";
   const autoLabel = { yes: c.autoYes, beta: c.autoBeta, no: c.autoNo };
 
   return (
@@ -60,7 +60,7 @@ export default function CostCalculator({ copy: c, toolIds, locale }: Props) {
               <tr className={`border-b ${m.rule.heavy}`}>
                 <th scope="col" className={`${m.text.meta} py-2 pe-4 text-start`}>{c.plan}</th>
                 <th scope="col" className={`${m.text.meta} py-2 pe-4 text-start`}>{c.perMonth}</th>
-                <th scope="col" className={`${m.text.meta} py-2 text-start`}>{autoLabel.yes.split(":")[0]}</th>
+                <th scope="col" className={`${m.text.meta} py-2 text-start`}>{c.autoSchedulingHeader}</th>
               </tr>
             </thead>
             <tbody>
@@ -70,7 +70,14 @@ export default function CostCalculator({ copy: c, toolIds, locale }: Props) {
                   className={`border-b ${m.rule.line} ${q.highlighted ? "font-bold bg-marker/20" : ""} ${q.fits ? "" : "text-ink/50"}`}
                   data-highlighted={q.highlighted || undefined}
                 >
-                  <th scope="row" className="py-2 pe-4 text-start font-[inherit]">{q.plan}</th>
+                  <th scope="row" className="py-2 pe-4 text-start font-[inherit]">
+                    {q.plan}
+                    {q.highlighted && (
+                      <span className={`${m.text.meta} ms-2 border ${m.rule.heavy} px-1.5 py-0.5 normal-case tracking-normal font-normal`}>
+                        {c.highlightedLabel}
+                      </span>
+                    )}
+                  </th>
                   <td className={`${m.text.data} py-2 pe-4`}>
                     {!q.fits ? c.doesNotFit : q.monthlyUsd === null ? c.contactSales : formatUsd(q.monthlyUsd)}
                   </td>
