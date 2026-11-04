@@ -51,6 +51,11 @@ const problemsAfter = (url: string, edit: (html: string) => string | null) => {
 beforeAll(() => {
   tmp = mkdtempSync(join(tmpdir(), "guide-build-"));
   cpSync(ROOT, tmp, { recursive: true, filter: (src) => !SKIP.has(src.slice(ROOT.length + 1).split("/")[0]) });
+  // The copy carries any real guides; only the fixtures should be built, so empty both guide trees.
+  for (const dir of ["src/content/guides", "public/guides"]) {
+    rmSync(join(tmp, dir), { recursive: true, force: true });
+    mkdirSync(join(tmp, dir), { recursive: true });
+  }
   mkdirSync(join(tmp, "node_modules"));
   for (const name of readdirSync(join(ROOT, "node_modules"))) {
     if (name === ".astro" || name === ".vite") continue;

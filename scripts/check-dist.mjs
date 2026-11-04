@@ -3,9 +3,9 @@
 // every guide file and the guide index built correctly (guideDistProblems).
 // Run after `npm run build`: npm run check:dist
 import assert from "node:assert/strict";
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { DEFAULT_LOCALE, LOCALES, dir, localePath } from "../src/lib/links.ts";
 
 // = src/lib/site.ts SITE_URL (that module reads import.meta.env, which plain node lacks)
@@ -199,4 +199,12 @@ function main() {
   console.log(`check:dist OK — ${checked} localized pages, ${guides.length} guide files, ${LOCALES.length} guide indexes`);
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();
+const isMain = () => {
+  if (!process.argv[1]) return false;
+  try {
+    return realpathSync(fileURLToPath(import.meta.url)) === realpathSync(process.argv[1]);
+  } catch {
+    return false;
+  }
+};
+if (isMain()) main();
