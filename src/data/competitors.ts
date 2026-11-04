@@ -323,6 +323,9 @@ export const TOOLS: Record<ToolId, Tool> = {
   },
 };
 
+/** Every compare page that exists, linked from each compare page. Add a path once its page ships in en and es. */
+export const COMPARE_PATHS: string[] = ["/compare/7shifts", "/compare/7shifts-alternatives"];
+
 export const DEFAULT_TEAM: Team = { locations: 3, employeesPerLocation: 13 };
 
 const MAX_COUNT = 10000;

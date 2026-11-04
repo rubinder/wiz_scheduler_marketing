@@ -1,39 +1,182 @@
 ---
-import { getEntry, render } from "astro:content";
+import { getEntry } from "astro:content";
 import Base from "../layouts/Base.astro";
+import Faq from "../components/Faq.astro";
+import CostCalculator from "../islands/CostCalculator.tsx";
 import { m } from "../theme";
 import { getSiteCopy } from "../i18n";
 import { appLink } from "../lib/site";
 import { localePath, type SiteLocale } from "../lib/links";
+import type { CompareData } from "../lib/compareSchema";
+import { COMPARE_PATHS, DEFAULT_TEAM, TOOLS, formatUsd, planRange, quotePlans, type Plan, type ToolId } from "../data/competitors";
 
 interface Props {
   locale: SiteLocale;
   slug: string;
+  /** The entry already loaded, for rendering outside a content-collection build (tests). */
+  entry?: { data: CompareData; html: string };
 }
 const { locale, slug } = Astro.props;
 const t = getSiteCopy(locale);
-const entry = await getEntry("compare", `${locale}/${slug}`);
-if (!entry) throw new Error(`compare entry missing: ${locale}/${slug}`);
-const { Content } = await render(entry);
-const d = entry.data;
+const c = t.compare;
+const path = `/compare/${slug}`;
+
+async function load(): Promise<{ data: CompareData; html: string }> {
+  if (Astro.props.entry) return Astro.props.entry;
+  const found = await getEntry("compare", `${locale}/${slug}`);
+  if (!found?.rendered) throw new Error(`compare entry missing: ${locale}/${slug}`);
+  return { data: found.data, html: found.rendered.html };
+}
+const entry = await load();
+
+// Prices, caps and team sizes in the markdown and frontmatter are
+// {placeholders} filled from src/data/competitors.ts, so a price change is one edit there.
+const fill = (s: string, vars: Record<string, string | number>) =>
+  s.replace(/\{([a-zA-Z0-9]+)\}/g, (whole, key: string) => (key in vars ? String(vars[key]) : whole));
+const usd = (n: number | null) => (n === null ? "" : Number.isInteger(n) ? `$${n}` : formatUsd(n));
+function findPlan(id: ToolId, name: string, match: (p: Plan) => boolean = () => true): Plan {
+  const found = TOOLS[id].plans.find((p) => p.name === name && match(p));
+  if (!found) throw new Error(`no ${id} plan ${name}`);
+  return found;
+}
+
+const team = DEFAULT_TEAM;
+const s7 = {
+  comp: findPlan("7shifts", "Comp"),
+  essentials: findPlan("7shifts", "Essentials"),
+  premium: findPlan("7shifts", "Premium", (p) => p.minEmployeesPerLocation === undefined),
+  pro: findPlan("7shifts", "Pro"),
+  premiumLarge: findPlan("7shifts", "Premium", (p) => p.minEmployeesPerLocation !== undefined),
+};
+const s7Pick = quotePlans(TOOLS["7shifts"], team).find((q) => q.highlighted);
+const wizFree = findPlan("wiz", "Free");
+const wizPro = findPlan("wiz", "Pro");
+const vars: Record<string, string | number> = {
+  locations: team.locations,
+  employees: team.employeesPerLocation,
+  compMaxEmployees: s7.comp.maxEmployeesPerLocation ?? "",
+  essentials: usd(s7.essentials.monthlyUsd),
+  essentialsMaxEmployees: s7.essentials.maxEmployeesPerLocation ?? "",
+  premium: usd(s7.premium.monthlyUsd),
+  pro: usd(s7.pro.monthlyUsd),
+  proMinEmployees: s7.pro.minEmployeesPerLocation ?? "",
+  proMaxEmployees: s7.pro.maxEmployeesPerLocation ?? "",
+  premiumLarge: usd(s7.premiumLarge.monthlyUsd),
+  sevenShiftsExamplePlan: s7Pick?.plan ?? "",
+  sevenShiftsExampleTotal: usd(s7Pick?.monthlyUsd ?? null),
+  sevenShiftsProTotal: formatUsd((s7.pro.monthlyUsd ?? 0) * team.locations),
+  wizPro: usd(wizPro.monthlyUsd),
+  wizExtra500: usd(wizPro.extraPer500EmployeesUsd ?? null),
+  wizFreeLocations: wizFree.maxLocations ?? "",
+  wizFreeEmployees: wizFree.maxTotalEmployees ?? "",
+};
+
+const d = {
+  ...entry.data,
+  title: fill(entry.data.title, vars),
+  description: fill(entry.data.description, vars),
+  qualifier: entry.data.qualifier ? fill(entry.data.qualifier, vars) : undefined,
+  faq: entry.data.faq.map(({ q, a }) => ({ q: fill(q, vars), a: fill(a, vars) })),
+};
+
+// The markdown marks where the data-driven pricing table goes.
+const bodyParts = fill(entry.html, vars).split(/<div data-pricing-table[^>]*><\/div>/);
+const [bodyBefore, bodyAfter = ""] = bodyParts;
+const hasPricing = bodyParts.length > 1;
+
+const autoLabel = { yes: t.calculator.autoYes, beta: t.calculator.autoBeta, no: t.calculator.autoNo };
+const pricingTools = (["wiz", entry.data.toolId] as const).filter((id): id is ToolId => !!id).map((id) => TOOLS[id]);
+const pricingRows = pricingTools.flatMap((tool) =>
+  tool.plans.map((plan) => ({
+    tool: tool.name,
+    plan: plan.name,
+    size:
+      planRange(plan, locale) ??
+      (plan.extraPer500EmployeesUsd !== undefined ? fill(c.wizProSize, { extra: usd(plan.extraPer500EmployeesUsd) }) : ""),
+    price:
+      plan.monthlyUsd === null
+        ? t.calculator.contactSales
+        : plan.monthlyUsd === 0
+          ? c.free
+          : fill(plan.basis === "location" ? c.perLocation : c.allLocations, { price: formatUsd(plan.monthlyUsd) }),
+    auto: autoLabel[plan.autoScheduling],
+  })),
+);
+
+const related = COMPARE_PATHS.filter((p) => p !== path).map((p) => ({
+  href: localePath(locale, p),
+  label: (c.pages as Record<string, string>)[p] ?? p,
+}));
 ---
-<Base locale={locale} title={`${d.title} | ${t.common.appName}`} description={d.description} path={`/compare/${slug}`}>
+<Base locale={locale} title={`${d.title} | ${t.common.appName}`} description={d.description} path={path}>
   <main class="max-w-[92rem] mx-auto px-6">
     <section class="pt-16 pb-10 max-w-[62ch]">
       <p class={`${m.text.meta} mb-6`}>{t.nav.compare}</p>
       <h1 class={`${m.text.display} font-display text-5xl sm:text-6xl font-semibold leading-[0.95] mb-6`}>{d.title}</h1>
-      <p class={`${m.text.muted} text-lg leading-relaxed`}>{d.description}</p>
+      <p class={`${m.text.display} text-xl leading-relaxed mb-3`}>{d.description}</p>
+      {d.qualifier && <p class={`${m.text.muted} text-base`}>{d.qualifier}</p>}
     </section>
+
     <article class="prose-rota max-w-4xl">
-      <Content />
+      <Fragment set:html={bodyBefore} />
+      {hasPricing && (
+        <table data-pricing-table>
+          <caption class="text-start">{c.pricingCaption}</caption>
+          <thead>
+            <tr>
+              <th scope="col">{c.pricingHeadings.plan}</th>
+              <th scope="col">{c.pricingHeadings.size}</th>
+              <th scope="col">{c.pricingHeadings.price}</th>
+              <th scope="col">{c.pricingHeadings.autoScheduling}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {pricingRows.map((row) => (
+              <tr data-plan>
+                <th scope="row">{row.tool} {row.plan}</th>
+                <td>{row.size}</td>
+                <td>{row.price}</td>
+                <td>{row.auto}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      <Fragment set:html={bodyAfter} />
     </article>
-    <p class={`${m.text.meta} mt-12`}>
-      {t.compare.checkedOn} <time datetime={d.checkedOn}>{d.checkedOn}</time> ·
+
+    {d.calculator && d.toolId && (
+      <section class="mt-16">
+        <CostCalculator client:visible copy={t.calculator} toolIds={["wiz", d.toolId]} locale={locale} />
+      </section>
+    )}
+
+    <div class="mt-16">
+      <Faq items={d.faq} title={c.faqTitle} />
+    </div>
+
+    <p class={m.text.meta}>
+      {c.checkedOn} <time datetime={d.checkedOn}>{d.checkedOn}</time> ·
       <a href={d.competitorUrl} rel="noopener nofollow" target="_blank" class={m.btn.link}>{d.competitor}</a>
     </p>
-    <div class="flex flex-wrap items-center gap-6 mt-12 mb-16">
-      <a href={appLink("/register")} class={m.btn.primary}>{t.compare.ctaSignup}</a>
-      <a href={localePath(locale, "/")} class={m.btn.link}>{t.compare.ctaHome}</a>
-    </div>
+
+    {related.length > 0 && (
+      <nav class="mt-12" aria-label={c.related}>
+        <h2 class={`${m.text.display} text-2xl font-semibold mb-4`}>{c.related}</h2>
+        <ul class="space-y-2">
+          {related.map((r) => (
+            <li><a href={r.href} class={m.btn.link}>{r.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+    )}
+
+    <section class={`max-w-3xl mt-12 mb-16 pt-12 border-t ${m.rule.line}`}>
+      <p class={`${m.text.muted} text-base mb-8`}>{c.howToTurnOn}</p>
+      <div class="flex flex-wrap items-center gap-6">
+        <a href={appLink("/register")} class={m.btn.primary}>{c.ctaSignup}</a>
+        <a href={localePath(locale, "/")} class={m.btn.link}>{c.ctaHome}</a>
+      </div>
+    </section>
   </main>
 </Base>

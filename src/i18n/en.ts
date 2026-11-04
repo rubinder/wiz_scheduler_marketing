@@ -104,6 +104,20 @@ const en = {
     checkedOn: "Competitor details checked on",
     ctaSignup: "Sign up free",
     ctaHome: "Back to home",
+    faqTitle: "Frequently asked questions",
+    howToTurnOn:
+      "Turn on preference requests in Company Settings and your employees can send their preferences for you to approve.",
+    related: "More comparisons",
+    pages: {
+      "/compare/7shifts": "Wiz Scheduler vs 7shifts",
+      "/compare/7shifts-alternatives": "7shifts alternatives and pricing compared",
+    },
+    pricingCaption: "Monthly list prices",
+    pricingHeadings: { plan: "Plan", size: "Team size", price: "Price", autoScheduling: "Auto-scheduling" },
+    free: "Free",
+    perLocation: "{price} per location a month",
+    allLocations: "{price} a month for every location",
+    wizProSize: "Unlimited locations; 500 employees included, then {extra} a month per extra 500",
   },
   checker: {
     metaTitle: "Free NYC Fair Workweek schedule checker",

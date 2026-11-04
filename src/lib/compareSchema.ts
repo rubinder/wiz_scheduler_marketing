@@ -11,3 +11,5 @@ export const compareSchema = z.object({
   toolId: z.enum(["7shifts", "deputy", "homebase", "wheniwork"]).optional(),
   qualifier: z.string().optional(),
 });
+
+export type CompareData = z.infer<typeof compareSchema>;

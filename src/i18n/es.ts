@@ -105,6 +105,20 @@ const es: Copy = {
     checkedOn: "Datos del competidor verificados el",
     ctaSignup: "Regístrate gratis",
     ctaHome: "Volver al inicio",
+    faqTitle: "Preguntas frecuentes",
+    howToTurnOn:
+      "Activa las solicitudes de preferencias en la Configuración de la empresa y tus empleados podrán enviarte sus preferencias para que las apruebes.",
+    related: "Más comparaciones",
+    pages: {
+      "/compare/7shifts": "Wiz Scheduler frente a 7shifts",
+      "/compare/7shifts-alternatives": "Alternativas a 7shifts y sus precios comparados",
+    },
+    pricingCaption: "Precios de lista mensuales",
+    pricingHeadings: { plan: "Plan", size: "Tamaño del equipo", price: "Precio", autoScheduling: "Programación automática" },
+    free: "Gratis",
+    perLocation: "{price} por ubicación al mes",
+    allLocations: "{price} al mes para todas las ubicaciones",
+    wizProSize: "Ubicaciones ilimitadas; 500 empleados incluidos y luego {extra} al mes por cada 500 adicionales",
   },
   checker: {
     metaTitle: "Verificador gratuito de horarios Fair Workweek NYC",
