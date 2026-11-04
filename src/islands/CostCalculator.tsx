@@ -2,7 +2,7 @@ import { useId, useState } from "react";
 import { m } from "../theme";
 import type { Copy } from "../i18n/en";
 import type { SiteLocale } from "../lib/links";
-import { clampTeam, DEFAULT_TEAM, formatUsd, quotePlans, TOOLS } from "../data/competitors";
+import { clampTeam, DEFAULT_TEAM, formatUsd, planRange, quotePlans, TOOLS } from "../data/competitors";
 import type { ToolId } from "../data/competitors";
 
 interface Props {
@@ -64,26 +64,38 @@ export default function CostCalculator({ copy: c, toolIds, locale }: Props) {
               </tr>
             </thead>
             <tbody>
-              {quotePlans(tool, team).map((q, i) => (
-                <tr
-                  key={`${q.plan}-${i}`}
-                  className={`border-b ${m.rule.line} ${q.highlighted ? "font-bold bg-marker/20" : ""} ${q.fits ? "" : "text-ink/50"}`}
-                  data-highlighted={q.highlighted || undefined}
-                >
-                  <th scope="row" className="py-2 pe-4 text-start font-[inherit]">
-                    {q.plan}
-                    {q.highlighted && (
-                      <span className={`${m.text.meta} ms-2 border ${m.rule.heavy} px-1.5 py-0.5 normal-case tracking-normal font-normal`}>
-                        {c.highlightedLabel}
-                      </span>
-                    )}
-                  </th>
-                  <td className={`${m.text.data} py-2 pe-4`}>
-                    {!q.fits ? c.doesNotFit : q.monthlyUsd === null ? c.contactSales : formatUsd(q.monthlyUsd)}
-                  </td>
-                  <td className="py-2">{autoLabel[q.autoScheduling]}</td>
-                </tr>
-              ))}
+              {quotePlans(tool, team).map((q, i) => {
+                const range = planRange(tool.plans[i], locale);
+                return (
+                  <tr
+                    key={`${q.plan}-${i}`}
+                    className={`border-b ${m.rule.line} ${q.highlighted ? "font-bold bg-marker/20" : ""} ${q.fits ? "" : "text-ink/60"}`}
+                    data-highlighted={q.highlighted || undefined}
+                    data-fits={q.fits}
+                  >
+                    <th scope="row" className="py-2 pe-4 text-start font-[inherit]">
+                      {q.plan}
+                      {q.highlighted && (
+                        <span className={`${m.text.meta} ms-2 border ${m.rule.heavy} px-1.5 py-0.5 normal-case tracking-normal font-normal`}>
+                          {c.highlightedLabel}
+                        </span>
+                      )}
+                      {range && <span className="block text-sm font-normal text-ink/70">{range}</span>}
+                    </th>
+                    <td className={`${m.text.data} py-2 pe-4`}>
+                      {q.fits ? (
+                        q.monthlyUsd === null ? c.contactSales : formatUsd(q.monthlyUsd)
+                      ) : (
+                        <>
+                          {q.wouldBeUsd !== null && <span className="block">{formatUsd(q.wouldBeUsd)}</span>}
+                          <span className="block font-body text-sm">{c.doesNotFit}</span>
+                        </>
+                      )}
+                    </td>
+                    <td className="py-2">{autoLabel[q.autoScheduling]}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         ))}

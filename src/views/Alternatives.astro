@@ -7,7 +7,7 @@ import { m } from "../theme";
 import { appLink } from "../lib/site";
 import { getSiteCopy, type Copy } from "../i18n";
 import { localePath, type SiteLocale } from "../lib/links";
-import { DEFAULT_TEAM, TOOLS, formatUsd, quotePlans, type Plan, type ToolId } from "../data/competitors";
+import { DEFAULT_TEAM, TOOLS, formatUsd, planRange, quotePlans, type Plan, type ToolId } from "../data/competitors";
 
 /** Competitors with an alternatives page; widens as their copy is added. */
 export type AlternativesFocus = Extract<keyof Copy["alternatives"], "7shifts" | "deputy">;
@@ -81,21 +81,23 @@ const f = a[focus];
 const autoLabel = { yes: t.calculator.autoYes, beta: t.calculator.autoBeta, no: t.calculator.autoNo };
 const example = tools.map((tool) => ({
   tool,
-  rows: quotePlans(tool, team)
-    .map((q, i) => ({ q, plan: tool.plans[i] }))
-    .filter(({ q }) => q.fits)
-    .map(({ q, plan }) => ({
+  rows: quotePlans(tool, team).map((q, i) => {
+    const plan = tool.plans[i];
+    const shown = q.fits ? q.monthlyUsd : q.wouldBeUsd;
+    return {
       ...q,
-      price: q.monthlyUsd === null ? t.calculator.contactSales : formatUsd(q.monthlyUsd),
+      range: planRange(plan, locale),
+      price: shown === null ? null : formatUsd(shown),
       how:
-        plan.basis === "location"
-          ? fill(a.perLocation, { count: team.locations, price: formatUsd(plan.monthlyUsd ?? 0) })
-          : plan.basis === "user"
-            ? fill(a.perUser, { count: team.locations * team.employeesPerLocation, price: formatUsd(plan.monthlyUsd ?? 0) })
-            : plan.basis === "flat"
-              ? a.flat
-              : t.calculator.contactSales,
-    })),
+        shown === null
+          ? ""
+          : plan.basis === "location"
+            ? fill(a.perLocation, { count: team.locations, price: formatUsd(plan.monthlyUsd ?? 0) })
+            : plan.basis === "user"
+              ? fill(a.perUser, { count: team.locations * team.employeesPerLocation, price: formatUsd(plan.monthlyUsd ?? 0) })
+              : a.flat,
+    };
+  }),
 }));
 ---
 <Base locale={locale} title={f.title} description={f.metaDescription} path={`/compare/${focus}-alternatives`}>
@@ -169,8 +171,9 @@ const example = tools.map((tool) => ({
             <tbody>
               {rows.map((row) => (
                 <tr
-                  class={`border-b ${m.rule.line} ${row.highlighted ? "font-bold bg-marker/20" : ""}`}
+                  class={`border-b ${m.rule.line} ${row.highlighted ? "font-bold bg-marker/20" : ""} ${row.fits ? "" : "text-ink/60"}`}
                   data-highlighted={row.highlighted || undefined}
+                  data-fits={String(row.fits)}
                 >
                   <th scope="row" class="py-3 pe-4 text-start font-[inherit]">
                     {tool.name} {row.plan}
@@ -179,8 +182,18 @@ const example = tools.map((tool) => ({
                         {t.calculator.highlightedLabel}
                       </span>
                     )}
+                    {row.range && <span class="block text-sm font-normal text-ink/70">{row.range}</span>}
                   </th>
-                  <td class={`${m.text.data} py-3 pe-4 text-end`}>{row.price}</td>
+                  <td class={`${m.text.data} py-3 pe-4 text-end`}>
+                    {row.fits ? (
+                      row.price ?? t.calculator.contactSales
+                    ) : (
+                      <>
+                        {row.price && <span class="block">{row.price}</span>}
+                        <span class="block font-body text-sm">{t.calculator.doesNotFit}</span>
+                      </>
+                    )}
+                  </td>
                   <td class={`${m.text.muted} py-3 pe-4`}>{row.how}</td>
                   <td class="py-3">{autoLabel[row.autoScheduling]}</td>
                 </tr>

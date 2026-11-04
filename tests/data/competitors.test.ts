@@ -5,6 +5,7 @@ import {
   clampTeam,
   quotePlans,
   formatUsd,
+  planRange,
   type PlanQuote,
   type Tool,
   type ToolId,
@@ -65,6 +66,54 @@ describe("quotePlans", () => {
     const qs = quotePlans(synthetic, DEFAULT_TEAM);
     expect(qs.find((p) => p.plan === "Enterprise")).toMatchObject({ monthlyUsd: null, highlighted: false });
     expect(hi(qs)).toMatchObject({ plan: "Standard", monthlyUsd: 50 });
+  });
+});
+
+describe("would-be prices for tiers that don't fit", () => {
+  it("7shifts at 3 x 13: Pro and Premium (31+) don't fit but show their per-location price", () => {
+    const qs = q("7shifts", 3, 13);
+    const pro = qs.find((p) => p.plan === "Pro")!;
+    expect(pro).toMatchObject({ fits: false, monthlyUsd: null, wouldBeUsd: 299.97, highlighted: false });
+    const [small, large] = qs.filter((p) => p.plan === "Premium");
+    expect(small).toMatchObject({ fits: true, monthlyUsd: 449.97, wouldBeUsd: 449.97 });
+    expect(large).toMatchObject({ fits: false, monthlyUsd: null, wouldBeUsd: 599.97 });
+    expect(qs.find((p) => p.plan === "Essentials")).toMatchObject({ fits: true, monthlyUsd: 149.97, wouldBeUsd: 149.97 });
+  });
+  it("no would-be price when the location count or company total rules the plan out", () => {
+    expect(q("7shifts", 3, 13).find((p) => p.plan === "Comp")!.wouldBeUsd).toBeNull();
+    expect(q("homebase", 3, 13).find((p) => p.plan === "Basic")!.wouldBeUsd).toBeNull();
+    expect(q("wheniwork", 3, 13).find((p) => p.plan === "One location")).toMatchObject({ fits: false, wouldBeUsd: null });
+    expect(q("wiz", 3, 13).find((p) => p.plan === "Free")).toMatchObject({ fits: false, wouldBeUsd: null });
+  });
+  it("no would-be price for a free tier that is over its headcount", () => {
+    expect(q("7shifts", 1, 20).find((p) => p.plan === "Comp")).toMatchObject({ fits: false, wouldBeUsd: null });
+  });
+});
+
+describe("planRange", () => {
+  const plan = (id: ToolId, name: string, i = 0) => TOOLS[id].plans.filter((p) => p.name === name)[i];
+  it("labels 7shifts tiers by employees per location", () => {
+    expect(planRange(plan("7shifts", "Essentials"), "en")).toBe("1–30 per location");
+    expect(planRange(plan("7shifts", "Premium", 0), "en")).toBe("1–30 per location");
+    expect(planRange(plan("7shifts", "Pro"), "en")).toBe("31–60 per location");
+    expect(planRange(plan("7shifts", "Premium", 1), "en")).toBe("31+ per location");
+    expect(planRange(plan("7shifts", "Comp"), "en")).toBe("1 location, up to 15 employees");
+    expect(planRange(plan("7shifts", "Pro"), "es")).toBe("31–60 por ubicación");
+    expect(planRange(plan("7shifts", "Premium", 1), "es")).toBe("31+ por ubicación");
+    expect(planRange(plan("7shifts", "Comp"), "es")).toBe("1 ubicación, hasta 15 empleados");
+  });
+  it("labels location and company limits", () => {
+    expect(planRange(plan("homebase", "Basic"), "en")).toBe("1 location, up to 10 employees");
+    expect(planRange(plan("wheniwork", "One location"), "en")).toBe("1 location");
+    expect(planRange(plan("wheniwork", "Multiple locations"), "en")).toBe("2+ locations");
+    expect(planRange(plan("wiz", "Free"), "en")).toBe("up to 2 locations and 25 employees");
+    expect(planRange(plan("wheniwork", "Multiple locations"), "es")).toBe("2+ ubicaciones");
+    expect(planRange(plan("wiz", "Free"), "es")).toBe("hasta 2 ubicaciones y 25 empleados");
+  });
+  it("is null for plans with no size limit", () => {
+    expect(planRange(plan("wiz", "Pro"), "en")).toBeNull();
+    expect(planRange(plan("deputy", "Core"), "en")).toBeNull();
+    expect(planRange(plan("homebase", "Plus"), "es")).toBeNull();
   });
 });
 

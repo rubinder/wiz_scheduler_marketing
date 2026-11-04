@@ -4,6 +4,8 @@ import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { loadRenderers } from "astro:container";
 import { getContainerRenderer } from "@astrojs/react/container-renderer";
 import Alternatives from "../../src/views/Alternatives.astro";
+import enCopy from "../../src/i18n/en";
+import esCopy from "../../src/i18n/es";
 import { DEFAULT_TEAM, TOOLS, formatUsd, quotePlans } from "../../src/data/competitors";
 
 let en = "";
@@ -21,6 +23,17 @@ function example(html: string): string {
   const m = html.match(/<section[^>]*data-worked-example[^>]*>([\s\S]*?)<\/section>/);
   expect(m, "worked example section missing").not.toBeNull();
   return m![1];
+}
+
+/** Rows of the worked example, with the fit/highlight flags they carry. */
+function exampleRows(html: string) {
+  return [...example(html).matchAll(/<tr([^>]*)>([\s\S]*?)<\/tr>/g)]
+    .filter((r) => r[1].includes("data-fits"))
+    .map((r) => ({
+      fits: r[1].includes('data-fits="true"'),
+      highlighted: r[1].includes("data-highlighted"),
+      html: r[2].replaceAll("&#39;", "'"),
+    }));
 }
 
 /** The calculator island's server-rendered markup only. */
@@ -54,7 +67,42 @@ describe("7shifts alternatives (en)", () => {
     expect(ex).toContain("13 employees per location");
     expect(ex).toContain("3 locations");
     expect(ex).toContain("$149.97");
-    expect(ex).not.toContain("$299.97");
+  });
+
+  it("lists every 7shifts tier with its range; tiers that don't fit show their price, marked", () => {
+    const rows = exampleRows(en).filter((r) => r.html.includes("7shifts "));
+    expect(rows).toHaveLength(TOOLS["7shifts"].plans.length);
+    const row = (text: string) => rows.filter((r) => r.html.includes(text));
+    const essentials = row("Essentials")[0];
+    expect(essentials).toMatchObject({ fits: true, highlighted: true });
+    expect(essentials.html).toContain("1–30 per location");
+    expect(essentials.html).toContain("$149.97");
+    const [premium, premiumLarge] = row("Premium");
+    expect(premium).toMatchObject({ fits: true, highlighted: false });
+    expect(premium.html).toContain("$449.97");
+    expect(premiumLarge).toMatchObject({ fits: false, highlighted: false });
+    expect(premiumLarge.html).toContain("31+ per location");
+    expect(premiumLarge.html).toContain("$599.97");
+    expect(premiumLarge.html).toContain(enCopy.calculator.doesNotFit);
+    const comp = row("Comp")[0];
+    expect(comp.fits).toBe(false);
+    expect(comp.html).toContain("1 location, up to 15 employees");
+    expect(comp.html).not.toContain("$");
+  });
+
+  it("shows $299.97 only on a 7shifts Pro row marked as not fitting, never highlighted", () => {
+    const with299 = exampleRows(en).filter((r) => r.html.includes("$299.97"));
+    expect(with299).toHaveLength(1);
+    expect(with299[0]).toMatchObject({ fits: false, highlighted: false });
+    expect(with299[0].html).toContain("Pro");
+    expect(with299[0].html).toContain("31–60 per location");
+    expect(with299[0].html).toContain(enCopy.calculator.doesNotFit);
+  });
+
+  it("every highlighted example row fits", () => {
+    const rows = exampleRows(en);
+    expect(rows.filter((r) => r.highlighted)).toHaveLength(Object.keys(TOOLS).length);
+    for (const r of rows.filter((r) => r.highlighted)) expect(r.fits).toBe(true);
   });
 
   it("marks 7shifts Essentials as the highlighted plan and lists Premium too", () => {
@@ -127,7 +175,11 @@ describe("7shifts alternatives (es)", () => {
     const ex = example(es);
     expect(ex).toContain("13 empleados por ubicación");
     expect(ex).toContain("$149.97");
-    expect(ex).not.toContain("$299.97");
+    expect(ex).toContain("31–60 por ubicación");
+    const pro = exampleRows(es).filter((r) => r.html.includes("$299.97"));
+    expect(pro).toHaveLength(1);
+    expect(pro[0]).toMatchObject({ fits: false, highlighted: false });
+    expect(pro[0].html).toContain(esCopy.calculator.doesNotFit);
     expect(es).toContain("Configuración de la empresa");
     expect(es).toContain('"@type":"FAQPage"');
   });

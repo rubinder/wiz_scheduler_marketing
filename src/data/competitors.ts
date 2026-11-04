@@ -48,7 +48,15 @@ export interface Team {
 export interface PlanQuote {
   plan: string;
   fits: boolean;
+  /** What this team pays on the plan; null when it doesn't fit or is sold by quote. */
   monthlyUsd: number | null;
+  /**
+   * The price at this team's size, ignoring the plan's per-location headcount
+   * limits: what a tier that doesn't fit would cost. Null for quote plans, free
+   * tiers, and plans ruled out by the location count or company total, where a
+   * price for this team would be meaningless.
+   */
+  wouldBeUsd: number | null;
   autoScheduling: AutoScheduling;
   highlighted: boolean;
 }
@@ -331,14 +339,21 @@ export function clampTeam(raw: { locations: unknown; employeesPerLocation: unkno
 
 const cents = (n: number): number => Math.round(n * 100) / 100;
 
-function planFits(plan: Plan, team: Team): boolean {
+function companyFits(plan: Plan, team: Team): boolean {
   const { locations, employeesPerLocation: per } = team;
   return (
     locations >= (plan.minLocations ?? 1) &&
     locations <= (plan.maxLocations ?? Infinity) &&
-    per >= (plan.minEmployeesPerLocation ?? 1) &&
-    per <= (plan.maxEmployeesPerLocation ?? Infinity) &&
     locations * per <= (plan.maxTotalEmployees ?? Infinity)
+  );
+}
+
+function planFits(plan: Plan, team: Team): boolean {
+  const per = team.employeesPerLocation;
+  return (
+    companyFits(plan, team) &&
+    per >= (plan.minEmployeesPerLocation ?? 1) &&
+    per <= (plan.maxEmployeesPerLocation ?? Infinity)
   );
 }
 
@@ -357,13 +372,18 @@ function planPrice(plan: Plan, team: Team): number | null {
 }
 
 export function quotePlans(tool: Tool, team: Team): PlanQuote[] {
-  const quotes: PlanQuote[] = tool.plans.map((plan) => ({
-    plan: plan.name,
-    fits: planFits(plan, team),
-    monthlyUsd: planPrice(plan, team),
-    autoScheduling: plan.autoScheduling,
-    highlighted: false,
-  }));
+  const quotes: PlanQuote[] = tool.plans.map((plan) => {
+    const fits = planFits(plan, team);
+    const price = planPrice(plan, team);
+    return {
+      plan: plan.name,
+      fits,
+      monthlyUsd: fits ? price : null,
+      wouldBeUsd: companyFits(plan, team) && plan.monthlyUsd !== 0 ? price : null,
+      autoScheduling: plan.autoScheduling,
+      highlighted: false,
+    };
+  });
 
   // Highlight exactly one plan: the cheapest fitting paid plan with
   // auto-scheduling (yes or beta). Wiz always highlights Pro.
@@ -383,4 +403,54 @@ export function quotePlans(tool: Tool, team: Team): PlanQuote[] {
 
 export function formatUsd(n: number): string {
   return `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+const RANGE_WORDS: Record<SiteLocale, {
+  perLocation: (range: string) => string;
+  locations: (n: number) => string;
+  locationsPlus: (n: number) => string;
+  upToLocations: (n: number) => string;
+  upToEmployees: (n: number) => string;
+  upToLocationsAndEmployees: (locations: number, employees: number) => string;
+}> = {
+  en: {
+    perLocation: (r) => `${r} per location`,
+    locations: (n) => (n === 1 ? "1 location" : `${n} locations`),
+    locationsPlus: (n) => `${n}+ locations`,
+    upToLocations: (n) => `up to ${n} locations`,
+    upToEmployees: (n) => `up to ${n} employees`,
+    upToLocationsAndEmployees: (l, e) => `up to ${l} locations and ${e} employees`,
+  },
+  es: {
+    perLocation: (r) => `${r} por ubicación`,
+    locations: (n) => (n === 1 ? "1 ubicación" : `${n} ubicaciones`),
+    locationsPlus: (n) => `${n}+ ubicaciones`,
+    upToLocations: (n) => `hasta ${n} ubicaciones`,
+    upToEmployees: (n) => `hasta ${n} empleados`,
+    upToLocationsAndEmployees: (l, e) => `hasta ${l} ubicaciones y ${e} empleados`,
+  },
+};
+
+/**
+ * The team size a plan is for, e.g. "1–30 per location", "31+ per location",
+ * "1 location, up to 15 employees", "2+ locations". Null when the plan has no limit.
+ */
+export function planRange(plan: Plan, locale: SiteLocale): string | null {
+  const w = RANGE_WORDS[locale];
+  const parts: string[] = [];
+  const { minLocations: minL, maxLocations: maxL, minEmployeesPerLocation: minE, maxEmployeesPerLocation: maxE } = plan;
+
+  if (maxL !== undefined && plan.maxTotalEmployees !== undefined && minE === undefined && maxE === undefined) {
+    return maxL === 1 ? `${w.locations(1)}, ${w.upToEmployees(plan.maxTotalEmployees)}` : w.upToLocationsAndEmployees(maxL, plan.maxTotalEmployees);
+  }
+  if (maxL === 1) parts.push(w.locations(1));
+  else if (maxL !== undefined) parts.push(w.upToLocations(maxL));
+  else if (minL !== undefined && minL > 1) parts.push(w.locationsPlus(minL));
+
+  if (maxL === 1 && minE === undefined && maxE !== undefined) parts.push(w.upToEmployees(maxE));
+  else if (maxE !== undefined) parts.push(w.perLocation(`${minE ?? 1}–${maxE}`));
+  else if (minE !== undefined) parts.push(w.perLocation(`${minE}+`));
+  else if (plan.maxTotalEmployees !== undefined) parts.push(w.upToEmployees(plan.maxTotalEmployees));
+
+  return parts.length > 0 ? parts.join(", ") : null;
 }

@@ -188,7 +188,7 @@ const en = {
     exampleEyebrow: "Worked example",
     exampleTitle: "{locations} locations, {employees} employees per location",
     exampleNote:
-      "Monthly list prices on {date} for {locations} locations with {employees} employees per location, before taxes, add-ons and annual discounts. Every plan that fits this team is listed; the marked one is each tool's cheapest plan with auto-scheduling.",
+      "Monthly list prices on {date} for {locations} locations with {employees} employees per location, before taxes, add-ons and annual discounts. Every plan is listed with the team size it is for. Plans that don't fit this team are marked, with what they would cost at this size where that makes sense; the highlighted plan is each tool's cheapest fitting plan with auto-scheduling.",
     exampleSevenShifts:
       "7shifts sets the plan by headcount per location. With {employees} employees per location, each location fits Essentials or Premium (up to {essentialsMaxEmployees} employees each), not Pro ({proMinEmployees} to {proMaxEmployees}).",
     exampleWiz: "Wiz Scheduler Pro is one base price for every location. AI Generate is paid from prepaid credits if you use it.",

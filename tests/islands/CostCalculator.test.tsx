@@ -68,6 +68,35 @@ describe("CostCalculator", () => {
     expect(within(row).getByText(en.calculator.doesNotFit)).toBeInTheDocument();
   });
 
+  it("labels every tier with its range; Comp shows doesn't-fit and no would-be price", () => {
+    render(<CostCalculator {...props} toolIds={["7shifts"]} />);
+    const comp = screen.getByRole("row", { name: /Comp/ });
+    expect(comp).toHaveAttribute("data-fits", "false");
+    expect(within(comp).getByText("1 location, up to 15 employees")).toBeInTheDocument();
+    expect(within(comp).getByText(en.calculator.doesNotFit)).toBeInTheDocument();
+    expect(comp.textContent).not.toContain("$");
+    expect(screen.getAllByText("1–30 per location")).toHaveLength(2);
+  });
+
+  it("shows what a tier that doesn't fit would cost, marked as not fitting", () => {
+    render(<CostCalculator {...props} toolIds={["7shifts"]} />);
+    const pro = screen.getByRole("row", { name: /^Pro/ });
+    expect(pro).toHaveAttribute("data-fits", "false");
+    expect(pro).not.toHaveAttribute("data-highlighted");
+    expect(within(pro).getByText("31–60 per location")).toBeInTheDocument();
+    expect(within(pro).getByText("$299.97")).toBeInTheDocument();
+    expect(within(pro).getByText(en.calculator.doesNotFit)).toBeInTheDocument();
+    const premiumLarge = screen.getByText("31+ per location").closest("tr")!;
+    expect(premiumLarge).toHaveAttribute("data-fits", "false");
+    expect(within(premiumLarge).getByText("$599.97")).toBeInTheDocument();
+  });
+
+  it("shows ranges in Spanish", () => {
+    render(<CostCalculator {...props} copy={es.calculator} locale="es" toolIds={["7shifts"]} />);
+    expect(screen.getByText("31–60 por ubicación")).toBeInTheDocument();
+    expect(screen.getByText("1 ubicación, hasta 15 empleados")).toBeInTheDocument();
+  });
+
   it("shows prices and the localized footnote in Spanish", () => {
     const { container } = render(<CostCalculator {...props} copy={es.calculator} locale="es" />);
     expect(screen.getByText("$149.97")).toBeInTheDocument();

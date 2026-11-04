@@ -189,7 +189,7 @@ const es: Copy = {
     exampleEyebrow: "Ejemplo práctico",
     exampleTitle: "{locations} ubicaciones, {employees} empleados por ubicación",
     exampleNote:
-      "Precios de lista mensuales, verificados el {date}, para {locations} ubicaciones con {employees} empleados por ubicación, sin impuestos, complementos ni descuentos anuales. Aparecen todos los planes que le sirven a este equipo; el marcado es el plan más barato de cada herramienta con programación automática.",
+      "Precios de lista mensuales, verificados el {date}, para {locations} ubicaciones con {employees} empleados por ubicación, sin impuestos, complementos ni descuentos anuales. Aparecen todos los planes, cada uno con el tamaño de equipo para el que es. Los que no le sirven a este equipo están marcados, con lo que costarían a este tamaño cuando tiene sentido; el destacado es el plan más barato de cada herramienta que le sirve y tiene programación automática.",
     exampleSevenShifts:
       "7shifts fija el plan según los empleados por ubicación. Con {employees} empleados por ubicación, cada ubicación entra en Essentials o Premium (hasta {essentialsMaxEmployees} empleados cada una), no en Pro (de {proMinEmployees} a {proMaxEmployees}).",
     exampleWiz: "Wiz Scheduler Pro es un solo precio base para todas las ubicaciones. La generación con AI se paga con créditos prepagados si la usas.",
