@@ -89,8 +89,8 @@ export const TOOLS: Record<ToolId, Tool> = {
         description: "Genera la semana a partir de la disponibilidad, los roles, los niveles de habilidad y las preferencias de cada empleado",
         autoScheduling: "Generación normal en todos los planes; la generación con AI no está en el plan gratuito y se paga con créditos prepagados",
         preferences:
-          "Días preferidos, horas preferidas, horas máximas, límites de turnos y con quién trabajar o a quién separar. Los gerentes las ingresan; los empleados pueden enviar las suyas cuando se activan las solicitudes de preferencias en la configuración de la empresa",
-        fairWorkweek: "Descanso mínimo entre turnos, fijado por ubicación (desactivado hasta que lo configuras). Sin seguimiento de avisos ni de pagos con prima",
+          "Días preferidos, horas preferidas, horas máximas, límites de turnos y con quién trabajar o a quién separar. Los gerentes las ingresan; los empleados pueden enviar las suyas cuando se activan las solicitudes de preferencias en la Configuración de la empresa",
+        fairWorkweek: "Descanso mínimo entre turnos, fijado por ubicación (desactivado hasta que lo configuras). Sin seguimiento de avisos ni del pago de primas",
         strengths: [
           "Las preferencias entran al generador, no en una nota que el gerente tiene que recordar",
           "Cada turno que va contra una preferencia queda marcado, así que ves todos los compromisos",
@@ -144,7 +144,7 @@ export const TOOLS: Record<ToolId, Tool> = {
         description: "Horarios por ubicación con programador automático en beta y complemento de nómina",
         autoScheduling: "Programador automático en beta, que se está habilitando en cuentas seleccionadas; arma el borrador a partir de al menos seis semanas de ventas y horarios",
         preferences: "Usa la disponibilidad y los días libres aprobados. Su documentación no menciona preferencias de turnos ni de compañeros",
-        fairWorkweek: "Sí: señala turnos de cierre y apertura seguidos, cambios dentro de 14 días y pagos con prima (planes de pago)",
+        fairWorkweek: "Sí: señala turnos de cierre y apertura seguidos, cambios dentro de 14 días y pago de primas (planes de pago)",
         strengths: [
           "Alertas de Fair Workweek de Nueva York en los planes de pago",
           "Complemento de nómina",
@@ -197,7 +197,7 @@ export const TOOLS: Record<ToolId, Tool> = {
         autoScheduling: "Planes Core y Pro; asigna turnos por costo, por igualdad de horas o aprendiendo de tus horarios anteriores",
         preferences: "Su documentación de asignación automática no menciona preferencias de turnos ni de compañeros",
         fairWorkweek:
-          "Sí: la más completa de estas herramientas, con consentimiento para cambios, pagos con prima, avisos y descansos. La propia documentación de Deputy indica que Fair Workweek de Nueva York para comida rápida se aplica a cadenas con 30 o más ubicaciones en todo el país",
+          "Sí: la más completa de estas herramientas, con consentimiento para cambios, pago de primas, avisos y descansos. La propia documentación de Deputy indica que Fair Workweek de Nueva York para comida rápida se aplica a cadenas con 30 o más ubicaciones en todo el país",
         strengths: [
           "El mejor soporte de Fair Workweek de Nueva York entre las herramientas comparadas",
           "Asignación automática por costo, por igualdad de horas o aprendiendo de tus horarios anteriores",

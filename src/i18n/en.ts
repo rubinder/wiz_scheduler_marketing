@@ -190,7 +190,7 @@ const en = {
     exampleNote:
       "Monthly list prices on {date} for {locations} locations with {employees} employees per location, before taxes, add-ons and annual discounts. Every plan that fits this team is listed; the marked one is each tool's cheapest plan with auto-scheduling.",
     exampleSevenShifts:
-      "7shifts sets the plan by headcount per location. With {employees} employees per location, each location fits Essentials or Premium (up to 30 employees each), not Pro (31 to 60).",
+      "7shifts sets the plan by headcount per location. With {employees} employees per location, each location fits Essentials or Premium (up to {essentialsMaxEmployees} employees each), not Pro ({proMinEmployees} to {proMaxEmployees}).",
     exampleWiz: "Wiz Scheduler Pro is one base price for every location. AI Generate is paid from prepaid credits if you use it.",
     exampleHeadings: { plan: "Plan", price: "Per month", how: "How it adds up", autoScheduling: "Auto-scheduling" },
     perLocation: "{count} locations × {price}",
@@ -214,7 +214,7 @@ const en = {
       },
       {
         title: "One price for every location",
-        body: "Pro is $18 a month for all your locations, with 500 employees, 50 manager seats and 25 schedule generations included, and small metered charges above those. 7shifts charges per location and Deputy per user. AI Generate is optional and paid from prepaid credits.",
+        body: "Pro is {wizPro} a month for all your locations, with 500 employees, 50 manager seats and 25 schedule generations included, and small metered charges above those. 7shifts charges per location and Deputy per user. AI Generate is optional and paid from prepaid credits.",
       },
       {
         title: "Rest between shifts, and where we stop",
@@ -232,7 +232,7 @@ const en = {
     faqTitle: "Frequently asked questions",
     ctaTitle: "Try it on your own team",
     ctaBody:
-      "The free plan covers 2 locations and 25 employees, with one schedule per location a month. AI Generate is on Pro, paid from prepaid credits.",
+      "The free plan covers {wizFreeLocations} locations and {wizFreeEmployees} employees, with one schedule per location a month. AI Generate is on Pro, paid from prepaid credits.",
     ctaSignup: "Start free",
     checkerLink: "Try the free schedule checker",
     "7shifts": {
@@ -246,11 +246,11 @@ const en = {
       faq: [
         {
           q: "How much does 7shifts cost?",
-          a: "7shifts charges per location per month, and the plan depends on headcount per location. Comp is free for one location with up to 15 employees. With 1 to 30 employees per location, Essentials is $49.99 and Premium $149.99. With 31 or more, Pro is $99.99 (up to 60 employees) and Premium $199.99. Annual billing takes 10% off. These are list prices from 7shifts' own pricing page.",
+          a: "7shifts charges per location per month, and the plan depends on headcount per location. Comp is free for one location with up to {compMaxEmployees} employees. With 1 to {essentialsMaxEmployees} employees per location, Essentials is {essentials} and Premium {premium}. With {proMinEmployees} or more, Pro is {pro} (up to {proMaxEmployees} employees) and Premium {premiumLarge}. Annual billing takes 10% off. These are list prices from 7shifts' own pricing page.",
         },
         {
-          q: "Which 7shifts plan fits 13 employees per location?",
-          a: "Essentials ($49.99 per location a month) or Premium ($149.99), since both cover up to 30 employees per location. Three such locations come to $149.97 a month on Essentials.",
+          q: "Which 7shifts plan fits {employees} employees per location?",
+          a: "Essentials ({essentials} per location a month) or Premium ({premium}), since both cover up to {essentialsMaxEmployees} employees per location. With {locations} such locations, the total is {sevenShiftsExampleTotal} a month on {sevenShiftsExamplePlan}.",
         },
         {
           q: "Does 7shifts auto-schedule?",

@@ -175,9 +175,9 @@ const es: Copy = {
     eyebrow: "Alternativas",
     heroHeadline: "El horario en el que tu equipo tuvo voz.",
     heroQualifier:
-      "Los gerentes pueden ingresar las preferencias de todos. Los empleados pueden enviar las suyas cuando se activan las solicitudes de preferencias en la configuración de la empresa.",
+      "Los gerentes pueden ingresar las preferencias de todos. Los empleados pueden enviar las suyas cuando se activan las solicitudes de preferencias en la Configuración de la empresa.",
     checkedOn: "Precios y funciones verificados el {date}. Las fuentes están debajo de cada herramienta.",
-    tableEyebrow: "Lado a lado",
+    tableEyebrow: "Comparación directa",
     tableTitle: "Comparación de funciones",
     tableHeadings: {
       tool: "Herramienta",
@@ -191,7 +191,7 @@ const es: Copy = {
     exampleNote:
       "Precios de lista mensuales, verificados el {date}, para {locations} ubicaciones con {employees} empleados por ubicación, sin impuestos, complementos ni descuentos anuales. Aparecen todos los planes que le sirven a este equipo; el marcado es el plan más barato de cada herramienta con programación automática.",
     exampleSevenShifts:
-      "7shifts fija el plan según los empleados por ubicación. Con {employees} empleados por ubicación, cada ubicación entra en Essentials o Premium (hasta 30 empleados cada una), no en Pro (de 31 a 60).",
+      "7shifts fija el plan según los empleados por ubicación. Con {employees} empleados por ubicación, cada ubicación entra en Essentials o Premium (hasta {essentialsMaxEmployees} empleados cada una), no en Pro (de {proMinEmployees} a {proMaxEmployees}).",
     exampleWiz: "Wiz Scheduler Pro es un solo precio base para todas las ubicaciones. La generación con AI se paga con créditos prepagados si la usas.",
     exampleHeadings: { plan: "Plan", price: "Al mes", how: "Cómo se calcula", autoScheduling: "Programación automática" },
     perLocation: "{count} ubicaciones × {price}",
@@ -207,7 +207,7 @@ const es: Copy = {
     differences: [
       {
         title: "Tu equipo tiene voz",
-        body: "Los gerentes pueden registrar los días preferidos de cada empleado, sus horas preferidas, su límite de horas semanales, un tope semanal de turnos en una franja horaria y con quién trabaja bien o de quién conviene separarlo. Activa las solicitudes de preferencias en la configuración de la empresa y tus empleados podrán enviarte sus preferencias para que las apruebes. El generador arma la semana a partir de ellas: una preferencia firme deja a la persona fuera de un turno, y una más flexible la vuelve una opción menos probable.",
+        body: "Los gerentes pueden registrar los días preferidos de cada empleado, sus horas preferidas, su límite de horas semanales, un tope semanal de turnos en una franja horaria y con quién trabaja bien o de quién conviene separarlo. Activa las solicitudes de preferencias en la Configuración de la empresa y tus empleados podrán enviarte sus preferencias para que las apruebes. El generador arma la semana a partir de ellas: una preferencia firme deja a la persona fuera de un turno, y una más flexible la vuelve una opción menos probable.",
       },
       {
         title: "Así corriges menos",
@@ -215,11 +215,11 @@ const es: Copy = {
       },
       {
         title: "Un solo precio para todas las ubicaciones",
-        body: "Pro cuesta $18 al mes para todas tus ubicaciones, con 500 empleados, 50 puestos de gerente y 25 generaciones de horario incluidos, y cargos medidos pequeños por encima de eso. 7shifts cobra por ubicación y Deputy por usuario. La generación con AI es opcional y se paga con créditos prepagados.",
+        body: "Pro cuesta {wizPro} al mes para todas tus ubicaciones, con 500 empleados, 50 puestos de gerente y 25 generaciones de horario incluidos, y pequeños cargos por uso por encima de eso. 7shifts cobra por ubicación y Deputy por usuario. La generación con AI es opcional y se paga con créditos prepagados.",
       },
       {
         title: "Descanso entre turnos, y hasta dónde llegamos",
-        body: "Fija un descanso mínimo, por ejemplo de 11 horas, en una ubicación y ningún horario generado lo romperá. La regla está desactivada hasta que la configuras, y es todo nuestro soporte de Fair Workweek: no hacemos seguimiento del aviso anticipado ni de los pagos con prima. Si necesitas eso, 7shifts y Deputy hacen más aquí.",
+        body: "Fija un descanso mínimo, por ejemplo de 11 horas, en una ubicación y ningún horario generado lo romperá. La regla está desactivada hasta que la configuras, y es todo nuestro soporte de Fair Workweek: no hacemos seguimiento del aviso anticipado ni del pago de primas. Si necesitas eso, 7shifts y Deputy hacen más aquí.",
       },
       {
         title: "Trae a tu equipo",
@@ -233,7 +233,7 @@ const es: Copy = {
     faqTitle: "Preguntas frecuentes",
     ctaTitle: "Pruébalo con tu propio equipo",
     ctaBody:
-      "El plan gratuito cubre 2 ubicaciones y 25 empleados, con un horario por ubicación al mes. La generación con AI está en Pro y se paga con créditos prepagados.",
+      "El plan gratuito cubre {wizFreeLocations} ubicaciones y {wizFreeEmployees} empleados, con un horario por ubicación al mes. La generación con AI está en Pro y se paga con créditos prepagados.",
     ctaSignup: "Empieza gratis",
     checkerLink: "Prueba el verificador de horarios gratis",
     "7shifts": {
@@ -247,11 +247,11 @@ const es: Copy = {
       faq: [
         {
           q: "¿Cuánto cuesta 7shifts?",
-          a: "7shifts cobra por ubicación al mes, y el plan depende de los empleados por ubicación. Comp es gratis para una ubicación con hasta 15 empleados. Con 1 a 30 empleados por ubicación, Essentials cuesta $49.99 y Premium $149.99. Con 31 o más, Pro cuesta $99.99 (hasta 60 empleados) y Premium $199.99. La facturación anual tiene un 10% de descuento. Son precios de lista de la página de precios de 7shifts.",
+          a: "7shifts cobra por ubicación al mes, y el plan depende de los empleados por ubicación. Comp es gratis para una ubicación con hasta {compMaxEmployees} empleados. Con 1 a {essentialsMaxEmployees} empleados por ubicación, Essentials cuesta {essentials} y Premium {premium}. Con {proMinEmployees} o más, Pro cuesta {pro} (hasta {proMaxEmployees} empleados) y Premium {premiumLarge}. La facturación anual tiene un 10% de descuento. Son precios de lista de la página de precios de 7shifts.",
         },
         {
-          q: "¿Qué plan de 7shifts sirve para 13 empleados por ubicación?",
-          a: "Essentials ($49.99 por ubicación al mes) o Premium ($149.99), porque ambos cubren hasta 30 empleados por ubicación. Tres ubicaciones así suman $149.97 al mes en Essentials.",
+          q: "¿Qué plan de 7shifts sirve para {employees} empleados por ubicación?",
+          a: "Essentials ({essentials} por ubicación al mes) o Premium ({premium}), porque ambos cubren hasta {essentialsMaxEmployees} empleados por ubicación. Con {locations} ubicaciones así, el total es de {sevenShiftsExampleTotal} al mes en {sevenShiftsExamplePlan}.",
         },
         {
           q: "¿7shifts programa los horarios automáticamente?",
@@ -259,11 +259,11 @@ const es: Copy = {
         },
         {
           q: "¿Los empleados pueden dar sus propias preferencias en Wiz Scheduler?",
-          a: "Sí. Los gerentes pueden ingresar las preferencias de todos. Los empleados pueden enviar las suyas cuando se activan las solicitudes de preferencias en la configuración de la empresa, y un gerente aprueba cada solicitud. Las solicitudes de preferencias vienen desactivadas.",
+          a: "Sí. Los gerentes pueden ingresar las preferencias de todos. Los empleados pueden enviar las suyas cuando se activan las solicitudes de preferencias en la Configuración de la empresa, y un gerente aprueba cada solicitud. Las solicitudes de preferencias vienen desactivadas.",
         },
         {
           q: "¿Wiz Scheduler sirve para Fair Workweek de Nueva York?",
-          a: "Solo para la regla de descanso. Wiz Scheduler aplica un descanso mínimo entre turnos, fijado por ubicación y desactivado hasta que lo configuras. No hace seguimiento del aviso anticipado ni de los pagos con prima. 7shifts señala turnos de cierre y apertura seguidos, cambios dentro de 14 días y pagos con prima en sus planes de pago, y Deputy tiene el soporte más completo de las herramientas comparadas aquí.",
+          a: "Solo para la regla de descanso. Wiz Scheduler aplica un descanso mínimo entre turnos, fijado por ubicación y desactivado hasta que lo configuras. No hace seguimiento del aviso anticipado ni del pago de primas. 7shifts señala turnos de cierre y apertura seguidos, cambios dentro de 14 días y pago de primas en sus planes de pago, y Deputy tiene el soporte más completo de las herramientas comparadas aquí.",
         },
         {
           q: "¿Puedo traer mis datos desde 7shifts?",

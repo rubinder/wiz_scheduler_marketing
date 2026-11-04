@@ -4,7 +4,7 @@ import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { loadRenderers } from "astro:container";
 import { getContainerRenderer } from "@astrojs/react/container-renderer";
 import Alternatives from "../../src/views/Alternatives.astro";
-import { TOOLS } from "../../src/data/competitors";
+import { DEFAULT_TEAM, TOOLS, formatUsd, quotePlans } from "../../src/data/competitors";
 
 let en = "";
 let es = "";
@@ -22,6 +22,31 @@ function example(html: string): string {
   expect(m, "worked example section missing").not.toBeNull();
   return m![1];
 }
+
+/** The calculator island's server-rendered markup only. */
+function island(html: string): string {
+  const m = html.match(/<astro-island[^>]*>([\s\S]*?)<\/astro-island>/);
+  expect(m, "calculator island missing").not.toBeNull();
+  return m![1];
+}
+
+/** FAQ questions and answers as published in the FAQPage JSON-LD. */
+function faqText(html: string): string {
+  const m = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  expect(m, "FAQPage JSON-LD missing").not.toBeNull();
+  const data = JSON.parse(m![1]) as { mainEntity: { name: string; acceptedAnswer: { text: string } }[] };
+  return data.mainEntity.map((e) => `${e.name}\n${e.acceptedAnswer.text}`).join("\n");
+}
+
+/** Page markup without scripts, styles or the island's serialized props (they carry the calculator's own {date}). */
+function visible(html: string): string {
+  return html
+    .replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/g, "")
+    .replace(/<astro-island[^>]*>/g, "<astro-island>");
+}
+
+const s7 = TOOLS["7shifts"].plans;
+const price = (n: number | null) => (Number.isInteger(n) ? `$${n}` : formatUsd(n!));
 
 describe("7shifts alternatives (en)", () => {
   it("prices the example per location: 13 employees each puts 7shifts on Essentials", () => {
@@ -62,8 +87,25 @@ describe("7shifts alternatives (en)", () => {
   });
 
   it("server-renders the calculator with all five tools", () => {
-    expect(en).toContain("What would it cost for your team?");
-    for (const tool of Object.values(TOOLS)) expect(en).toContain(`>${tool.name}</caption>`);
+    const calc = island(en);
+    expect(calc).toContain("What would it cost for your team?");
+    for (const tool of Object.values(TOOLS)) expect(calc).toContain(`>${tool.name}</caption>`);
+  });
+
+  it("fills every FAQ price from the data module", () => {
+    const faq = faqText(en);
+    for (const p of s7.filter((p) => p.monthlyUsd)) expect(faq).toContain(price(p.monthlyUsd));
+    const pick = quotePlans(TOOLS["7shifts"], DEFAULT_TEAM).find((q) => q.highlighted)!;
+    expect(faq).toContain(`${pick.plan}`);
+    expect(faq).toContain(formatUsd(pick.monthlyUsd!));
+    expect(faq).toContain(`${DEFAULT_TEAM.employeesPerLocation} employees per location`);
+    expect(faq).not.toMatch(/[{}]/);
+  });
+
+  it("leaves no unfilled {placeholder} on the page", () => {
+    expect(visible(en)).not.toMatch(/\{[a-zA-Z]+\}/);
+    expect(visible(es)).not.toMatch(/\{[a-zA-Z]+\}/);
+    expect(faqText(es)).not.toMatch(/[{}]/);
   });
 
   it("keeps external links nofollow in a new tab", () => {
@@ -86,7 +128,7 @@ describe("7shifts alternatives (es)", () => {
     expect(ex).toContain("13 empleados por ubicación");
     expect(ex).toContain("$149.97");
     expect(ex).not.toContain("$299.97");
-    expect(es).toContain("configuración de la empresa");
+    expect(es).toContain("Configuración de la empresa");
     expect(es).toContain('"@type":"FAQPage"');
   });
 
