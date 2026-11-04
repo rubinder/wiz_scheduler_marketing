@@ -32,7 +32,7 @@ const head = (f: Fig) => ({ x: f.x, y: f.y - 120 * f.s, r: 15 * f.s });
 
 // The hat sits on the manager's head; HAT_Y is the brim's resting line.
 const HAT_Y = head(MANAGER).y - head(MANAGER).r + 4;
-const CARD = { x: 380, y: 30, w: 440, h: 196 };
+const CARD = { x: 380, y: 18, w: 440, h: 182 };
 const SHIFTS = [
   [1, 1, 0, 1, 1, 1, 0],
   [0, 1, 1, 1, 0, 1, 1],
@@ -214,6 +214,102 @@ function drawSchedule(ctx: CanvasRenderingContext2D, filled: number) {
 }
 const SHIFT_COUNT = SHIFTS.flat().filter(Boolean).length;
 
+/** The falling hat: drawn on top of the field, and cut out of the calm plate. */
+interface Hat {
+  draw: (ctx: CanvasRenderingContext2D, by: number, squash: number) => void;
+  voidInto: (mask: CanvasRenderingContext2D) => void;
+}
+
+const squashed = (ctx: CanvasRenderingContext2D, by: number, squash: number, draw: () => void) => {
+  ctx.save();
+  ctx.translate(MANAGER.x, by);
+  ctx.scale(1 + squash * 0.12, 1 - squash * 0.12);
+  ctx.translate(-MANAGER.x, -by);
+  draw();
+  ctx.restore();
+};
+
+/** Fallback when the logo cannot be loaded: a plain hatched cone. */
+const vectorHat: Hat = {
+  draw: (ctx, by, squash) => squashed(ctx, by, squash, () => drawHat(ctx, MANAGER.x, by, 0)),
+  voidInto: (m) => {
+    m.lineWidth = 16;
+    hatPath(m, MANAGER.x, HAT_Y);
+    m.fill();
+    m.stroke();
+  },
+};
+
+/**
+ * The logo's own hat (public/favicon.svg) as an ink engraving: its exact
+ * silhouette, dark navy densely hatched, mid blues lightly hatched, and the
+ * light details (stars, W, network, calendar) left as bare paper.
+ */
+const LOGO = { src: "/favicon.svg", size: 150, ax: 240 / 500, ay: 395 / 500 };
+
+function logoHat(img: HTMLImageElement, k: number): Hat | null {
+  const R = Math.round(LOGO.size * k);
+  const hp = Math.max(2, Math.round(5 * k));
+  const w = R + 2 * hp;
+  const src = makeCanvas(w, w);
+  const sctx = src?.getContext("2d", { willReadFrequently: true });
+  if (!src || !sctx) return null;
+  sctx.drawImage(img, hp, hp, R, R);
+  const img4 = sctx.getImageData(0, 0, w, w);
+  const d = img4.data;
+  const inside = new Float32Array(w * w);
+  for (let i = 0; i < inside.length; i++) inside[i] = d[i * 4 + 3] > 128 ? 1 : 0;
+  const halo = blur(inside, w, w, hp);
+  const rim = blur(inside, w, w, Math.max(1, Math.round(0.7 * k)));
+  const sp = Math.max(3, Math.round(2.2 * k));
+  const lw = Math.max(1, Math.round(0.55 * k));
+  const paper = [0xf5, 0xf2, 0xea];
+  const ink = [0x1a, 0x18, 0x15];
+  for (let y = 0; y < w; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = y * w + x;
+      let c: number[] | null = null;
+      if (inside[i]) {
+        const L = (0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2]) / 255;
+        const a = (x + y) % sp < lw;
+        const b = (x - y + w) % sp < lw;
+        // Four tones: crosshatch, dense, sparse, bare paper (the light details).
+        const dark =
+          rim[i] < 0.97 ||
+          (L < 0.2 && (a || b)) ||
+          (L < 0.32 && a) ||
+          (L < 0.5 && (x + y) % (sp * 2) < lw);
+        c = dark ? ink : paper;
+      } else if (halo[i] > 0.001) c = paper;
+      d[i * 4 + 3] = c ? 255 : 0;
+      if (c) [d[i * 4], d[i * 4 + 1], d[i * 4 + 2]] = c;
+    }
+  }
+  sctx.putImageData(img4, 0, 0);
+  const left = MANAGER.x - LOGO.size * LOGO.ax;
+  const top = -LOGO.size * LOGO.ay;
+  return {
+    draw: (ctx, by, squash) =>
+      squashed(ctx, by, squash, () => ctx.drawImage(src, left - hp / k, by + top - hp / k, w / k, w / k)),
+    voidInto: (m) => {
+      for (let a = 0; a < 8; a++) {
+        const dx = Math.cos((a * Math.PI) / 4) * 7;
+        const dy = Math.sin((a * Math.PI) / 4) * 7;
+        m.drawImage(img, left + dx, HAT_Y + top + dy, LOGO.size, LOGO.size);
+      }
+    },
+  };
+}
+
+function loadImage(src: string): Promise<HTMLImageElement | null> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
 interface Plate {
   curves: Curve[];
   dist: Float32Array;
@@ -221,7 +317,7 @@ interface Plate {
   origin: { x: number; y: number };
 }
 
-function buildPlate(kind: "chaos" | "calm", rng: Rng, dSep: number): Plate | null {
+function buildPlate(kind: "chaos" | "calm", rng: Rng, dSep: number, hat: Hat): Plate | null {
   const mw = W / 2;
   const mh = H / 2;
   const mask = makeCanvas(mw, mh);
@@ -247,10 +343,7 @@ function buildPlate(kind: "chaos" | "calm", rng: Rng, dSep: number): Plate | nul
   } else {
     figure(mctx, MANAGER, "cheer");
     PEOPLE.forEach((p) => figure(mctx, p, "cheer"));
-    mctx.lineWidth = 16;
-    hatPath(mctx, MANAGER.x, HAT_Y);
-    mctx.fill();
-    mctx.stroke();
+    hat.voidInto(mctx);
     mctx.fillRect(CARD.x - 8, CARD.y - 8, CARD.w + 16, CARD.h + 16);
   }
   const alpha = mctx.getImageData(0, 0, mw, mh).data;
@@ -458,12 +551,13 @@ export interface SceneHandle {
   setRunning: (on: boolean) => void;
 }
 
-export function startScene(
+export async function startScene(
   canvas: HTMLCanvasElement,
   opts: { seed: number; still: boolean },
-): SceneHandle | null {
+): Promise<SceneHandle | null> {
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
+  const logo = await loadImage(LOGO.src);
   const cssW = canvas.clientWidth || W;
   const dpr = Math.min(2, window.devicePixelRatio || 1);
   canvas.width = Math.round(cssW * dpr);
@@ -472,8 +566,9 @@ export function startScene(
   // Keep curves at least ~3.5 CSS px apart on small screens.
   const dSep = Math.max(5.5, (3.5 * W) / cssW);
   const rng = rngFrom(opts.seed);
-  const chaosPlate = buildPlate("chaos", rng, dSep);
-  const calmPlate = buildPlate("calm", rng, dSep);
+  const hat = (logo && logoHat(logo, k)) || vectorHat;
+  const chaosPlate = buildPlate("chaos", rng, dSep, hat);
+  const calmPlate = buildPlate("calm", rng, dSep, hat);
   if (!chaosPlate || !calmPlate) return null;
   const chaos = new Layer(chaosPlate, canvas.width, canvas.height, k);
   const calm = new Layer(calmPlate, canvas.width, canvas.height, k);
@@ -496,7 +591,7 @@ export function startScene(
     calm.advance(1e6, 1, GROW);
     paint(() => {
       blit(calm);
-      drawHat(ctx, MANAGER.x, HAT_Y, 0);
+      hat.draw(ctx, HAT_Y, 0);
       drawSchedule(ctx, SHIFT_COUNT);
     });
     return { stop: () => {}, setRunning: () => {} };
@@ -545,7 +640,7 @@ export function startScene(
         const by = -20 + (HAT_Y + 20) * p * p;
         const squash = t > t2 ? Math.sin(Math.min(1, (t - t2) / T.settle) * Math.PI) : 0;
         if (t > t2 && t < t3 + 0.4) sparkle(ctx, (t - t2) / (T.settle + 0.4));
-        drawHat(ctx, MANAGER.x, by, squash);
+        hat.draw(ctx, by, squash);
       }
       if (t >= t3 + 0.8) drawSchedule(ctx, Math.min(SHIFT_COUNT, ((t - t3 - 0.8) / 2.6) * SHIFT_COUNT));
       if (t >= t5) {

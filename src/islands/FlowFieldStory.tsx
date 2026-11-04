@@ -14,29 +14,35 @@ export default function FlowFieldStory() {
     const canvas = ref.current;
     if (!canvas) return;
     const still = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
-    const scene = startScene(canvas, { seed: (Math.random() * 2 ** 32) >>> 0, still });
-    if (!scene) return;
-    if (still) return scene.stop;
-
-    let visible = false;
-    const sync = () => scene.setRunning(visible && !document.hidden);
-    const io =
-      typeof IntersectionObserver === "undefined"
-        ? null
-        : new IntersectionObserver(([e]) => {
-            visible = e.isIntersecting;
-            sync();
-          });
-    if (io) io.observe(canvas);
-    else {
-      visible = true;
-      sync();
-    }
-    document.addEventListener("visibilitychange", sync);
+    let cleanup = () => {};
+    let cancelled = false;
+    void startScene(canvas, { seed: (Math.random() * 2 ** 32) >>> 0, still }).then((scene) => {
+      if (!scene || still) return;
+      if (cancelled) return scene.stop();
+      let visible = false;
+      const sync = () => scene.setRunning(visible && !document.hidden);
+      const io =
+        typeof IntersectionObserver === "undefined"
+          ? null
+          : new IntersectionObserver(([e]) => {
+              visible = e.isIntersecting;
+              sync();
+            });
+      if (io) io.observe(canvas);
+      else {
+        visible = true;
+        sync();
+      }
+      document.addEventListener("visibilitychange", sync);
+      cleanup = () => {
+        io?.disconnect();
+        document.removeEventListener("visibilitychange", sync);
+        scene.stop();
+      };
+    });
     return () => {
-      io?.disconnect();
-      document.removeEventListener("visibilitychange", sync);
-      scene.stop();
+      cancelled = true;
+      cleanup();
     };
   }, []);
 
