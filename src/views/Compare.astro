@@ -63,6 +63,17 @@ function s7Total(plan: Plan): string {
   const q = s7Quotes[TOOLS["7shifts"].plans.indexOf(plan)];
   return usd(need(q?.fits ? q.monthlyUsd : q?.wouldBeUsd, `7shifts ${plan.name} total`));
 }
+const deputy = {
+  lite: findPlan("deputy", "Lite"),
+  core: findPlan("deputy", "Core"),
+  pro: findPlan("deputy", "Pro"),
+};
+const deputyQuotes = quotePlans(TOOLS.deputy, team);
+/** Monthly total for this team on a Deputy plan (per user, with its monthly minimum). */
+function deputyTotal(plan: Plan): string {
+  const q = deputyQuotes[TOOLS.deputy.plans.indexOf(plan)];
+  return usd(need(q?.fits ? q.monthlyUsd : null, `Deputy ${plan.name} total`));
+}
 const wizFree = findPlan("wiz", "Free");
 const wizPro = findPlan("wiz", "Pro");
 const vars: Record<string, string | number> = {
@@ -81,6 +92,17 @@ const vars: Record<string, string | number> = {
   premiumTotal: s7Total(s7.premium),
   proTotal: s7Total(s7.pro),
   premiumLargeTotal: s7Total(s7.premiumLarge),
+  users: team.locations * team.employeesPerLocation,
+  deputyLite: usd(need(deputy.lite.monthlyUsd, "Deputy Lite price")),
+  deputyCore: usd(need(deputy.core.monthlyUsd, "Deputy Core price")),
+  deputyPro: usd(need(deputy.pro.monthlyUsd, "Deputy Pro price")),
+  deputyLiteAnnual: usd(need(deputy.lite.annualMonthlyUsd, "Deputy Lite annual price")),
+  deputyCoreAnnual: usd(need(deputy.core.annualMonthlyUsd, "Deputy Core annual price")),
+  deputyProAnnual: usd(need(deputy.pro.annualMonthlyUsd, "Deputy Pro annual price")),
+  deputyMinimum: usd(need(deputy.core.minimumMonthlyUsd, "Deputy minimumMonthlyUsd")),
+  deputyLiteTotal: deputyTotal(deputy.lite),
+  deputyCoreTotal: deputyTotal(deputy.core),
+  deputyProTotal: deputyTotal(deputy.pro),
   wizPro: usd(need(wizPro.monthlyUsd, "Wiz Pro price")),
   wizExtra500: usd(need(wizPro.extraPer500EmployeesUsd, "Wiz Pro extraPer500EmployeesUsd")),
   wizFreeLocations: need(wizFree.maxLocations, "Wiz Free maxLocations"),
@@ -108,16 +130,25 @@ const pricingRows = pricingTools.flatMap((tool) =>
     plan: plan.name,
     size:
       planRange(plan, locale) ??
-      (plan.extraPer500EmployeesUsd !== undefined ? fill(c.wizProSize, { extra: usd(plan.extraPer500EmployeesUsd) }) : ""),
+      (plan.extraPer500EmployeesUsd !== undefined
+        ? fill(c.wizProSize, { extra: usd(plan.extraPer500EmployeesUsd) })
+        : plan.minimumMonthlyUsd !== undefined
+          ? fill(c.userSize, { minimum: usd(plan.minimumMonthlyUsd) })
+          : ""),
     price:
       plan.monthlyUsd === null
         ? t.calculator.contactSales
         : plan.monthlyUsd === 0
           ? c.free
-          : fill(plan.basis === "location" ? c.perLocation : c.allLocations, { price: usd(plan.monthlyUsd) }),
+          : fill({ location: c.perLocation, user: c.perUser, flat: c.allLocations, quote: c.allLocations }[plan.basis], {
+              price: usd(plan.monthlyUsd),
+            }),
     auto: autoLabel[plan.autoScheduling],
   })),
 );
+
+const competitorSources = d.toolId ? TOOLS[d.toolId].sources : [];
+const eyebrow = fill(c.eyebrow, { competitor: d.competitor });
 
 const related = COMPARE_PATHS.filter((p) => p !== path).map((p) => ({
   href: localePath(locale, p),
@@ -127,7 +158,7 @@ const related = COMPARE_PATHS.filter((p) => p !== path).map((p) => ({
 <Base locale={locale} title={`${d.title} | ${t.common.appName}`} description={d.description} path={path}>
   <main class="max-w-[92rem] mx-auto px-6">
     <section class="pt-16 pb-10 max-w-[62ch]">
-      <p class={`${m.text.meta} mb-6`}>{t.nav.compare}</p>
+      <p class={`${m.text.meta} mb-6`}>{eyebrow}</p>
       <h1 class={`${m.text.display} font-display text-5xl sm:text-6xl font-semibold leading-[0.95] mb-6`}>{d.title}</h1>
       <p class={`${m.text.display} text-xl leading-relaxed mb-3`}>{d.description}</p>
       {d.qualifier && <p class={`${m.text.muted} text-base`}>{d.qualifier}</p>}
@@ -193,6 +224,17 @@ const related = COMPARE_PATHS.filter((p) => p !== path).map((p) => ({
     <p class={m.text.meta}>
       {c.checkedOn} <time datetime={d.checkedOn}>{d.checkedOn}</time> ·
       <a href={d.competitorUrl} rel="noopener nofollow" target="_blank" class={m.btn.link}>{d.competitor}</a>
+      {competitorSources.length > 0 && (
+        <>
+          {" · "}{c.pricingSources}:{" "}
+          {competitorSources.map((s, i) => (
+            <>
+              {i > 0 && " · "}
+              <a href={s.href} rel="noopener nofollow" target="_blank" class={m.btn.link}>{s.label[locale]}</a>
+            </>
+          ))}
+        </>
+      )}
     </p>
 
     {related.length > 0 && (

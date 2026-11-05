@@ -57,6 +57,10 @@ const s7 = {
   premiumLarge: findPlan("7shifts", "Premium", (p) => p.minEmployeesPerLocation !== undefined),
 };
 const s7Pick = quotePlans(TOOLS["7shifts"], team).find((q) => q.highlighted);
+const deputy = { lite: findPlan("deputy", "Lite"), core: findPlan("deputy", "Core"), pro: findPlan("deputy", "Pro") };
+const deputyQuotes = quotePlans(TOOLS.deputy, team);
+const deputyTotal = (plan: Plan) => usd(deputyQuotes[TOOLS.deputy.plans.indexOf(plan)]?.monthlyUsd ?? null);
+const deputyPick = deputyQuotes.find((q) => q.highlighted);
 const wizFree = findPlan("wiz", "Free");
 const vars: Record<string, string | number> = {
   locations: team.locations,
@@ -72,6 +76,18 @@ const vars: Record<string, string | number> = {
   premiumLarge: usd(s7.premiumLarge.monthlyUsd),
   sevenShiftsExamplePlan: s7Pick?.plan ?? "",
   sevenShiftsExampleTotal: usd(s7Pick?.monthlyUsd ?? null),
+  users: team.locations * team.employeesPerLocation,
+  deputyLite: usd(deputy.lite.monthlyUsd),
+  deputyCore: usd(deputy.core.monthlyUsd),
+  deputyPro: usd(deputy.pro.monthlyUsd),
+  deputyLiteAnnual: usd(deputy.lite.annualMonthlyUsd ?? null),
+  deputyCoreAnnual: usd(deputy.core.annualMonthlyUsd ?? null),
+  deputyProAnnual: usd(deputy.pro.annualMonthlyUsd ?? null),
+  deputyMinimum: usd(deputy.core.minimumMonthlyUsd ?? null),
+  deputyLiteTotal: deputyTotal(deputy.lite),
+  deputyProTotal: deputyTotal(deputy.pro),
+  deputyExamplePlan: deputyPick?.plan ?? "",
+  deputyExampleTotal: usd(deputyPick?.monthlyUsd ?? null),
   wizPro: usd(findPlan("wiz", "Pro").monthlyUsd),
   wizFreeLocations: wizFree.maxLocations ?? "",
   wizFreeEmployees: wizFree.maxTotalEmployees ?? "",
@@ -203,6 +219,7 @@ const example = tools.map((tool) => ({
         ))}
       </div>
       <p class={`${m.text.muted} text-sm mt-6`}>{a.exampleSevenShifts} {t.calculator.sevenShiftsBeta}</p>
+      <p class={`${m.text.muted} text-sm mt-2`}>{a.exampleDeputy}</p>
       <p class={`${m.text.muted} text-sm mt-2`}>{a.exampleWiz}</p>
     </section>
 

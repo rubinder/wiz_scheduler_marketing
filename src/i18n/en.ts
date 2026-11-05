@@ -101,6 +101,7 @@ const en = {
     ctaSignup: "Sign up free",
   },
   compare: {
+    eyebrow: "Compare with {competitor}",
     checkedOn: "Competitor details checked on",
     ctaSignup: "Sign up free",
     ctaHome: "Back to home",
@@ -111,6 +112,8 @@ const en = {
     pages: {
       "/compare/7shifts": "Wiz Scheduler vs 7shifts",
       "/compare/7shifts-alternatives": "7shifts alternatives and pricing compared",
+      "/compare/deputy": "Wiz Scheduler vs Deputy",
+      "/compare/deputy-alternatives": "Deputy alternatives and pricing compared",
     },
     pricingCaption: "Monthly list prices",
     pricingSources: "Sources",
@@ -118,6 +121,8 @@ const en = {
     free: "Free",
     perLocation: "{price} per location a month",
     allLocations: "{price} a month for every location",
+    perUser: "{price} per user a month",
+    userSize: "Priced per user; {minimum} monthly minimum on monthly billing",
     wizProSize: "Unlimited locations; 500 employees included, then {extra} a month per extra 500",
   },
   checker: {
@@ -206,6 +211,8 @@ const en = {
       "Monthly list prices on {date} for {locations} locations with {employees} employees per location, before taxes, add-ons and annual discounts. Every plan is listed with the team size it is for. Plans that don't fit this team are marked, with what they would cost at this size where that makes sense; the highlighted plan is each tool's cheapest fitting plan with auto-scheduling.",
     exampleSevenShifts:
       "7shifts sets the plan by headcount per location. With {employees} employees per location, each location fits Essentials or Premium (up to {essentialsMaxEmployees} employees each), not Pro ({proMinEmployees} to {proMaxEmployees}).",
+    exampleDeputy:
+      "Deputy charges per user, counted here as one user per employee: {users} users. Monthly plans have a {deputyMinimum} minimum a month, and Lite has no auto-scheduling.",
     exampleWiz: "Wiz Scheduler Pro is one base price for every location. AI Generate is paid from prepaid credits if you use it.",
     exampleHeadings: { plan: "Plan", price: "Per month", how: "How it adds up", autoScheduling: "Auto-scheduling" },
     perLocation: "{count} locations × {price}",
@@ -282,6 +289,41 @@ const en = {
         {
           q: "Can I bring my data over from 7shifts?",
           a: "On the paid plan, Wiz Scheduler imports companies, locations, departments, roles, employees and their assignments from 7shifts with an API token from your 7shifts account. A separate import brings over weekly availability, unavailability and approved time off. Preferences and coworker relationships are not imported.",
+        },
+      ],
+    },
+    deputy: {
+      title: "Deputy Alternatives and Deputy Pricing Compared | Wiz Scheduler",
+      metaDescription:
+        "Deputy pricing next to 7shifts, Homebase, When I Work and Wiz Scheduler: every plan that fits your team, how each tool auto-schedules, whether it uses employee preferences, and NYC Fair Workweek support.",
+      heading: "Deputy alternatives",
+      intro:
+        "Deputy charges per user, and its auto-scheduling, on Core and Pro, fills shifts by cost, by equal hours or by learning from your past schedules. It also has the most complete NYC Fair Workweek support of the tools here. If you are weighing alternatives, here is how five tools compare on price, auto-scheduling, employee preferences and NYC Fair Workweek, with prices from each vendor's own site.",
+      compareLink: "Wiz Scheduler vs Deputy",
+      faq: [
+        {
+          q: "How much does Deputy cost?",
+          a: "Deputy charges per user per month. On monthly billing, Lite is {deputyLite}, Core {deputyCore} and Pro {deputyPro} per user. Billed annually, they are {deputyLiteAnnual}, {deputyCoreAnnual} and {deputyProAnnual}. Monthly plans have a {deputyMinimum} minimum a month, and there is no free plan. These are list prices from Deputy's own pricing page.",
+        },
+        {
+          q: "What would Deputy cost for {locations} locations with {employees} employees each?",
+          a: "Deputy counts users, so that team is {users} users: {deputyLiteTotal} a month on Lite, which has no auto-scheduling, {deputyExampleTotal} on {deputyExamplePlan}, the cheapest plan with auto-scheduling, and {deputyProTotal} on Pro, on monthly billing. Wiz Scheduler Pro is {wizPro} a month for every location.",
+        },
+        {
+          q: "Does Deputy auto-schedule?",
+          a: "Yes, on Core and Pro; Lite has no auto-scheduling. It fills shifts by cost, by equal hours, or by learning from your past schedules. Its documentation doesn't mention employee shift or coworker preferences.",
+        },
+        {
+          q: "Can employees give their own preferences in Wiz Scheduler?",
+          a: "Yes. Managers can enter preferences for everyone. Employees can send their own once preference requests are turned on in Company Settings, and a manager approves each request. Preference requests are off by default.",
+        },
+        {
+          q: "Is Deputy better for NYC Fair Workweek?",
+          a: "Yes. Deputy has the most complete NYC Fair Workweek support of the tools compared here, including consent to changes, premiums, advance notice and rest. Deputy's own docs say the NYC fast-food rules apply to chains with 30 or more locations nationwide, and the NYC retail rules to employers with 20 or more employees. Wiz Scheduler enforces only a minimum rest between shifts, set per location and off until you set it.",
+        },
+        {
+          q: "Can I bring my data over from Deputy?",
+          a: "On the paid plan, Wiz Scheduler imports locations, roles and employees with their email from Deputy with an API token from your Deputy account, and Deputy unavailability comes over as blackouts, the times an employee can't work. Every employee gets all the roles at their location at skill level 1, so adjust skills after importing. A separate import brings over availability. Preferences and coworker relationships are not imported.",
         },
       ],
     },

@@ -230,3 +230,155 @@ describe("/compare/7shifts (es)", () => {
     expect(es).not.toContain('href="/es/pricing"');
   });
 });
+
+const deputy = TOOLS.deputy;
+/** Each Deputy plan with its total for DEFAULT_TEAM (Deputy charges per user). */
+const deputyTotals = quotePlans(deputy, DEFAULT_TEAM).map((q, i) => ({ ...q, plan: deputy.plans[i] }));
+const deputyMinimum = deputy.plans[0].minimumMonthlyUsd!;
+
+const deputyPages = [
+  {
+    locale: "en" as const,
+    qualifier: enCopy.alternatives.heroQualifier,
+    settings: "Company Settings",
+    eyebrow: "Compare with Deputy",
+    alternatives: 'href="/compare/deputy-alternatives"',
+    fairWorkweek: "Deputy has the most complete NYC Fair Workweek support",
+    threshold: "30 or more locations",
+    retail: "20 or more employees",
+    skill: "skill level 1",
+    adjust: "roles and skill levels before you generate",
+    notImported: "Preferences and coworker relationships are not imported",
+    minimum: `${usd(deputyMinimum)} monthly minimum`,
+    exampleLead: "Take 3 locations with 13 employees each.",
+  },
+  {
+    locale: "es" as const,
+    qualifier: esCopy.alternatives.heroQualifier,
+    settings: "Configuración de la empresa",
+    eyebrow: "Comparar con Deputy",
+    alternatives: 'href="/es/compare/deputy-alternatives"',
+    fairWorkweek: "Deputy tiene el soporte de Fair Workweek de Nueva York más completo",
+    threshold: "30 o más ubicaciones",
+    retail: "20 o más empleados",
+    skill: "nivel de habilidad 1",
+    adjust: "ajusta los roles y los niveles de habilidad de cada empleado",
+    notImported: "Las preferencias y las relaciones entre compañeros no se importan",
+    minimum: `mínimo de ${usd(deputyMinimum)} al mes`,
+    exampleLead: "Pongamos 3 ubicaciones con 13 empleados cada una.",
+  },
+];
+
+function usd(n: number): string {
+  return Number.isInteger(n) ? `$${n}` : formatUsd(n);
+}
+
+for (const p of deputyPages) {
+  describe(`/compare/deputy (${p.locale})`, () => {
+    let html = "";
+    beforeAll(async () => {
+      const renderers = await loadRenderers([getContainerRenderer()]);
+      const c = await AstroContainer.create({ renderers });
+      html = await c.renderToString(Compare, {
+        props: { locale: p.locale, slug: "deputy", entry: await entry(p.locale, "deputy") },
+      });
+    });
+
+    it("names the product Wiz Scheduler and targets Deputy pricing in the title", () => {
+      expect(html).toContain("Wiz Scheduler");
+      expect(html).not.toContain("WizScheduler");
+      const title = html.match(/<title>([^<]*)<\/title>/)?.[1] ?? "";
+      expect(title.toLowerCase()).toMatch(/deputy pricing|precios de deputy/);
+    });
+
+    it("has its own hero eyebrow, not the 7shifts one", () => {
+      const hero = visible(html).match(/<section[^>]*>([\s\S]*?)<\/section>/)![1];
+      expect(hero).toContain(p.eyebrow);
+      expect(hero).not.toContain("7shifts");
+    });
+
+    it("has FAQPage JSON-LD with at least five questions, the hero qualifier and the Company Settings wording", () => {
+      expect(html).toContain('"@type":"FAQPage"');
+      expect(faqText(html).split("\n").length).toBeGreaterThanOrEqual(10);
+      expect(visible(html)).toContain(p.qualifier);
+      expect(faqText(html)).toContain(p.settings);
+    });
+
+    it("prices every Deputy plan for 3 locations from the data module, $282.75 on Core", () => {
+      expect(deputyTotals.map((x) => x.monthlyUsd)).toEqual([214.5, 282.75, 390]);
+      expect(deputyTotals.find((x) => x.highlighted)?.plan.name).toBe("Core");
+      const para = exampleParagraph(html, p.exampleLead);
+      const faq = faqText(html);
+      for (const x of deputyTotals) {
+        expect(para).toContain(x.plan.name);
+        expect(para).toContain(usd(x.monthlyUsd!)); // $214.50, $282.75, $390: one format outside the calculator
+        expect(faq).toContain(usd(x.monthlyUsd!));
+      }
+      expect(outsideIsland(html)).toContain("$282.75");
+    });
+
+    it("lists Lite, Core and Pro per user with auto-scheduling marked and the $30 minimum", () => {
+      const table = pricing(html);
+      const rows = [...table.matchAll(/<tr[^>]*data-plan[^>]*>([\s\S]*?)<\/tr>/g)].map((r) => r[1]);
+      expect(rows).toHaveLength(deputy.plans.length + TOOLS.wiz.plans.length);
+      const copy = p.locale === "en" ? enCopy : esCopy;
+      const label = { yes: copy.calculator.autoYes, no: copy.calculator.autoNo, beta: copy.calculator.autoBeta };
+      for (const plan of deputy.plans) {
+        const row = rows.find((r) => r.includes(`Deputy ${plan.name}`));
+        expect(row, plan.name).toBeDefined();
+        expect(row).toContain(usd(plan.monthlyUsd!));
+        expect(row).toContain(p.minimum);
+        expect(row).toContain(`<td>${label[plan.autoScheduling]}</td>`);
+      }
+      expect(table).not.toContain(copy.compare.allLocations.replace("{price}", usd(deputy.plans[0].monthlyUsd!)));
+    });
+
+    it("server-renders the calculator with Deputy at $282.75", () => {
+      expect(island(html)).toContain("$282.75");
+      expect(island(html)).toContain(">Deputy</caption>");
+    });
+
+    it("links Wiz Scheduler's and Deputy's pricing pages, and every Deputy source", () => {
+      const m = html.match(/<p[^>]*data-pricing-sources[^>]*>([\s\S]*?)<\/p>/);
+      expect(m![1]).toContain('href="/pricing"');
+      expect(m![1]).toContain(`href="${deputy.pricingUrl}"`);
+      for (const s of deputy.sources) expect(html).toContain(`href="${s.href}"`);
+      expect(html).not.toContain('href="/es/pricing"');
+    });
+
+    it("says plainly that Deputy is stronger on Fair Workweek, with its 30-location fast-food threshold", () => {
+      const text = visible(html);
+      expect(text).toContain(p.fairWorkweek);
+      expect(text).toContain(p.threshold);
+      expect(text).toContain(p.retail);
+    });
+
+    it("explains the Deputy importer: every role at skill level 1, then adjust", () => {
+      const text = visible(html);
+      expect(text).toContain(p.skill);
+      expect(text).toContain(p.adjust);
+      expect(text).toContain(p.notImported);
+    });
+
+    it("links the other compare pages in its own locale", () => {
+      expect(html).toContain(p.alternatives);
+      for (const path of COMPARE_PATHS.filter((x) => x !== "/compare/deputy")) {
+        const href = p.locale === "en" ? path : `/es${path}`;
+        expect(html).toContain(`href="${href}"`);
+      }
+    });
+
+    it("leaves no unfilled {placeholder}", () => {
+      expect(visible(html)).not.toMatch(/\{[a-zA-Z0-9]+\}/);
+      expect(faqText(html)).not.toMatch(/[{}]/);
+      expect(html).not.toMatch(/<meta name="description" content="[^"]*[{}]/);
+    });
+  });
+}
+
+describe("compare paths", () => {
+  it("lists the Deputy pages", () => {
+    expect(COMPARE_PATHS).toContain("/compare/deputy");
+    expect(COMPARE_PATHS).toContain("/compare/deputy-alternatives");
+  });
+});
