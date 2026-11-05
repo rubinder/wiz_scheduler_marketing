@@ -43,9 +43,9 @@ Captions should not claim more than the screen shows. Preference requests are of
 
 Employee scheduling built from preferences managers enter and employees can send, so managers fix less. Free plan, then from $18 a month.
 
-**Long description (462 words, under 1000 words):**
+**Long description (about 465 words, under 1000 words):**
 
-Wiz Scheduler is a multi-location employee scheduling app. It builds the weekly schedule from manager and employee preferences, together with availability, roles and skill levels, reflects the preferences on file.
+Wiz Scheduler is a multi-location employee scheduling app. It builds the weekly schedule from manager and employee preferences, together with availability, roles and skill levels, so the draft reflects the preferences on file.
 
 Managers can enter preferences for everyone: preferred days (up to 3), preferred time ranges, a weekly maximum of hours, caps such as "at most N shifts in this time range a week", unavailable times, and coworker relationships (work with, keep apart, or do not schedule together, limited to people who share a location). Employees can send their own preferences once an admin turns on preference requests in Company Settings. Preference requests are off by default, and a manager approves each request and sets its weight.
 
@@ -79,9 +79,9 @@ Pricing: Free plan with 2 locations, 25 employees and one schedule a month for e
 
 Shift scheduling built from preferences managers enter and employees can send, so managers fix less. Free plan, then from $18 a month.
 
-**Long description (462 words, under 1000 words):**
+**Long description (about 465 words, under 1000 words):**
 
-Wiz Scheduler is a multi-location employee scheduling app. It builds the weekly schedule from manager and employee preferences, together with availability, roles and skill levels, reflects the preferences on file.
+Wiz Scheduler is a multi-location employee scheduling app. It builds the weekly schedule from manager and employee preferences, together with availability, roles and skill levels, so the draft reflects the preferences on file.
 
 Managers can enter preferences for everyone: preferred days (up to 3), preferred time ranges, a weekly maximum of hours, caps such as "at most N shifts in this time range a week", unavailable times, and coworker relationships (work with, keep apart, or do not schedule together, limited to people who share a location). Employees can send their own preferences once an admin turns on preference requests in Company Settings. Preference requests are off by default, and a manager approves each request and sets its weight.
 
@@ -116,9 +116,9 @@ Pricing: Free plan with 2 locations, 25 employees and one schedule a month for e
 
 Shift scheduling built from preferences managers enter and employees can send, so managers fix less. Free plan, then from $18 a month.
 
-**Long description (462 words, under 1000 words):**
+**Long description (about 465 words, under 1000 words):**
 
-Wiz Scheduler is a multi-location employee scheduling app. It builds the weekly schedule from manager and employee preferences, together with availability, roles and skill levels, reflects the preferences on file.
+Wiz Scheduler is a multi-location employee scheduling app. It builds the weekly schedule from manager and employee preferences, together with availability, roles and skill levels, so the draft reflects the preferences on file.
 
 Managers can enter preferences for everyone: preferred days (up to 3), preferred time ranges, a weekly maximum of hours, caps such as "at most N shifts in this time range a week", unavailable times, and coworker relationships (work with, keep apart, or do not schedule together, limited to people who share a location). Employees can send their own preferences once an admin turns on preference requests in Company Settings. Preference requests are off by default, and a manager approves each request and sets its weight.
 
@@ -153,9 +153,9 @@ Pricing: Free plan with 2 locations, 25 employees and one schedule a month for e
 
 Employee scheduling built from preferences managers enter and employees can send. Free plan, then from $18 a month. An alternative to 7shifts and Deputy.
 
-**Long description (462 words, under 1000 words):**
+**Long description (about 465 words, under 1000 words):**
 
-Wiz Scheduler is a multi-location employee scheduling app. It builds the weekly schedule from manager and employee preferences, together with availability, roles and skill levels, reflects the preferences on file.
+Wiz Scheduler is a multi-location employee scheduling app. It builds the weekly schedule from manager and employee preferences, together with availability, roles and skill levels, so the draft reflects the preferences on file.
 
 Managers can enter preferences for everyone: preferred days (up to 3), preferred time ranges, a weekly maximum of hours, caps such as "at most N shifts in this time range a week", unavailable times, and coworker relationships (work with, keep apart, or do not schedule together, limited to people who share a location). Employees can send their own preferences once an admin turns on preference requests in Company Settings. Preference requests are off by default, and a manager approves each request and sets its weight.
 
