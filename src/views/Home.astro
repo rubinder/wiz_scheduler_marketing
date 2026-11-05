@@ -6,6 +6,7 @@ import FlowFieldStory from "../islands/FlowFieldStory";
 import { m } from "../theme";
 import { getCopy } from "../i18n";
 import { appLink } from "../lib/site";
+import { serializeJsonLd } from "../lib/jsonLd";
 import { localePath, type Locale } from "../lib/links";
 
 interface Props {
@@ -160,7 +161,7 @@ const jsonLd = {
 const title = `${t.common.appName} — ${t.landing.badge}`;
 ---
 <Base locale={locale} title={title} description={t.landing.heroDesc} path="/">
-  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+  <script slot="head" type="application/ld+json" is:inline set:html={serializeJsonLd(jsonLd)} />
 
   <RotaHero
     client:load

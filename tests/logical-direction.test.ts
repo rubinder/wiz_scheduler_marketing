@@ -5,7 +5,7 @@
  */
 import { describe, expect, it } from "vitest";
 
-const SOURCES = import.meta.glob("../src/**/*.{astro,tsx,ts}", {
+const SOURCES = import.meta.glob("../src/**/*.{astro,tsx,ts,css}", {
   query: "?raw",
   import: "default",
   eager: true,

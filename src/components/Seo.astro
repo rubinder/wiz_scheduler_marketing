@@ -1,6 +1,9 @@
 ---
 import { SITE_URL } from "../lib/site";
+import { serializeJsonLd } from "../lib/jsonLd";
 import { OG_LOCALE, alternates, localePath, type Locale } from "../lib/links";
+
+type Alternate = { locale: Locale; href: string };
 
 interface Props {
   locale: Locale;
@@ -8,17 +11,25 @@ interface Props {
   description: string;
   path: string;
   noindex?: boolean;
+  /** The versions this page actually exists in, when not every locale of `path` does (guides). Must include `locale`. */
+  alternates?: Alternate[];
+  /** Structured data, serialized with serializeJsonLd so no value can leave the script element. */
+  jsonLd?: Record<string, unknown>;
 }
-const { locale, title, description, path, noindex = false } = Astro.props;
-const canonical = `${SITE_URL}${localePath(locale, path)}`;
+const { locale, title, description, path, noindex = false, alternates: own, jsonLd } = Astro.props;
+const versions: Alternate[] = own ?? alternates(path);
+const self = own ? own.find((a) => a.locale === locale) : { locale, href: localePath(locale, path) };
+if (!self) throw new Error(`Seo: alternates for ${path} do not include ${locale}`);
+const xDefault = own ? own.find((a) => a.locale === "en")?.href : localePath("en", path);
+const canonical = `${SITE_URL}${self.href}`;
 const ogLocale = OG_LOCALE[locale];
 ---
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
 {noindex && <meta name="robots" content="noindex" />}
-{!noindex && alternates(path).map((a) => <link rel="alternate" hreflang={a.locale} href={`${SITE_URL}${a.href}`} />)}
-{!noindex && <link rel="alternate" hreflang="x-default" href={`${SITE_URL}${localePath("en", path)}`} />}
+{!noindex && versions.map((a) => <link rel="alternate" hreflang={a.locale} href={`${SITE_URL}${a.href}`} />)}
+{!noindex && xDefault && <link rel="alternate" hreflang="x-default" href={`${SITE_URL}${xDefault}`} />}
 <meta property="og:type" content="website" />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
@@ -32,3 +43,4 @@ const ogLocale = OG_LOCALE[locale];
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={`${SITE_URL}/og-image.png`} />
+{jsonLd && <script type="application/ld+json" is:inline set:html={serializeJsonLd(jsonLd)} />}

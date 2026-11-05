@@ -28,6 +28,17 @@ const chrome: Chrome = {
     rotaPeople: "వ్యక్తులు",
     rotaViolations: "విశ్రాంతి ఉల్లంఘనలు",
   },
+  footer: {
+    guides: "గైడ్‌లు",
+  },
+  guides: {
+    indexTitle: "షిఫ్ట్ షెడ్యూలింగ్ గైడ్‌లు",
+    indexIntro: "షిఫ్ట్ షెడ్యూల్‌లు తయారుచేసే మేనేజర్ల కోసం సులభమైన, ఆచరణాత్మక గైడ్‌లు.",
+    readMore: "ఇంకా చదవండి",
+    ctaSignup: "ఉచితంగా సైన్ అప్ చేయండి",
+    ctaHome: "హోమ్‌కు తిరిగి వెళ్ళండి",
+    updated: "నవీకరించబడింది",
+  },
 };
 
 export default chrome;

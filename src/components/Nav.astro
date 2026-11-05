@@ -7,10 +7,12 @@ import { ENDONYMS, dir, localePath, localesFor, type Locale } from "../lib/links
 interface Props {
   locale: Locale;
   path: string;
+  /** The versions this page exists in, when not every locale of `path` does (guides). */
+  alternates?: { locale: Locale; href: string }[];
 }
-const { locale, path } = Astro.props;
+const { locale, path, alternates } = Astro.props;
 const t = getCopy(locale);
-const available = localesFor(path);
+const available = alternates ?? localesFor(path).map((l) => ({ locale: l, href: localePath(l, path) }));
 const links = [
   { href: localePath(locale, "/nyc-fair-workweek-scheduling"), label: t.nav.nyc },
   { href: localePath(locale, "/free-schedule-checker"), label: t.nav.checker },
@@ -40,10 +42,10 @@ const links = [
         <ul
           class={`absolute end-0 top-full mt-1 z-50 min-w-[11rem] max-h-[70vh] overflow-y-auto bg-newsprint border ${m.rule.line} py-1 shadow-sm`}
         >
-          {available.map((l) => (
+          {available.map(({ locale: l, href }) => (
             <li>
               <a
-                href={localePath(l, path)}
+                href={href}
                 hreflang={l}
                 lang={l}
                 dir={dir(l)}

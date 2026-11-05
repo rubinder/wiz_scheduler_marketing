@@ -28,6 +28,17 @@ const chrome: Chrome = {
     rotaPeople: "افراد",
     rotaViolations: "آرام کی خلاف ورزیاں",
   },
+  footer: {
+    guides: "رہنما",
+  },
+  guides: {
+    indexTitle: "شفٹ شیڈولنگ کے رہنما",
+    indexIntro: "شفٹ شیڈول بنانے والے مینیجرز کے لیے آسان اور عملی رہنما۔",
+    readMore: "مزید پڑھیں",
+    ctaSignup: "مفت سائن اپ کریں",
+    ctaHome: "ہوم پیج پر واپس",
+    updated: "تازہ کاری",
+  },
 };
 
 export default chrome;
