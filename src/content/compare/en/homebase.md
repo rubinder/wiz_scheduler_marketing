@@ -40,7 +40,7 @@ Homebase charges per location, so the price grows with every site. Wiz Scheduler
 
 Take {locations} locations. Basic is free for {homebaseBasicLocations} location and up to {homebaseBasicEmployees} employees, so it doesn't fit. Essentials comes to {homebaseEssentialsTotal} a month, but has no auto-scheduling. Plus, the cheapest Homebase plan with the AI scheduling assistant, is {homebasePlusTotal} a month, and All-in-One is {homebaseAllInOneTotal}. On Wiz Scheduler Pro, the same team pays {wizPro} a month, plus any AI credits it chooses to buy.
 
-Those are Homebase's monthly prices. Billed annually, Essentials is {homebaseEssentialsAnnual}, Plus {homebasePlusAnnual} and All-in-One {homebaseAllInOneAnnual} per location a month. Homebase's site also shows a $0 promotion, which we do not count.
+Those are Homebase's monthly prices. Billed annually, Essentials is {homebaseEssentialsAnnual}, Plus {homebasePlusAnnual} and All-in-One {homebaseAllInOneAnnual} per location a month. Homebase's site also shows a $0 promotion on Plus, which we do not count.
 
 Wiz Scheduler Pro includes 500 employees, 50 manager seats and 25 schedule generations, with small metered charges above those. AI Generate is not included; it is paid from prepaid credit packs. The free plan covers {wizFreeLocations} locations and {wizFreeEmployees} employees, with one schedule per location a month and no AI Generate. Wiz Scheduler has no annual discount.
 

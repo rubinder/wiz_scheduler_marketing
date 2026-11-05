@@ -411,8 +411,8 @@ const shortPages = [
     qualifier: enCopy.alternatives.heroQualifier,
     marketing: "Homebase's marketing says",
     marketingFull: "uses availability and preferred shifts",
-    essentialsNoAuto: "Essentials has no auto-scheduling",
-    promo: "$0 promotion",
+    keyClaim: "Essentials has no auto-scheduling",
+    promo: "$0 promotion on Plus",
     assumption: null as string | null,
   },
   {
@@ -426,8 +426,8 @@ const shortPages = [
     qualifier: esCopy.alternatives.heroQualifier,
     marketing: "publicidad de Homebase dice",
     marketingFull: "usa la disponibilidad y los turnos preferidos",
-    essentialsNoAuto: "Essentials no tiene programación automática",
-    promo: "promoción de $0",
+    keyClaim: "Essentials no tiene programación automática",
+    promo: "promoción de $0 en Plus",
     assumption: null as string | null,
   },
   {
@@ -441,7 +441,7 @@ const shortPages = [
     qualifier: enCopy.alternatives.heroQualifier,
     marketing: "70%",
     marketingFull: "preferred availability",
-    essentialsNoAuto: "no coworker preferences",
+    keyClaim: "no coworker preferences",
     promo: "",
     assumption: "counting one user per employee",
   },
@@ -456,7 +456,7 @@ const shortPages = [
     qualifier: esCopy.alternatives.heroQualifier,
     marketing: "70%",
     marketingFull: "disponibilidad preferida",
-    essentialsNoAuto: "no tiene preferencias de compañeros",
+    keyClaim: "no tiene preferencias de compañeros",
     promo: "",
     assumption: "si contamos un usuario por empleado",
   },
@@ -495,7 +495,7 @@ for (const p of shortPages) {
         expect(row, plan.name).toBeDefined();
         const range = planRange(plan, p.locale);
         if (range) expect(row).toContain(range);
-        else expect(row).toMatch(/<td>[^<]+<\/td>\s*<td>/); // never an empty size cell
+        else expect(row).toContain(`<td>${(p.locale === "en" ? enCopy : esCopy).compare.noLimit}</td>`);
         if (plan.monthlyUsd) expect(row).toContain(usd(plan.monthlyUsd));
       }
       expect(p.quotes.filter((q) => q.highlighted)).toHaveLength(1);
@@ -528,6 +528,26 @@ for (const p of shortPages) {
   });
 }
 
+describe("Homebase size cells", () => {
+  it("renders exact wording that asserts no cap for plans without a listed range, and the real cap for Basic", () => {
+    const sizes = (html: string) =>
+      Object.fromEntries(
+        [...pricing(html).matchAll(/<tr[^>]*data-plan[^>]*><th[^>]*>([^<]*)<\/th><td>([^<]*)<\/td>/g)].map((m) => [m[1], m[2]]),
+      );
+    return Promise.all([["en", enCopy], ["es", esCopy]] as const).then(async ([[le, ce], [ls, cs]]) => {
+      const renderers = await loadRenderers([getContainerRenderer()]);
+      const c = await AstroContainer.create({ renderers });
+      for (const [locale, copy] of [[le, ce], [ls, cs]] as const) {
+        const html = await c.renderToString(Compare, { props: { locale, slug: "homebase", entry: await entry(locale, "homebase") } });
+        const s = sizes(html);
+        for (const n of ["Essentials", "Plus", "All-in-One"]) expect(s[`Homebase ${n}`]).toBe(copy.compare.noLimit);
+        expect(s["Homebase Basic"]).toBe(planRange(homebase.plans[0], locale));
+        expect(copy.compare.noLimit).not.toMatch(/no (published )?limit|sin límite/i);
+      }
+    });
+  });
+});
+
 describe("/compare/homebase", () => {
   const find = (n: string) => homebaseQuotes.find((q) => q.plan.name === n)!;
   it("prices Plus at $210.00 for the default team and highlights it; Basic does not fit", () => {
@@ -559,9 +579,9 @@ describe("/compare/homebase", () => {
 
       it("says Essentials has no auto-scheduling and mentions the $0 promo without counting it", () => {
         const text = visible(html).replaceAll("&#39;", "'");
-        expect(text).toContain(p.essentialsNoAuto);
+        expect(text).toContain(p.keyClaim);
         expect(text).toContain(p.promo);
-        expect(faqText(html)).toContain(p.essentialsNoAuto);
+        expect(faqText(html)).toContain(p.keyClaim);
       });
 
       it("attributes the availability-and-preferred-shifts claim to Homebase's marketing", () => {
@@ -600,8 +620,8 @@ describe("/compare/when-i-work", () => {
         const text = visible(html).replaceAll("&#39;", "'");
         expect(text).toContain("70%");
         expect(text).toContain(p.marketingFull);
-        expect(text.toLowerCase()).toContain(p.essentialsNoAuto);
-        expect(faqText(html).toLowerCase()).toContain(p.essentialsNoAuto);
+        expect(text.toLowerCase()).toContain(p.keyClaim);
+        expect(faqText(html).toLowerCase()).toContain(p.keyClaim);
       });
     });
   }

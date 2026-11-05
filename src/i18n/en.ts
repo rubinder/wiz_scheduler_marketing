@@ -125,7 +125,7 @@ const en = {
     allLocations: "{price} a month for every location",
     perUser: "{price} per user a month",
     userSize: "Priced per user; {minimum} monthly minimum on monthly billing",
-    noLimit: "No published limit on team size",
+    noLimit: "Per location; no team-size range listed",
     wizProSize: "Unlimited locations; 500 employees included, then {extra} a month per extra 500",
   },
   checker: {

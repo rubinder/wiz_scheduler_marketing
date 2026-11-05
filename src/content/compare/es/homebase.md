@@ -40,7 +40,7 @@ Homebase cobra por ubicación, así que el precio crece con cada sede. Wiz Sched
 
 Pongamos {locations} ubicaciones. Basic es gratuito para {homebaseBasicLocations} ubicación y hasta {homebaseBasicEmployees} empleados, así que no encaja. Essentials sale a {homebaseEssentialsTotal} al mes, pero no tiene programación automática. Plus, el plan más barato de Homebase con el asistente de horarios con AI, cuesta {homebasePlusTotal} al mes, y All-in-One {homebaseAllInOneTotal}. Con Wiz Scheduler Pro, el mismo equipo paga {wizPro} al mes, más los créditos de AI que decida comprar.
 
-Esos son los precios mensuales de Homebase. Con facturación anual, Essentials cuesta {homebaseEssentialsAnnual}, Plus {homebasePlusAnnual} y All-in-One {homebaseAllInOneAnnual} por ubicación al mes. El sitio de Homebase también muestra una promoción de $0, que no contamos.
+Esos son los precios mensuales de Homebase. Con facturación anual, Essentials cuesta {homebaseEssentialsAnnual}, Plus {homebasePlusAnnual} y All-in-One {homebaseAllInOneAnnual} por ubicación al mes. El sitio de Homebase también muestra una promoción de $0 en Plus, que no contamos.
 
 Wiz Scheduler Pro incluye 500 empleados, 50 puestos de gerente y 25 generaciones de horario, con pequeños cargos por uso por encima de eso. La generación con AI no está incluida; se paga con paquetes de créditos prepagados. El plan gratuito cubre {wizFreeLocations} ubicaciones y {wizFreeEmployees} empleados, con un horario por ubicación al mes y sin generación con AI. Wiz Scheduler no tiene descuento anual.
 

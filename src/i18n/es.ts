@@ -126,7 +126,7 @@ const es: Copy = {
     allLocations: "{price} al mes para todas las ubicaciones",
     perUser: "{price} por usuario al mes",
     userSize: "Por usuario; mínimo de {minimum} al mes con facturación mensual",
-    noLimit: "Sin límite de equipo publicado",
+    noLimit: "Por ubicación; sin rango de equipo indicado",
     wizProSize: "Ubicaciones ilimitadas; 500 empleados incluidos y luego {extra} al mes por cada 500 adicionales",
   },
   checker: {
