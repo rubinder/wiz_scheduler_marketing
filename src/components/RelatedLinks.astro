@@ -1,0 +1,28 @@
+---
+import { m } from "../theme";
+import { getSiteCopy } from "../i18n";
+import { localePath, type SiteLocale } from "../lib/links";
+import { COMPARE_PATHS } from "../data/competitors";
+
+interface Props {
+  locale: SiteLocale;
+  /** The page being rendered, as a locale-free path; left out of the list. */
+  path: string;
+}
+const { locale, path } = Astro.props;
+const c = getSiteCopy(locale).compare;
+const related = COMPARE_PATHS.filter((p) => p !== path).map((p) => ({
+  href: localePath(locale, p),
+  label: (c.pages as Record<string, string>)[p] ?? p,
+}));
+---
+{related.length > 0 && (
+  <nav class="mt-12" aria-label={c.related}>
+    <h2 class={`${m.text.display} text-2xl font-semibold mb-4`}>{c.related}</h2>
+    <ul class="space-y-2">
+      {related.map((r) => (
+        <li><a href={r.href} class={m.btn.link}>{r.label}</a></li>
+      ))}
+    </ul>
+  </nav>
+)}

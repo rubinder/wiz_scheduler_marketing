@@ -6,7 +6,8 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEFAULT_LOCALE, LOCALES, dir, localePath } from "../src/lib/links.ts";
+import { DEFAULT_LOCALE, LOCALES, SITE_LOCALES, dir, localePath } from "../src/lib/links.ts";
+import { COMPARE_PATHS } from "../src/data/competitors.ts";
 
 // = src/lib/site.ts SITE_URL (that module reads import.meta.env, which plain node lacks)
 const SITE = "https://wizscheduler.com";
@@ -157,6 +158,57 @@ export function guideDistProblems(distDir, guides) {
   return problems;
 }
 
+// ---- compare pages --------------------------------------------------------------------
+
+/** Default-team highlighted totals (3 locations x 13 employees) from src/data/competitors.ts. */
+const COMPARE_PRICES = {
+  "/compare/7shifts": "$149.97",
+  "/compare/deputy": "$282.75",
+  "/compare/homebase": "$210.00",
+  "/compare/when-i-work": "$195.00",
+};
+const ROUNDUP = "/best-scheduling-apps-nyc-restaurants";
+const footerOf = (html) => html.match(/<footer[\s\S]*?<\/footer>/)?.[0] ?? "";
+/** Text a visitor can read: no scripts, styles or tags (bundled JS and island props carry braces). */
+const visibleText = (html) =>
+  html.replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/g, "").replace(/<[^>]*>/g, " ");
+
+/** Problems with the en/es-only compare, alternatives and roundup pages, and the links to them. */
+export function compareDistProblems(distDir) {
+  const problems = [];
+  const read = (url) => {
+    const f = join(distDir, url.replace(/^\//, ""), "index.html");
+    return existsSync(f) ? readFileSync(f, "utf8") : null;
+  };
+  for (const locale of SITE_LOCALES) {
+    for (const path of COMPARE_PATHS) {
+      const url = localePath(locale, path);
+      const html = read(url);
+      if (html === null) {
+        problems.push(`${url}: not built`);
+        continue;
+      }
+      const langs = hreflangs(html);
+      if (langs.length !== 3 || !["en", "es", "x-default"].every((l) => langs.includes(l))) problems.push(`${url}: hreflang ${langs.join(",")}, want en,es,x-default`);
+      if (!html.includes('"@type":"FAQPage"')) problems.push(`${url}: no FAQPage JSON-LD`);
+      const price = COMPARE_PRICES[path];
+      if (price && !visibleText(html).includes(price)) problems.push(`${url}: missing default-team price ${price}`);
+      if (path === "/compare/7shifts" && !html.includes("<table")) problems.push(`${url}: no pricing table`);
+      const holes = visibleText(html).match(/\{[A-Za-z][A-Za-z0-9]*\}/g);
+      if (holes) problems.push(`${url}: unfilled placeholder ${[...new Set(holes)].join(" ")}`);
+    }
+    const footer = footerOf(read(localePath(locale, "/")) ?? "");
+    for (const path of ["/compare/7shifts-alternatives", "/compare/deputy-alternatives", ROUNDUP]) {
+      if (!footer.includes(`href="${localePath(locale, path)}"`)) problems.push(`${localePath(locale, "/")}: footer does not link ${localePath(locale, path)}`);
+    }
+  }
+  if (existsSync(join(distDir, "ja/compare"))) problems.push("dist/ja/compare must not exist");
+  const jaFooter = footerOf(read("/ja") ?? "");
+  if (!jaFooter.includes('href="/compare/7shifts"')) problems.push("/ja footer: lost its /compare/7shifts link");
+  if (jaFooter.includes("-alternatives") || jaFooter.includes(ROUNDUP)) problems.push("/ja footer: gained compare links");
+  return problems;
+}
+
 // ---- CLI ------------------------------------------------------------------------------
 
 function main() {
@@ -195,6 +247,9 @@ function main() {
   const guides = guideFiles(resolve(process.cwd(), "src/content/guides"));
   const problems = guideDistProblems(DIST, guides);
   assert.deepEqual(problems, [], `guide pages:\n${problems.join("\n")}`);
+
+  const compareProblems = compareDistProblems(DIST);
+  assert.deepEqual(compareProblems, [], `compare pages:\n${compareProblems.join("\n")}`);
 
   console.log(`check:dist OK — ${checked} localized pages, ${guides.length} guide files, ${LOCALES.length} guide indexes`);
 }

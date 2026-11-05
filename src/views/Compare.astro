@@ -1,5 +1,6 @@
 ---
 import { getEntry } from "astro:content";
+import RelatedLinks from "../components/RelatedLinks.astro";
 import Base from "../layouts/Base.astro";
 import Faq from "../components/Faq.astro";
 import CostCalculator from "../islands/CostCalculator.tsx";
@@ -8,7 +9,7 @@ import { getSiteCopy } from "../i18n";
 import { appLink } from "../lib/site";
 import { localePath, type SiteLocale } from "../lib/links";
 import type { CompareData } from "../lib/compareSchema";
-import { COMPARE_PATHS, DEFAULT_TEAM, TOOLS, formatUsd, planRange, quotePlans, type Plan, type ToolId } from "../data/competitors";
+import { DEFAULT_TEAM, TOOLS, formatUsd, planRange, quotePlans, type Plan, type ToolId } from "../data/competitors";
 
 interface Props {
   locale: SiteLocale;
@@ -181,10 +182,6 @@ const pricingRows = pricingTools.flatMap((tool) =>
 const competitorSources = d.toolId ? TOOLS[d.toolId].sources : [];
 const eyebrow = fill(c.eyebrow, { competitor: d.competitor });
 
-const related = COMPARE_PATHS.filter((p) => p !== path).map((p) => ({
-  href: localePath(locale, p),
-  label: (c.pages as Record<string, string>)[p] ?? p,
-}));
 ---
 <Base locale={locale} title={`${d.title} | ${t.common.appName}`} description={d.description} path={path}>
   <main class="max-w-[92rem] mx-auto px-6">
@@ -268,16 +265,7 @@ const related = COMPARE_PATHS.filter((p) => p !== path).map((p) => ({
       )}
     </p>
 
-    {related.length > 0 && (
-      <nav class="mt-12" aria-label={c.related}>
-        <h2 class={`${m.text.display} text-2xl font-semibold mb-4`}>{c.related}</h2>
-        <ul class="space-y-2">
-          {related.map((r) => (
-            <li><a href={r.href} class={m.btn.link}>{r.label}</a></li>
-          ))}
-        </ul>
-      </nav>
-    )}
+    <RelatedLinks locale={locale} path={path} />
 
     <section class={`max-w-3xl mt-12 mb-16 pt-12 border-t ${m.rule.line}`}>
       <p class={`${m.text.muted} text-base mb-8`}>{c.howToTurnOn}</p>

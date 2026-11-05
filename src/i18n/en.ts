@@ -4,6 +4,14 @@ import chrome from "./chrome/en";
 const en = {
   ...generated,
   ...chrome,
+  footer: {
+    ...chrome.footer,
+    compareLinks: {
+      "/compare/7shifts-alternatives": "7shifts alternatives",
+      "/compare/deputy-alternatives": "Deputy alternatives",
+      "/best-scheduling-apps-nyc-restaurants": "Best scheduling apps for NYC restaurants",
+    },
+  },
   notFound: {
     title: "Page not found",
     desc: "That link doesn't go anywhere. The home page does.",

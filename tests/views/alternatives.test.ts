@@ -6,7 +6,7 @@ import { getContainerRenderer } from "@astrojs/react/container-renderer";
 import Alternatives from "../../src/views/Alternatives.astro";
 import enCopy from "../../src/i18n/en";
 import esCopy from "../../src/i18n/es";
-import { DEFAULT_TEAM, TOOLS, formatUsd, quotePlans } from "../../src/data/competitors";
+import { COMPARE_PATHS, DEFAULT_TEAM, TOOLS, formatUsd, quotePlans } from "../../src/data/competitors";
 
 let en = "";
 let es = "";
@@ -316,4 +316,17 @@ describe("alternatives data fields", () => {
       }),
     ).rejects.toThrow("missing 7shifts Comp maxEmployeesPerLocation");
   });
+});
+
+describe("related comparisons", () => {
+  for (const [name, html, locale, copy] of [["en", () => en, "en", enCopy], ["es", () => es, "es", esCopy]] as const) {
+    it(`${name}: links every other compare page, localized, and not itself`, () => {
+      const nav = html().match(/<nav[^>]*aria-label="([^"]*)"[^>]*>([\s\S]*?)<\/nav>/g)?.find((n) => n.includes(copy.compare.related));
+      expect(nav, "related nav missing").toBeDefined();
+      const prefix = locale === "en" ? "" : `/${locale}`;
+      const hrefs = [...nav!.matchAll(/href="([^"]*)"/g)].map((m) => m[1]);
+      expect(hrefs).toEqual(COMPARE_PATHS.filter((p) => p !== "/compare/7shifts-alternatives").map((p) => `${prefix}${p}`));
+      expect(nav).toContain(copy.compare.pages["/compare/7shifts"]);
+    });
+  }
 });

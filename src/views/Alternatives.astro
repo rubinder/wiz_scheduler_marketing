@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import SectionRule from "../components/SectionRule.astro";
+import RelatedLinks from "../components/RelatedLinks.astro";
 import Faq from "../components/Faq.astro";
 import CostCalculator from "../islands/CostCalculator.tsx";
 import { m } from "../theme";
@@ -299,6 +300,8 @@ const example = tools.map((tool) => ({
     </section>
 
     <Faq items={f.faq} title={a.faqTitle} />
+
+    <RelatedLinks locale={locale} path={`/compare/${focus}-alternatives`} />
 
     <section class={`max-w-3xl mb-16 pb-16 border-t ${m.rule.line}`}>
       <h2 class={`${m.text.display} text-2xl font-semibold mb-4 mt-12`}>{a.ctaTitle}</h2>

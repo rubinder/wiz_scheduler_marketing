@@ -5,6 +5,14 @@ import type { Copy } from "./en";
 const es: Copy = {
   ...generated,
   ...chrome,
+  footer: {
+    ...chrome.footer,
+    compareLinks: {
+      "/compare/7shifts-alternatives": "Alternativas a 7shifts",
+      "/compare/deputy-alternatives": "Alternativas a Deputy",
+      "/best-scheduling-apps-nyc-restaurants": "Mejores apps de turnos para restaurantes de NYC",
+    },
+  },
   notFound: {
     title: "Página no encontrada",
     desc: "Ese enlace no lleva a ninguna parte. La página de inicio sí.",
