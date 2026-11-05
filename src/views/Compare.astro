@@ -74,6 +74,23 @@ function deputyTotal(plan: Plan): string {
   const q = deputyQuotes[TOOLS.deputy.plans.indexOf(plan)];
   return usd(need(q?.fits ? q.monthlyUsd : null, `Deputy ${plan.name} total`));
 }
+const hb = {
+  basic: findPlan("homebase", "Basic"),
+  essentials: findPlan("homebase", "Essentials"),
+  plus: findPlan("homebase", "Plus"),
+  allInOne: findPlan("homebase", "All-in-One"),
+};
+const hbQuotes = quotePlans(TOOLS.homebase, team);
+/** Monthly total for this team on a Homebase plan (per location). Totals print with cents, like the calculator. */
+function hbTotal(plan: Plan): string {
+  const q = hbQuotes[TOOLS.homebase.plans.indexOf(plan)];
+  return formatUsd(need(q?.fits ? q.monthlyUsd : q?.wouldBeUsd, `Homebase ${plan.name} total`));
+}
+const wiw = {
+  one: findPlan("wheniwork", "One location"),
+  multi: findPlan("wheniwork", "Multiple locations"),
+};
+const wiwQuotes = quotePlans(TOOLS.wheniwork, team);
 const wizFree = findPlan("wiz", "Free");
 const wizPro = findPlan("wiz", "Pro");
 const vars: Record<string, string | number> = {
@@ -103,6 +120,20 @@ const vars: Record<string, string | number> = {
   deputyLiteTotal: deputyTotal(deputy.lite),
   deputyCoreTotal: deputyTotal(deputy.core),
   deputyProTotal: deputyTotal(deputy.pro),
+  homebaseBasicLocations: need(hb.basic.maxLocations, "Homebase Basic maxLocations"),
+  homebaseBasicEmployees: need(hb.basic.maxEmployeesPerLocation, "Homebase Basic maxEmployeesPerLocation"),
+  homebaseEssentials: usd(need(hb.essentials.monthlyUsd, "Homebase Essentials price")),
+  homebasePlus: usd(need(hb.plus.monthlyUsd, "Homebase Plus price")),
+  homebaseAllInOne: usd(need(hb.allInOne.monthlyUsd, "Homebase All-in-One price")),
+  homebaseEssentialsAnnual: usd(need(hb.essentials.annualMonthlyUsd, "Homebase Essentials annual price")),
+  homebasePlusAnnual: usd(need(hb.plus.annualMonthlyUsd, "Homebase Plus annual price")),
+  homebaseAllInOneAnnual: usd(need(hb.allInOne.annualMonthlyUsd, "Homebase All-in-One annual price")),
+  homebaseEssentialsTotal: hbTotal(hb.essentials),
+  homebasePlusTotal: hbTotal(hb.plus),
+  homebaseAllInOneTotal: hbTotal(hb.allInOne),
+  wiwOne: usd(need(wiw.one.monthlyUsd, "When I Work One location price")),
+  wiwMulti: usd(need(wiw.multi.monthlyUsd, "When I Work Multiple locations price")),
+  wiwMultiTotal: formatUsd(need(wiwQuotes[TOOLS.wheniwork.plans.indexOf(wiw.multi)]?.monthlyUsd, "When I Work multi-location total")),
   wizPro: usd(need(wizPro.monthlyUsd, "Wiz Pro price")),
   wizExtra500: usd(need(wizPro.extraPer500EmployeesUsd, "Wiz Pro extraPer500EmployeesUsd")),
   wizFreeLocations: need(wizFree.maxLocations, "Wiz Free maxLocations"),
@@ -134,7 +165,7 @@ const pricingRows = pricingTools.flatMap((tool) =>
         ? fill(c.wizProSize, { extra: usd(plan.extraPer500EmployeesUsd) })
         : plan.minimumMonthlyUsd !== undefined
           ? fill(c.userSize, { minimum: usd(plan.minimumMonthlyUsd) })
-          : ""),
+          : c.noLimit),
     price:
       plan.monthlyUsd === null
         ? t.calculator.contactSales

@@ -115,6 +115,8 @@ const es: Copy = {
       "/compare/7shifts-alternatives": "Alternativas a 7shifts y sus precios comparados",
       "/compare/deputy": "Wiz Scheduler frente a Deputy",
       "/compare/deputy-alternatives": "Alternativas a Deputy y sus precios comparados",
+      "/compare/homebase": "Wiz Scheduler frente a Homebase",
+      "/compare/when-i-work": "Wiz Scheduler frente a When I Work",
     },
     pricingCaption: "Precios de lista mensuales",
     pricingSources: "Fuentes",
@@ -124,6 +126,7 @@ const es: Copy = {
     allLocations: "{price} al mes para todas las ubicaciones",
     perUser: "{price} por usuario al mes",
     userSize: "Por usuario; mínimo de {minimum} al mes con facturación mensual",
+    noLimit: "Sin límite de equipo publicado",
     wizProSize: "Ubicaciones ilimitadas; 500 empleados incluidos y luego {extra} al mes por cada 500 adicionales",
   },
   checker: {

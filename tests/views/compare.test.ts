@@ -392,3 +392,227 @@ describe("compare paths", () => {
     expect(COMPARE_PATHS).toContain("/compare/deputy-alternatives");
   });
 });
+
+const homebase = TOOLS.homebase;
+const wheniwork = TOOLS.wheniwork;
+const homebaseQuotes = quotePlans(homebase, DEFAULT_TEAM).map((q, i) => ({ ...q, plan: homebase.plans[i] }));
+const wiwQuotes = quotePlans(wheniwork, DEFAULT_TEAM).map((q, i) => ({ ...q, plan: wheniwork.plans[i] }));
+const defaultUsers = DEFAULT_TEAM.locations * DEFAULT_TEAM.employeesPerLocation;
+
+const shortPages = [
+  {
+    slug: "homebase",
+    tool: homebase,
+    quotes: homebaseQuotes,
+    locale: "en" as const,
+    titleRe: /homebase pricing/,
+    eyebrow: "Compare with Homebase",
+    settings: "Company Settings",
+    qualifier: enCopy.alternatives.heroQualifier,
+    marketing: "Homebase's marketing says",
+    marketingFull: "uses availability and preferred shifts",
+    essentialsNoAuto: "Essentials has no auto-scheduling",
+    promo: "$0 promotion",
+    assumption: null as string | null,
+  },
+  {
+    slug: "homebase",
+    tool: homebase,
+    quotes: homebaseQuotes,
+    locale: "es" as const,
+    titleRe: /precios de homebase/,
+    eyebrow: "Comparar con Homebase",
+    settings: "Configuración de la empresa",
+    qualifier: esCopy.alternatives.heroQualifier,
+    marketing: "publicidad de Homebase dice",
+    marketingFull: "usa la disponibilidad y los turnos preferidos",
+    essentialsNoAuto: "Essentials no tiene programación automática",
+    promo: "promoción de $0",
+    assumption: null as string | null,
+  },
+  {
+    slug: "when-i-work",
+    tool: wheniwork,
+    quotes: wiwQuotes,
+    locale: "en" as const,
+    titleRe: /when i work pricing/,
+    eyebrow: "Compare with When I Work",
+    settings: "Company Settings",
+    qualifier: enCopy.alternatives.heroQualifier,
+    marketing: "70%",
+    marketingFull: "preferred availability",
+    essentialsNoAuto: "no coworker preferences",
+    promo: "",
+    assumption: "counting one user per employee",
+  },
+  {
+    slug: "when-i-work",
+    tool: wheniwork,
+    quotes: wiwQuotes,
+    locale: "es" as const,
+    titleRe: /precios de when i work/,
+    eyebrow: "Comparar con When I Work",
+    settings: "Configuración de la empresa",
+    qualifier: esCopy.alternatives.heroQualifier,
+    marketing: "70%",
+    marketingFull: "disponibilidad preferida",
+    essentialsNoAuto: "no tiene preferencias de compañeros",
+    promo: "",
+    assumption: "si contamos un usuario por empleado",
+  },
+];
+
+for (const p of shortPages) {
+  describe(`/compare/${p.slug} (${p.locale})`, () => {
+    let html = "";
+    beforeAll(async () => {
+      const renderers = await loadRenderers([getContainerRenderer()]);
+      const c = await AstroContainer.create({ renderers });
+      html = await c.renderToString(Compare, {
+        props: { locale: p.locale, slug: p.slug, entry: await entry(p.locale, p.slug) },
+      });
+    });
+
+    it("names the product Wiz Scheduler, targets the pricing search and has its own eyebrow", () => {
+      expect(html).toContain("Wiz Scheduler");
+      expect(html).not.toContain("WizScheduler");
+      expect((html.match(/<title>([^<]*)<\/title>/)?.[1] ?? "").toLowerCase()).toMatch(p.titleRe);
+      expect(visible(html).match(/<section[^>]*>([\s\S]*?)<\/section>/)![1]).toContain(p.eyebrow);
+    });
+
+    it("has FAQPage JSON-LD with at least three questions, the hero qualifier and the Company Settings wording", () => {
+      expect(html).toContain('"@type":"FAQPage"');
+      expect(faqText(html).split("\n").length).toBeGreaterThanOrEqual(6);
+      expect(visible(html)).toContain(p.qualifier);
+      expect(faqText(html)).toContain(p.settings);
+    });
+
+    it("shows every plan with its range, the fitting ones priced and the highlighted one auto-scheduling", () => {
+      const rows = [...pricing(html).matchAll(/<tr[^>]*data-plan[^>]*>([\s\S]*?)<\/tr>/g)].map((r) => r[1]);
+      expect(rows).toHaveLength(p.tool.plans.length + TOOLS.wiz.plans.length);
+      for (const plan of p.tool.plans) {
+        const row = rows.find((r) => r.includes(`${p.tool.name} ${plan.name}`));
+        expect(row, plan.name).toBeDefined();
+        const range = planRange(plan, p.locale);
+        if (range) expect(row).toContain(range);
+        else expect(row).toMatch(/<td>[^<]+<\/td>\s*<td>/); // never an empty size cell
+        if (plan.monthlyUsd) expect(row).toContain(usd(plan.monthlyUsd));
+      }
+      expect(p.quotes.filter((q) => q.highlighted)).toHaveLength(1);
+    });
+
+    it("server-renders the calculator for this tool", () => {
+      expect(island(html)).toContain(`>${p.tool.name}</caption>`);
+      const hl = p.quotes.find((q) => q.highlighted)!;
+      expect(island(html)).toContain(formatUsd(hl.monthlyUsd!));
+    });
+
+    it("leaves no unfilled {placeholder} and links the other compare pages in its own locale", () => {
+      expect(visible(html)).not.toMatch(/\{[a-zA-Z0-9]+\}/);
+      expect(faqText(html)).not.toMatch(/[{}]/);
+      for (const path of COMPARE_PATHS.filter((x) => x !== `/compare/${p.slug}`)) {
+        expect(html).toContain(`href="${p.locale === "en" ? path : `/es${path}`}"`);
+      }
+    });
+
+    it("states the one-user-per-employee assumption wherever any copy or FAQ answer gives a user count", () => {
+      const word = p.locale === "en" ? "users" : "usuarios";
+      const lines = [
+        ...faqText(html).split("\n"),
+        ...[...outsideIsland(html).matchAll(/<p>([\s\S]*?)<\/p>/g)].map((m) => m[1]),
+      ].filter((l) => l.includes(`${defaultUsers} ${word}`));
+      if (!p.assumption) return expect(lines).toHaveLength(0);
+      expect(lines.length).toBeGreaterThan(0);
+      for (const l of lines) expect(l).toContain(p.assumption);
+    });
+  });
+}
+
+describe("/compare/homebase", () => {
+  const find = (n: string) => homebaseQuotes.find((q) => q.plan.name === n)!;
+  it("prices Plus at $210.00 for the default team and highlights it; Basic does not fit", () => {
+    expect(find("Plus").monthlyUsd).toBe(210);
+    expect(find("Plus").highlighted).toBe(true);
+    expect(find("Basic").fits).toBe(false);
+  });
+
+  for (const [locale, p] of [["en", shortPages[0]], ["es", shortPages[1]]] as const) {
+    describe(locale, () => {
+      let html = "";
+      beforeAll(async () => {
+        const renderers = await loadRenderers([getContainerRenderer()]);
+        const c = await AstroContainer.create({ renderers });
+        html = await c.renderToString(Compare, { props: { locale, slug: "homebase", entry: await entry(locale, "homebase") } });
+      });
+
+      it("shows every plan's total for 3 locations in the copy and the FAQ, Plus at $210.00", () => {
+        const body = outsideIsland(html);
+        expect(body).toContain("$210.00");
+        expect(faqText(html)).toContain("$210.00");
+        const para = exampleParagraph(html, locale === "en" ? "Take 3 locations" : "Pongamos 3 ubicaciones");
+        for (const n of ["Essentials", "Plus", "All-in-One"]) expect(para).toContain(n);
+        expect(para).toContain("$90.00");
+        expect(para).toContain("$360.00");
+        expect(para).toContain("Basic");
+        expect(para).toContain(`$${wizProUsd} `);
+      });
+
+      it("says Essentials has no auto-scheduling and mentions the $0 promo without counting it", () => {
+        const text = visible(html).replaceAll("&#39;", "'");
+        expect(text).toContain(p.essentialsNoAuto);
+        expect(text).toContain(p.promo);
+        expect(faqText(html)).toContain(p.essentialsNoAuto);
+      });
+
+      it("attributes the availability-and-preferred-shifts claim to Homebase's marketing", () => {
+        const sentences = (visible(html) + "\n" + faqText(html)).replaceAll("&#39;", "'").replaceAll("’", "'").split(/(?<=[.!?])\s+/);
+        const hits = sentences.filter((s) => s.includes(p.marketingFull));
+        expect(hits.length).toBeGreaterThan(0);
+        for (const s of hits) expect(s).toContain(p.marketing);
+      });
+    });
+  }
+});
+
+describe("/compare/when-i-work", () => {
+  it("prices Multiple locations at $195.00 for the default team (39 users) and highlights it", () => {
+    const multi = wiwQuotes.find((q) => q.plan.name === "Multiple locations")!;
+    expect(multi.monthlyUsd).toBe(195);
+    expect(multi.highlighted).toBe(true);
+  });
+
+  for (const [locale, p] of [["en", shortPages[2]], ["es", shortPages[3]]] as const) {
+    describe(locale, () => {
+      let html = "";
+      beforeAll(async () => {
+        const renderers = await loadRenderers([getContainerRenderer()]);
+        const c = await AstroContainer.create({ renderers });
+        html = await c.renderToString(Compare, { props: { locale, slug: "when-i-work", entry: await entry(locale, "when-i-work") } });
+      });
+
+      it("prices the default team at $195.00 outside the calculator and in the FAQ, with the per-user assumption beside it", () => {
+        expect(outsideIsland(html)).toContain("$195.00");
+        const line = faqText(html).split("\n").find((l) => l.includes("$195.00"))!;
+        expect(line).toContain(p.assumption!);
+      });
+
+      it("says it uses preferred availability (70% overlap, max hours) but has no coworker preferences", () => {
+        const text = visible(html).replaceAll("&#39;", "'");
+        expect(text).toContain("70%");
+        expect(text).toContain(p.marketingFull);
+        expect(text.toLowerCase()).toContain(p.essentialsNoAuto);
+        expect(faqText(html).toLowerCase()).toContain(p.essentialsNoAuto);
+      });
+    });
+  }
+});
+
+describe("compare paths (Homebase and When I Work)", () => {
+  it("lists the Homebase and When I Work pages, each labelled in en and es", () => {
+    for (const path of ["/compare/homebase", "/compare/when-i-work"]) {
+      expect(COMPARE_PATHS).toContain(path);
+      expect((enCopy.compare.pages as Record<string, string>)[path]).toBeTruthy();
+      expect((esCopy.compare.pages as Record<string, string>)[path]).toBeTruthy();
+    }
+  });
+});

@@ -114,6 +114,8 @@ const en = {
       "/compare/7shifts-alternatives": "7shifts alternatives and pricing compared",
       "/compare/deputy": "Wiz Scheduler vs Deputy",
       "/compare/deputy-alternatives": "Deputy alternatives and pricing compared",
+      "/compare/homebase": "Wiz Scheduler vs Homebase",
+      "/compare/when-i-work": "Wiz Scheduler vs When I Work",
     },
     pricingCaption: "Monthly list prices",
     pricingSources: "Sources",
@@ -123,6 +125,7 @@ const en = {
     allLocations: "{price} a month for every location",
     perUser: "{price} per user a month",
     userSize: "Priced per user; {minimum} monthly minimum on monthly billing",
+    noLimit: "No published limit on team size",
     wizProSize: "Unlimited locations; 500 employees included, then {extra} a month per extra 500",
   },
   checker: {

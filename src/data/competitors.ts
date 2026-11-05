@@ -329,6 +329,8 @@ export const COMPARE_PATHS: string[] = [
   "/compare/7shifts-alternatives",
   "/compare/deputy",
   "/compare/deputy-alternatives",
+  "/compare/homebase",
+  "/compare/when-i-work",
 ];
 
 export const DEFAULT_TEAM: Team = { locations: 3, employeesPerLocation: 13 };
