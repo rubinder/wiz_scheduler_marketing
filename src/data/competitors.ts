@@ -465,3 +465,16 @@ export function planRange(plan: Plan, locale: SiteLocale): string | null {
 
   return parts.length > 0 ? parts.join(", ") : null;
 }
+
+const PLAN_LABELS: Record<SiteLocale, Record<string, string>> = {
+  en: {},
+  es: { Free: "Gratis", "One location": "Una ubicación", "Multiple locations": "Varias ubicaciones" },
+};
+
+/**
+ * A plan's name as shown to readers. Product plan names (Pro, Essentials…) stay
+ * as they are; Wiz Free and When I Work's two descriptive names are translated.
+ */
+export function planLabel(name: string, locale: SiteLocale): string {
+  return PLAN_LABELS[locale][name] ?? name;
+}

@@ -7,7 +7,7 @@ import Compare from "../../src/views/Compare.astro";
 import enCopy from "../../src/i18n/en";
 import esCopy from "../../src/i18n/es";
 import { compareSchema } from "../../src/lib/compareSchema";
-import { COMPARE_PATHS, DEFAULT_TEAM, TOOLS, formatUsd, planRange, quotePlans } from "../../src/data/competitors";
+import { COMPARE_PATHS, DEFAULT_TEAM, TOOLS, formatUsd, planLabel, planRange, quotePlans } from "../../src/data/competitors";
 
 let en = "";
 let es = "";
@@ -491,7 +491,7 @@ for (const p of shortPages) {
       const rows = [...pricing(html).matchAll(/<tr[^>]*data-plan[^>]*>([\s\S]*?)<\/tr>/g)].map((r) => r[1]);
       expect(rows).toHaveLength(p.tool.plans.length + TOOLS.wiz.plans.length);
       for (const plan of p.tool.plans) {
-        const row = rows.find((r) => r.includes(`${p.tool.name} ${plan.name}`));
+        const row = rows.find((r) => r.includes(`${p.tool.name} ${planLabel(plan.name, p.locale)}`));
         expect(row, plan.name).toBeDefined();
         const range = planRange(plan, p.locale);
         if (range) expect(row).toContain(range);
@@ -499,6 +499,8 @@ for (const p of shortPages) {
         if (plan.monthlyUsd) expect(row).toContain(usd(plan.monthlyUsd));
       }
       expect(p.quotes.filter((q) => q.highlighted)).toHaveLength(1);
+      // Wiz's own Free plan reads in the page's language.
+      expect(rows.some((r) => r.includes(`Wiz Scheduler ${p.locale === "es" ? "Gratis" : "Free"}`))).toBe(true);
     });
 
     it("server-renders the calculator for this tool", () => {

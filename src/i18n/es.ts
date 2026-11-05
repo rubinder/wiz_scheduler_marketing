@@ -10,7 +10,7 @@ const es: Copy = {
     compareLinks: {
       "/compare/7shifts-alternatives": "Alternativas a 7shifts",
       "/compare/deputy-alternatives": "Alternativas a Deputy",
-      "/best-scheduling-apps-nyc-restaurants": "Mejores apps de turnos para restaurantes de NYC",
+      "/best-scheduling-apps-nyc-restaurants": "Mejores apps de horarios para restaurantes de Nueva York",
     },
   },
   notFound: {
@@ -141,7 +141,7 @@ const es: Copy = {
   roundup: {
     metaTitle: "Mejores apps de horarios para restaurantes de Nueva York, comparadas",
     metaDescription:
-      "Cinco apps de horarios para restaurantes comparadas para Nueva York: programación automática, preferencias de empleados, Fair Workweek y precio mensual para 1 a 3 ubicaciones, con fuentes.",
+      "Cinco apps de horarios para restaurantes comparadas para Nueva York: programación automática, preferencias de empleados, Fair Workweek y precio mensual para 3 ubicaciones, con fuentes.",
     eyebrow: "Guía",
     heading: "Mejores apps de horarios para restaurantes de Nueva York",
     intro:
@@ -151,15 +151,15 @@ const es: Copy = {
       "Programación automática: ¿puede la herramienta armar el borrador de la semana, y en qué plan?",
       "Preferencias de los empleados: ¿entran al borrador los días, las horas y los compañeros que prefiere cada empleado?",
       "Fair Workweek de Nueva York: ¿cuánta ayuda da con avisos, descansos y primas?",
-      "Precio: el costo mensual de un restaurante típico de Nueva York con 1 a 3 ubicaciones.",
+      "Precio: el costo mensual de un restaurante de Nueva York con 3 ubicaciones.",
     ],
     bestForLabel: "Ideal para",
     bestFor: {
       wiz: "Wiz Scheduler es ideal para equipos que quieren que los empleados tengan voz en su horario.",
       "7shifts": "7shifts es ideal para restaurantes que quieren alertas de Fair Workweek y un complemento de nómina, y que no tienen problema en probar un programador automático que todavía está en beta.",
       deputy: "Deputy es ideal para equipos que necesitan el soporte de Fair Workweek de Nueva York más completo de los cinco.",
-      homebase: "Homebase es ideal para una sola ubicación pequeña que quiere empezar con un plan gratuito, con programación con AI en el plan de pago Plus.",
-      wheniwork: "When I Work es ideal para una sola ubicación que busca un precio bajo por usuario con asignación automática en todos los planes.",
+      homebase: "Homebase es ideal para ubicaciones que quieren un asistente de horarios con AI en el plan de pago Plus, o precios anuales más bajos.",
+      wheniwork: "When I Work es ideal para una sola ubicación que busca un precio bajo por usuario.",
     },
     wizSay:
       "Los gerentes pueden ingresar las preferencias de todos. Los empleados pueden enviar las suyas cuando se activan las solicitudes de preferencias en la Configuración de la empresa, y un gerente aprueba cada solicitud.",
@@ -177,7 +177,7 @@ const es: Copy = {
     sources: "Fuentes",
     priceTitle: "Cuánto cuestan",
     priceNote:
-      "Los precios son para {locations} ubicaciones con {employees} empleados cada una, el tope del rango de 1 a 3 ubicaciones. Son precios de lista con facturación mensual, sin impuestos, complementos ni descuentos anuales, y cada herramienta se calcula con su plan más barato con programación automática. Verificados el {date}; los proveedores cambian sus precios, así que confírmalos en sus páginas de precios.",
+      "Los precios son para {locations} ubicaciones con {employees} empleados cada una. Son precios de lista con facturación mensual, sin impuestos, complementos ni descuentos anuales, y cada herramienta se calcula con su plan más barato con programación automática. Verificados el {date}; los proveedores cambian sus precios, así que confírmalos en sus páginas de precios.",
     priceBasis:
       "Deputy y When I Work cobran por usuario; sus totales son para {users} usuarios, si contamos un usuario por empleado.",
     priceHeadings: { tool: "Herramienta", plan: "Plan", total: "Total mensual" },
@@ -192,10 +192,10 @@ const es: Copy = {
     faq: [
       {
         q: "¿Cuál es la mejor app de horarios para un restaurante de Nueva York?",
-        a: "Ninguna app es la mejor para todos. Deputy tiene el soporte de Fair Workweek de Nueva York más completo de las cinco herramientas que comparamos. Wiz Scheduler es ideal para equipos que quieren que los empleados tengan voz en su horario: los gerentes pueden ingresar las preferencias de todos, y los empleados pueden enviar las suyas cuando se activan las solicitudes de preferencias en la Configuración de la empresa. 7shifts sirve a restaurantes que quieren alertas de Fair Workweek y un complemento de nómina, Homebase a una sola ubicación pequeña que quiere empezar con un plan gratuito, y When I Work a una sola ubicación que busca un precio bajo por usuario con asignación automática en todos los planes.",
+        a: "Ninguna app es la mejor para todos. Deputy tiene el soporte de Fair Workweek de Nueva York más completo de las cinco herramientas que comparamos. Wiz Scheduler es ideal para equipos que quieren que los empleados tengan voz en su horario: los gerentes pueden ingresar las preferencias de todos, y los empleados pueden enviar las suyas cuando se activan las solicitudes de preferencias en la Configuración de la empresa. 7shifts sirve a restaurantes que quieren alertas de Fair Workweek y un complemento de nómina, Homebase a una sola ubicación pequeña que quiere empezar con un plan gratuito, y When I Work a una sola ubicación que busca un precio bajo por usuario.",
       },
       {
-        q: "¿Cuánto cuesta un software de horarios para restaurantes con 1 a 3 ubicaciones en Nueva York?",
+        q: "¿Cuánto cuesta un software de horarios para restaurantes con 3 ubicaciones en Nueva York?",
         a: "Para {locations} ubicaciones con {employees} empleados cada una, con facturación mensual y sin impuestos, complementos ni descuentos anuales, y con el plan más barato con programación automática de cada herramienta: Wiz Scheduler {wizPlan} {wizTotal} al mes; 7shifts {sevenPlan} {sevenTotal} al mes con {employees} empleados por ubicación, y un programador automático que está en beta; Deputy {deputyPlan} {deputyTotal} al mes para {users} usuarios, si contamos un usuario por empleado; Homebase {homebasePlan} {homebaseTotal} al mes, sin contar su promoción de $0; When I Work {wiwPlan} {wiwTotal} al mes para {users} usuarios, si contamos un usuario por empleado. Precios de lista verificados el {date}.",
       },
       {

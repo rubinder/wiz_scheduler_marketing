@@ -46,7 +46,6 @@ Wiz Scheduler Pro incluye 500 empleados, 50 puestos de gerente y 25 generaciones
 
 ## Dónde Homebase es más fuerte
 
-- **Un plan gratuito.** Homebase Basic es gratuito para {homebaseBasicLocations} ubicación y hasta {homebaseBasicEmployees} empleados.
 - **Un asistente de horarios con AI.** En Plus y superiores, la publicidad de Homebase dice que usa la disponibilidad y los turnos preferidos.
 - **Un descuento anual.** Los precios anuales de Homebase son más bajos por ubicación. Wiz Scheduler no tiene descuento anual.
 

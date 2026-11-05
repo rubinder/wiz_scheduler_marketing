@@ -42,7 +42,6 @@ Wiz Scheduler Pro includes 500 employees, 50 manager seats and 25 schedule gener
 
 ## Where When I Work is stronger
 
-- **Auto-assign on every plan.** When I Work includes it on its lowest plan too.
 - **A low per-user price for one location.** The one-location rate is {wiwOne} per user.
 - **Preferred availability with a threshold.** It can require 70% overlap with an employee's preferred availability and respects maximum hours.
 

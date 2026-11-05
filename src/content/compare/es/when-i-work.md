@@ -42,7 +42,6 @@ Wiz Scheduler Pro incluye 500 empleados, 50 puestos de gerente y 25 generaciones
 
 ## Dónde When I Work es más fuerte
 
-- **Asignación automática en todos los planes.** When I Work la incluye también en su plan más bajo.
 - **Un precio bajo por usuario para una ubicación.** La tarifa de una ubicación es de {wiwOne} por usuario.
 - **Disponibilidad preferida con un umbral.** Puede exigir un 70% de coincidencia con la disponibilidad preferida del empleado y respeta las horas máximas.
 

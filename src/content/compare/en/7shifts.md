@@ -62,7 +62,6 @@ Wiz Scheduler Pro includes 500 employees, 50 manager seats and 25 schedule gener
 - **NYC Fair Workweek alerts.** 7shifts' paid plans flag clopens, changes inside 14 days and premium pay. Wiz Scheduler only enforces rest between shifts, once you set it.
 - **Payroll.** 7shifts sells a payroll add-on. Wiz Scheduler does not process payroll or pool tips.
 - **Drafts from sales.** 7shifts' auto-scheduler works from your sales and schedule history. Wiz Scheduler has no POS integration or sales forecasting.
-- **A free plan for one small location.** 7shifts Comp is free for one location with up to {compMaxEmployees} employees.
 
 If those are the reasons you use 7shifts, it may well remain the better fit.
 

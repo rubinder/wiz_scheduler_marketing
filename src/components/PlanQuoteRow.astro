@@ -1,0 +1,51 @@
+---
+import { m } from "../theme";
+import { planLabel, type AutoScheduling } from "../data/competitors";
+import type { SiteLocale } from "../lib/links";
+import type { Copy } from "../i18n";
+
+/** One plan of one tool, priced for a team: its range, whether it fits, the would-be price if not. */
+interface Props {
+  locale: SiteLocale;
+  toolName: string;
+  plan: string;
+  range: string | null;
+  fits: boolean;
+  highlighted: boolean;
+  /** Formatted price; null when the plan is sold by quote. */
+  price: string | null;
+  autoScheduling: AutoScheduling;
+  calculator: Copy["calculator"];
+  /** How the price was worked out; omit to drop the column. */
+  how?: string;
+}
+const { locale, toolName, plan, range, fits, highlighted, price, autoScheduling, calculator: c, how } = Astro.props;
+const autoLabel = { yes: c.autoYes, beta: c.autoBeta, no: c.autoNo };
+---
+<tr
+  class={`border-b ${m.rule.line} ${highlighted ? "font-bold bg-marker/20" : ""} ${fits ? "" : "text-ink/60"}`}
+  data-highlighted={highlighted || undefined}
+  data-fits={String(fits)}
+>
+  <th scope="row" class="py-3 pe-4 text-start font-[inherit]">
+    {toolName} {planLabel(plan, locale)}
+    {highlighted && (
+      <span class={`${m.text.meta} ms-2 border ${m.rule.heavy} px-1.5 py-0.5 normal-case tracking-normal font-normal`}>
+        {c.highlightedLabel}
+      </span>
+    )}
+    {range && <span class="block text-sm font-normal text-ink/70">{range}</span>}
+  </th>
+  <td class={`${m.text.data} py-3 pe-4 text-end`}>
+    {fits ? (
+      price ?? c.contactSales
+    ) : (
+      <>
+        {price && <span class="block">{price}</span>}
+        <span class="block font-body text-sm">{c.doesNotFit}</span>
+      </>
+    )}
+  </td>
+  {how !== undefined && <td class={`${m.text.muted} py-3 pe-4`}>{how}</td>}
+  <td class="py-3">{autoLabel[autoScheduling]}</td>
+</tr>

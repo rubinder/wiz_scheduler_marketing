@@ -6,10 +6,11 @@ import Faq from "../components/Faq.astro";
 import CostCalculator from "../islands/CostCalculator.tsx";
 import { m } from "../theme";
 import { getSiteCopy } from "../i18n";
+import { fill as fillCopy } from "../lib/fill";
 import { appLink } from "../lib/site";
 import { localePath, type SiteLocale } from "../lib/links";
 import type { CompareData } from "../lib/compareSchema";
-import { DEFAULT_TEAM, TOOLS, formatUsd, planRange, quotePlans, type Plan, type ToolId } from "../data/competitors";
+import { DEFAULT_TEAM, TOOLS, formatUsd, planLabel, planRange, quotePlans, type Plan, type ToolId } from "../data/competitors";
 
 interface Props {
   locale: SiteLocale;
@@ -33,11 +34,7 @@ const entry = await load();
 // Prices, caps and team sizes in the markdown and frontmatter are
 // {placeholders} filled from src/data/competitors.ts, so a price change is one edit there.
 // An unknown placeholder or a missing data field fails the build rather than printing blank.
-const fill = (s: string, vars: Record<string, string | number>) =>
-  s.replace(/\{([a-zA-Z0-9]+)\}/g, (_, key: string) => {
-    if (!(key in vars)) throw new Error(`compare ${locale}/${slug}: no value for {${key}}`);
-    return String(vars[key]);
-  });
+const fill = (s: string, vars: Record<string, string | number>) => fillCopy(s, vars, `compare ${locale}/${slug}`);
 function need<T>(value: T | null | undefined, what: string): T {
   if (value === null || value === undefined) throw new Error(`compare ${locale}/${slug}: missing ${what}`);
   return value;
@@ -159,7 +156,7 @@ const pricingTools = (["wiz", entry.data.toolId] as const).filter((id): id is To
 const pricingRows = pricingTools.flatMap((tool) =>
   tool.plans.map((plan) => ({
     tool: tool.name,
-    plan: plan.name,
+    plan: planLabel(plan.name, locale),
     size:
       planRange(plan, locale) ??
       (plan.extraPer500EmployeesUsd !== undefined
@@ -250,7 +247,7 @@ const eyebrow = fill(c.eyebrow, { competitor: d.competitor });
     </div>
 
     <p class={m.text.meta}>
-      {c.checkedOn} <time datetime={d.checkedOn}>{d.checkedOn}</time> ·
+      {c.checkedOn} <time datetime={d.checkedOn}>{d.checkedOn}</time>{" · "}
       <a href={d.competitorUrl} rel="noopener nofollow" target="_blank" class={m.btn.link}>{d.competitor}</a>
       {competitorSources.length > 0 && (
         <>

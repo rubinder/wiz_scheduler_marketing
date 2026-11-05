@@ -51,7 +51,7 @@ Managers can enter preferences for everyone: preferred days (up to 3), preferred
 
 How preferences act is visible. A weight of 1.0 is a firm rule: that employee is not considered for the shift, and if nobody else qualifies, the shift stays open instead of being filled badly. Lower weights are soft: the employee is a less likely pick. When a shift is assigned against a soft preference, it is marked with an asterisk, so the manager sees every compromise at a glance. Managers still review and edit the draft, and the aim is simply that there is less to fix afterwards.
 
-Every generation applies hard rules: role, availability and unavailability, weekly maximum hours, and pairs of people who must be kept apart. A minimum-rest rule between shifts (for example 11 hours) is available per location, and it is off until you set it. There are two ways to generate. Normal Generate offers random, rotation, rotation with about three months of history, and max-hours strategies, and managers can set priority weights for seniority, pay rate and overtime. AI Generate uses fixed weights and is paid from prepaid credits. Employee names are pseudonymized before anything is sent to the AI model.
+Every generation applies hard rules: role, availability and unavailability, weekly maximum hours, and pairs marked never to be scheduled together. A minimum-rest rule between shifts (for example 11 hours) is available per location, and it is off until you set it. There are two ways to generate. Normal Generate offers random, rotation, rotation with about three months of history, and max-hours strategies, and managers can set priority weights for seniority, pay rate and overtime. AI Generate uses fixed weights and is paid from prepaid credits. Employee names are pseudonymized before anything is sent to the AI model.
 
 Other features: QR check-in on the paid plan, employee pages in 19 languages, and importers that bring data in from 7shifts and Deputy. The importers are paid-plan only, need an API token you paste in, and do not import preferences or coworker relationships.
 
@@ -65,9 +65,9 @@ Pricing: Free plan with 2 locations, 25 employees and one schedule a month for e
 
 **List as an alternative to:**
 - 7shifts: 7shifts is priced per location, and its auto-scheduler is a beta rolling out to selected accounts that drafts from at least 6 weeks of sales and schedule history; Wiz Scheduler is priced from $18 a month for all locations and builds from preferences, while 7shifts is stronger on Fair Workweek alerts and offers a payroll add-on.
-- Deputy: Deputy is priced per user and can auto-fill by cost or equal hours; Wiz Scheduler is flat-priced and builds from preferences and coworker pairings, but Deputy is stronger on Fair Workweek (consent, premiums, notice, rest).
-- Homebase: Homebase is priced per location and Wiz Scheduler is flat-priced across locations, marking every shift that goes against a preference; Homebase is stronger with a free plan for 1 location and 10 employees, and its AI scheduling assistant comes with its Plus plan.
-- When I Work: When I Work is priced per user and Wiz Scheduler is flat-priced with coworker preferences; When I Work is stronger with a low per-user price at a single location ($2.50) and auto-assign on every plan.
+- Deputy: Deputy is priced per user and, on Core and Pro, can auto-fill by cost or equal hours; Wiz Scheduler is flat-priced and builds from preferences and coworker pairings, but Deputy is stronger on Fair Workweek (consent, premiums, notice, rest).
+- Homebase: Homebase is priced per location and Wiz Scheduler is flat-priced across locations, marking every shift that goes against a preference; Homebase is stronger with its AI scheduling assistant on the Plus plan and lower annual prices.
+- When I Work: When I Work is priced per user and Wiz Scheduler is flat-priced with coworker preferences; When I Work is stronger with a low per-user price at a single location ($2.50) and an auto-assign that can require 70% overlap with preferred availability and respects maximum hours.
 
 ## Capterra
 
@@ -87,7 +87,7 @@ Managers can enter preferences for everyone: preferred days (up to 3), preferred
 
 How preferences act is visible. A weight of 1.0 is a firm rule: that employee is not considered for the shift, and if nobody else qualifies, the shift stays open instead of being filled badly. Lower weights are soft: the employee is a less likely pick. When a shift is assigned against a soft preference, it is marked with an asterisk, so the manager sees every compromise at a glance. Managers still review and edit the draft, and the aim is simply that there is less to fix afterwards.
 
-Every generation applies hard rules: role, availability and unavailability, weekly maximum hours, and pairs of people who must be kept apart. A minimum-rest rule between shifts (for example 11 hours) is available per location, and it is off until you set it. There are two ways to generate. Normal Generate offers random, rotation, rotation with about three months of history, and max-hours strategies, and managers can set priority weights for seniority, pay rate and overtime. AI Generate uses fixed weights and is paid from prepaid credits. Employee names are pseudonymized before anything is sent to the AI model.
+Every generation applies hard rules: role, availability and unavailability, weekly maximum hours, and pairs marked never to be scheduled together. A minimum-rest rule between shifts (for example 11 hours) is available per location, and it is off until you set it. There are two ways to generate. Normal Generate offers random, rotation, rotation with about three months of history, and max-hours strategies, and managers can set priority weights for seniority, pay rate and overtime. AI Generate uses fixed weights and is paid from prepaid credits. Employee names are pseudonymized before anything is sent to the AI model.
 
 Other features: QR check-in on the paid plan, employee pages in 19 languages, and importers that bring data in from 7shifts and Deputy. The importers are paid-plan only, need an API token you paste in, and do not import preferences or coworker relationships.
 
@@ -102,9 +102,9 @@ Pricing: Free plan with 2 locations, 25 employees and one schedule a month for e
 
 **List as an alternative to:**
 - 7shifts: 7shifts is priced per location, and its auto-scheduler is a beta rolling out to selected accounts that drafts from at least 6 weeks of sales and schedule history; Wiz Scheduler is priced from $18 a month for all locations and builds from preferences, while 7shifts is stronger on Fair Workweek alerts and offers a payroll add-on.
-- Deputy: Deputy is priced per user and can auto-fill by cost or equal hours; Wiz Scheduler is flat-priced and builds from preferences and coworker pairings, but Deputy is stronger on Fair Workweek (consent, premiums, notice, rest).
-- Homebase: Homebase is priced per location and Wiz Scheduler is flat-priced across locations, marking every shift that goes against a preference; Homebase is stronger with a free plan for 1 location and 10 employees, and its AI scheduling assistant comes with its Plus plan.
-- When I Work: When I Work is priced per user and Wiz Scheduler is flat-priced with coworker preferences; When I Work is stronger with a low per-user price at a single location ($2.50) and auto-assign on every plan.
+- Deputy: Deputy is priced per user and, on Core and Pro, can auto-fill by cost or equal hours; Wiz Scheduler is flat-priced and builds from preferences and coworker pairings, but Deputy is stronger on Fair Workweek (consent, premiums, notice, rest).
+- Homebase: Homebase is priced per location and Wiz Scheduler is flat-priced across locations, marking every shift that goes against a preference; Homebase is stronger with its AI scheduling assistant on the Plus plan and lower annual prices.
+- When I Work: When I Work is priced per user and Wiz Scheduler is flat-priced with coworker preferences; When I Work is stronger with a low per-user price at a single location ($2.50) and an auto-assign that can require 70% overlap with preferred availability and respects maximum hours.
 
 ## GetApp
 
@@ -124,7 +124,7 @@ Managers can enter preferences for everyone: preferred days (up to 3), preferred
 
 How preferences act is visible. A weight of 1.0 is a firm rule: that employee is not considered for the shift, and if nobody else qualifies, the shift stays open instead of being filled badly. Lower weights are soft: the employee is a less likely pick. When a shift is assigned against a soft preference, it is marked with an asterisk, so the manager sees every compromise at a glance. Managers still review and edit the draft, and the aim is simply that there is less to fix afterwards.
 
-Every generation applies hard rules: role, availability and unavailability, weekly maximum hours, and pairs of people who must be kept apart. A minimum-rest rule between shifts (for example 11 hours) is available per location, and it is off until you set it. There are two ways to generate. Normal Generate offers random, rotation, rotation with about three months of history, and max-hours strategies, and managers can set priority weights for seniority, pay rate and overtime. AI Generate uses fixed weights and is paid from prepaid credits. Employee names are pseudonymized before anything is sent to the AI model.
+Every generation applies hard rules: role, availability and unavailability, weekly maximum hours, and pairs marked never to be scheduled together. A minimum-rest rule between shifts (for example 11 hours) is available per location, and it is off until you set it. There are two ways to generate. Normal Generate offers random, rotation, rotation with about three months of history, and max-hours strategies, and managers can set priority weights for seniority, pay rate and overtime. AI Generate uses fixed weights and is paid from prepaid credits. Employee names are pseudonymized before anything is sent to the AI model.
 
 Other features: QR check-in on the paid plan, employee pages in 19 languages, and importers that bring data in from 7shifts and Deputy. The importers are paid-plan only, need an API token you paste in, and do not import preferences or coworker relationships.
 
@@ -139,9 +139,9 @@ Pricing: Free plan with 2 locations, 25 employees and one schedule a month for e
 
 **List as an alternative to:**
 - 7shifts: 7shifts is priced per location, and its auto-scheduler is a beta rolling out to selected accounts that drafts from at least 6 weeks of sales and schedule history; Wiz Scheduler is priced from $18 a month for all locations and builds from preferences, while 7shifts is stronger on Fair Workweek alerts and offers a payroll add-on.
-- Deputy: Deputy is priced per user and can auto-fill by cost or equal hours; Wiz Scheduler is flat-priced and builds from preferences and coworker pairings, but Deputy is stronger on Fair Workweek (consent, premiums, notice, rest).
-- Homebase: Homebase is priced per location and Wiz Scheduler is flat-priced across locations, marking every shift that goes against a preference; Homebase is stronger with a free plan for 1 location and 10 employees, and its AI scheduling assistant comes with its Plus plan.
-- When I Work: When I Work is priced per user and Wiz Scheduler is flat-priced with coworker preferences; When I Work is stronger with a low per-user price at a single location ($2.50) and auto-assign on every plan.
+- Deputy: Deputy is priced per user and, on Core and Pro, can auto-fill by cost or equal hours; Wiz Scheduler is flat-priced and builds from preferences and coworker pairings, but Deputy is stronger on Fair Workweek (consent, premiums, notice, rest).
+- Homebase: Homebase is priced per location and Wiz Scheduler is flat-priced across locations, marking every shift that goes against a preference; Homebase is stronger with its AI scheduling assistant on the Plus plan and lower annual prices.
+- When I Work: When I Work is priced per user and Wiz Scheduler is flat-priced with coworker preferences; When I Work is stronger with a low per-user price at a single location ($2.50) and an auto-assign that can require 70% overlap with preferred availability and respects maximum hours.
 
 ## AlternativeTo
 
@@ -161,7 +161,7 @@ Managers can enter preferences for everyone: preferred days (up to 3), preferred
 
 How preferences act is visible. A weight of 1.0 is a firm rule: that employee is not considered for the shift, and if nobody else qualifies, the shift stays open instead of being filled badly. Lower weights are soft: the employee is a less likely pick. When a shift is assigned against a soft preference, it is marked with an asterisk, so the manager sees every compromise at a glance. Managers still review and edit the draft, and the aim is simply that there is less to fix afterwards.
 
-Every generation applies hard rules: role, availability and unavailability, weekly maximum hours, and pairs of people who must be kept apart. A minimum-rest rule between shifts (for example 11 hours) is available per location, and it is off until you set it. There are two ways to generate. Normal Generate offers random, rotation, rotation with about three months of history, and max-hours strategies, and managers can set priority weights for seniority, pay rate and overtime. AI Generate uses fixed weights and is paid from prepaid credits. Employee names are pseudonymized before anything is sent to the AI model.
+Every generation applies hard rules: role, availability and unavailability, weekly maximum hours, and pairs marked never to be scheduled together. A minimum-rest rule between shifts (for example 11 hours) is available per location, and it is off until you set it. There are two ways to generate. Normal Generate offers random, rotation, rotation with about three months of history, and max-hours strategies, and managers can set priority weights for seniority, pay rate and overtime. AI Generate uses fixed weights and is paid from prepaid credits. Employee names are pseudonymized before anything is sent to the AI model.
 
 Other features: QR check-in on the paid plan, employee pages in 19 languages, and importers that bring data in from 7shifts and Deputy. The importers are paid-plan only, need an API token you paste in, and do not import preferences or coworker relationships.
 
@@ -176,6 +176,6 @@ Pricing: Free plan with 2 locations, 25 employees and one schedule a month for e
 
 **List as an alternative to:**
 - 7shifts: 7shifts is priced per location, and its auto-scheduler is a beta rolling out to selected accounts that drafts from at least 6 weeks of sales and schedule history; Wiz Scheduler is priced from $18 a month for all locations and builds from preferences, while 7shifts is stronger on Fair Workweek alerts and offers a payroll add-on.
-- Deputy: Deputy is priced per user and can auto-fill by cost or equal hours; Wiz Scheduler is flat-priced and builds from preferences and coworker pairings, but Deputy is stronger on Fair Workweek (consent, premiums, notice, rest).
-- Homebase: Homebase is priced per location and Wiz Scheduler is flat-priced across locations, marking every shift that goes against a preference; Homebase is stronger with a free plan for 1 location and 10 employees, and its AI scheduling assistant comes with its Plus plan.
-- When I Work: When I Work is priced per user and Wiz Scheduler is flat-priced with coworker preferences; When I Work is stronger with a low per-user price at a single location ($2.50) and auto-assign on every plan.
+- Deputy: Deputy is priced per user and, on Core and Pro, can auto-fill by cost or equal hours; Wiz Scheduler is flat-priced and builds from preferences and coworker pairings, but Deputy is stronger on Fair Workweek (consent, premiums, notice, rest).
+- Homebase: Homebase is priced per location and Wiz Scheduler is flat-priced across locations, marking every shift that goes against a preference; Homebase is stronger with its AI scheduling assistant on the Plus plan and lower annual prices.
+- When I Work: When I Work is priced per user and Wiz Scheduler is flat-priced with coworker preferences; When I Work is stronger with a low per-user price at a single location ($2.50) and an auto-assign that can require 70% overlap with preferred availability and respects maximum hours.

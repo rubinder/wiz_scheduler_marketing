@@ -5,7 +5,9 @@ import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { loadRenderers } from "astro:container";
 import { getContainerRenderer } from "@astrojs/react/container-renderer";
 import Roundup from "../../src/views/Roundup.astro";
-import { COMPARE_PATHS, DEFAULT_TEAM, TOOLS, formatUsd, quotePlans, type ToolId } from "../../src/data/competitors";
+import enCopy from "../../src/i18n/en";
+import esCopy from "../../src/i18n/es";
+import { COMPARE_PATHS, DEFAULT_TEAM, TOOLS, formatUsd, planLabel, planRange, quotePlans, type ToolId } from "../../src/data/competitors";
 
 const PATH = "/best-scheduling-apps-nyc-restaurants";
 const ORDER: ToolId[] = ["wiz", "7shifts", "deputy", "homebase", "wheniwork"];
@@ -82,11 +84,8 @@ function faq(h: string): { name: string; text: string }[] {
 }
 const sentences = (s: string) => s.split(/(?<=[.!?])\s+/);
 const total = (id: ToolId) => formatUsd(quotePlans(TOOLS[id], DEFAULT_TEAM).find((q) => q.highlighted)!.monthlyUsd!);
-const ES_PLAN: Record<string, string> = { "One location": "Una ubicación", "Multiple locations": "Varias ubicaciones" };
-const planName = (id: ToolId, locale: "en" | "es" = "en") => {
-  const name = quotePlans(TOOLS[id], DEFAULT_TEAM).find((q) => q.highlighted)!.plan;
-  return locale === "es" ? (ES_PLAN[name] ?? name) : name;
-};
+const planName = (id: ToolId, locale: "en" | "es" = "en") =>
+  planLabel(quotePlans(TOOLS[id], DEFAULT_TEAM).find((q) => q.highlighted)!.plan, locale);
 
 describe("roundup page files", () => {
   it("exist in en and es and are listed in COMPARE_PATHS", () => {
@@ -136,6 +135,31 @@ for (const l of Object.values(L)) {
         const row = rows.find((x) => x.includes(total(id)));
         expect(row, `${id} row`).toBeDefined();
         expect(caption).toContain(TOOLS[id].name);
+      }
+    });
+
+    it("lists every plan of every tool with its range, price and fit, marking the highlighted plan", () => {
+      const table = page().match(/<table[^>]*data-price-table[^>]*>([\s\S]*?)<\/table>/)![1];
+      const rows = table.match(/<tr[^>]*data-fits[\s\S]*?<\/tr>/g)!;
+      expect(rows).toHaveLength(ORDER.reduce((n, id) => n + TOOLS[id].plans.length, 0));
+      const highlightedLabel = (l.locale === "en" ? enCopy : esCopy).calculator.highlightedLabel;
+      let at = 0;
+      for (const id of ORDER) {
+        const quotes = quotePlans(TOOLS[id], DEFAULT_TEAM);
+        TOOLS[id].plans.forEach((plan, i) => {
+          const q = quotes[i];
+          const row = rows[at++];
+          const text = plain(row);
+          expect(text, `${id} ${plan.name}`).toContain(`${TOOLS[id].name} ${planLabel(plan.name, l.locale)}`);
+          const range = planRange(plan, l.locale);
+          if (range) expect(text).toContain(range);
+          expect(row).toContain(`data-fits="${q.fits}"`);
+          const shown = q.fits ? q.monthlyUsd : q.wouldBeUsd;
+          if (shown !== null) expect(text).toContain(formatUsd(shown));
+          if (!q.fits) expect(text).toContain((l.locale === "en" ? enCopy : esCopy).calculator.doesNotFit);
+          if (q.highlighted) expect(text).toContain(highlightedLabel);
+          else expect(text).not.toContain(highlightedLabel);
+        });
       }
     });
 

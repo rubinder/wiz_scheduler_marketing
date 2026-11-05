@@ -1,12 +1,14 @@
 ---
 import Base from "../layouts/Base.astro";
 import SectionRule from "../components/SectionRule.astro";
+import PlanQuoteRow from "../components/PlanQuoteRow.astro";
 import Faq from "../components/Faq.astro";
 import { m } from "../theme";
+import { fill as fillCopy } from "../lib/fill";
 import { appLink } from "../lib/site";
 import { getSiteCopy } from "../i18n";
 import { localePath, type SiteLocale } from "../lib/links";
-import { COMPARE_PATHS, DEFAULT_TEAM, TOOLS, formatUsd, quotePlans, type Plan, type ToolId } from "../data/competitors";
+import { COMPARE_PATHS, DEFAULT_TEAM, TOOLS, formatUsd, planLabel, planRange, quotePlans, type Plan, type ToolId } from "../data/competitors";
 
 interface Props {
   locale: SiteLocale;
@@ -24,11 +26,7 @@ function need<T>(value: T | null | undefined, what: string): T {
 }
 // Every price, cap and team size in the copy is a {placeholder} filled from
 // src/data/competitors.ts, so a price change is one edit there.
-const fill = (s: string, vars: Record<string, string | number>) =>
-  s.replace(/\{([a-zA-Z0-9]+)\}/g, (_, key: string) => {
-    if (!(key in vars)) throw new Error(`roundup ${locale}: no value for {${key}}`);
-    return String(vars[key]);
-  });
+const fill = (s: string, vars: Record<string, string | number>) => fillCopy(s, vars, `roundup ${locale}`);
 const usd = (n: number) => (Number.isInteger(n) ? `$${n}` : formatUsd(n));
 function findPlan(id: ToolId, name: string): Plan {
   const found = TOOLS[id].plans.find((p) => p.name === name);
@@ -43,20 +41,23 @@ const ids: ToolId[] = ["wiz", "7shifts", "deputy", "homebase", "wheniwork"];
 const tools = ids.map((id) => TOOLS[id]);
 const checkedOn = need(tools.map((tool) => tool.checkedOn).sort()[0], "checkedOn");
 
-// Plan names are product names, but two of When I Work's are plain descriptions.
-const PLAN_LABELS: Record<SiteLocale, Record<string, string>> = {
-  en: {},
-  es: { "One location": "Una ubicación", "Multiple locations": "Varias ubicaciones" },
-};
-const planLabel = (name: string) => PLAN_LABELS[locale][name] ?? name;
 
 const picks = Object.fromEntries(
   ids.map((id) => {
     const quote = need(quotePlans(TOOLS[id], team).find((q) => q.highlighted), `${id} highlighted plan`);
     const plan = findPlan(id, quote.plan);
-    return [id, { plan, name: planLabel(quote.plan), total: formatUsd(need(quote.monthlyUsd, `${id} total`)), price: usd(need(plan.monthlyUsd, `${id} price`)) }];
+    return [id, { plan, name: planLabel(quote.plan, locale), total: formatUsd(need(quote.monthlyUsd, `${id} total`)), price: usd(need(plan.monthlyUsd, `${id} price`)) }];
   }),
 ) as Record<ToolId, { plan: Plan; name: string; total: string; price: string }>;
+
+// Every plan of every tool, priced for the default team.
+const priceRows = tools.map((tool) => ({
+  tool,
+  rows: quotePlans(tool, team).map((q, i) => {
+    const shown = q.fits ? q.monthlyUsd : q.wouldBeUsd;
+    return { ...q, range: planRange(tool.plans[i], locale), price: shown === null ? null : formatUsd(shown) };
+  }),
+}));
 
 const wizFree = findPlan("wiz", "Free");
 const common = { locations: team.locations, employees: team.employeesPerLocation, users, date: checkedOn };
@@ -144,19 +145,27 @@ const external = (href: string) => !href.startsWith("/");
         <caption class={`${m.text.muted} text-sm text-start mb-3`}>{fill(r.priceBasis, common)}</caption>
         <thead>
           <tr class={`border-b ${m.rule.heavy}`}>
-            <th scope="col" class={`${m.text.meta} py-2 pe-4 text-start`}>{r.priceHeadings.tool}</th>
             <th scope="col" class={`${m.text.meta} py-2 pe-4 text-start`}>{r.priceHeadings.plan}</th>
-            <th scope="col" class={`${m.text.meta} py-2 text-end`}>{r.priceHeadings.total}</th>
+            <th scope="col" class={`${m.text.meta} py-2 pe-4 text-end`}>{r.priceHeadings.total}</th>
+            <th scope="col" class={`${m.text.meta} py-2 text-start`}>{t.calculator.autoSchedulingHeader}</th>
           </tr>
         </thead>
         <tbody>
-          {tools.map((tool) => (
-            <tr class={`border-b ${m.rule.line}`}>
-              <th scope="row" class="py-3 pe-4 text-start font-medium">{tool.name}</th>
-              <td class="py-3 pe-4">{picks[tool.id].name}</td>
-              <td class={`${m.text.data} py-3 text-end`}>{picks[tool.id].total}</td>
-            </tr>
-          ))}
+          {priceRows.flatMap(({ tool, rows }) =>
+            rows.map((row) => (
+              <PlanQuoteRow
+                locale={locale}
+                toolName={tool.name}
+                plan={row.plan}
+                range={row.range}
+                fits={row.fits}
+                highlighted={row.highlighted}
+                price={row.price}
+                autoScheduling={row.autoScheduling}
+                calculator={t.calculator}
+              />
+            )),
+          )}
         </tbody>
       </table>
     </section>
