@@ -14,15 +14,26 @@
   }
 }
 
-/* Markdown bodies (compare pages). No typography plugin: the rules are few. */
+/* Markdown bodies (compare pages, guides). No typography plugin: the rules are few. Every element
+   the guide boundary check allows has a rule here; logical-direction utilities only. */
 @layer components {
   .prose-rota h2 { @apply font-display text-3xl font-semibold leading-[1.05] mt-16 mb-4; }
   .prose-rota h3 { @apply font-display text-2xl font-semibold mt-10 mb-3; }
+  .prose-rota h4 { @apply font-display text-xl font-semibold mt-8 mb-2; }
+  .prose-rota h5 { @apply font-display text-lg font-semibold mt-6 mb-2; }
+  .prose-rota h6 { @apply font-data text-xs uppercase tracking-[0.14em] text-ink/70 mt-6 mb-2; }
   .prose-rota p { @apply font-body text-ink/70 leading-relaxed max-w-[62ch] mb-4; }
   .prose-rota ul { @apply list-disc ps-6 mb-6 max-w-[62ch]; }
+  .prose-rota ol { @apply list-decimal ps-6 mb-6 max-w-[62ch]; }
+  .prose-rota li > ul,
+  .prose-rota li > ol { @apply mt-1 mb-1; }
   .prose-rota li { @apply font-body text-ink/70 leading-relaxed mb-1; }
+  .prose-rota blockquote { @apply border-s-2 border-rule ps-4 my-6 max-w-[62ch] italic; }
+  .prose-rota hr { @apply border-t border-rule my-12; }
+  .prose-rota pre { @apply my-6 p-4 rounded-md text-sm leading-relaxed overflow-x-auto max-w-full; }
   .prose-rota a { @apply underline underline-offset-4 decoration-rule hover:decoration-marker; }
-  .prose-rota table { @apply w-full font-data text-sm tabular-nums my-8; }
+  /* block + overflow-x-auto scrolls a wide table at phone width instead of widening the page. */
+  .prose-rota table { @apply block overflow-x-auto max-w-full sm:table w-full font-data text-sm tabular-nums my-8; }
   .prose-rota th { @apply font-data text-ink/70 uppercase tracking-[0.14em] text-xs text-start pb-3 border-b border-rule; }
   .prose-rota td { @apply py-2.5 text-start border-b border-rule/70 align-top; }
 }

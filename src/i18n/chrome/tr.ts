@@ -28,6 +28,17 @@ const chrome: Chrome = {
     rotaPeople: "kişi",
     rotaViolations: "dinlenme ihlali",
   },
+  footer: {
+    guides: "Rehberler",
+  },
+  guides: {
+    indexTitle: "Vardiya planlama rehberleri",
+    indexIntro: "Vardiya çizelgesi hazırlayan yöneticiler için sade ve uygulanabilir rehberler.",
+    readMore: "Devamını okuyun",
+    ctaSignup: "Ücretsiz kaydolun",
+    ctaHome: "Ana sayfaya dön",
+    updated: "Güncellendi",
+  },
 };
 
 export default chrome;

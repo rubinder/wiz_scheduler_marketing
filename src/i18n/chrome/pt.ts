@@ -28,6 +28,17 @@ const chrome: Chrome = {
     rotaPeople: "pessoas",
     rotaViolations: "violações de descanso",
   },
+  footer: {
+    guides: "Guias",
+  },
+  guides: {
+    indexTitle: "Guias de escalas",
+    indexIntro: "Guias práticos e diretos para gestores que montam as escalas da equipe.",
+    readMore: "Leia também",
+    ctaSignup: "Cadastre-se grátis",
+    ctaHome: "Voltar ao início",
+    updated: "Atualizado em",
+  },
 };
 
 export default chrome;

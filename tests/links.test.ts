@@ -72,3 +72,10 @@ describe("appLink", () => {
     );
   });
 });
+
+describe("guides index", () => {
+  it("the guides index exists in every locale", () => {
+    expect(localePath("ja", "/guides")).toBe("/ja/guides");
+    expect(alternates("/guides")).toHaveLength(LOCALES.length);
+  });
+});

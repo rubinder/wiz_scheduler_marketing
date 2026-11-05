@@ -28,6 +28,17 @@ const chrome: Chrome = {
     rotaPeople: "लोग",
     rotaViolations: "विश्राम उल्लंघन",
   },
+  footer: {
+    guides: "गाइड",
+  },
+  guides: {
+    indexTitle: "शिफ्ट शेड्यूलिंग गाइड",
+    indexIntro: "शिफ्ट शेड्यूल बनाने वाले मैनेजरों के लिए आसान भाषा में व्यावहारिक गाइड।",
+    readMore: "और पढ़ें",
+    ctaSignup: "मुफ़्त साइन अप करें",
+    ctaHome: "होम पर वापस जाएँ",
+    updated: "अपडेट किया गया",
+  },
 };
 
 export default chrome;

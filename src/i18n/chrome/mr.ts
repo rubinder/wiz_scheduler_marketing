@@ -28,6 +28,17 @@ const chrome: Chrome = {
     rotaPeople: "लोक",
     rotaViolations: "विश्रांती उल्लंघने",
   },
+  footer: {
+    guides: "मार्गदर्शक",
+  },
+  guides: {
+    indexTitle: "शिफ्ट वेळापत्रक मार्गदर्शक",
+    indexIntro: "शिफ्टचे वेळापत्रक बनवणाऱ्या व्यवस्थापकांसाठी सोप्या भाषेतील व्यावहारिक मार्गदर्शक.",
+    readMore: "आणखी वाचा",
+    ctaSignup: "मोफत साइन अप करा",
+    ctaHome: "मुख्यपृष्ठावर परत",
+    updated: "अद्ययावत",
+  },
 };
 
 export default chrome;

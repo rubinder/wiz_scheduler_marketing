@@ -28,6 +28,17 @@ const chrome: Chrome = {
     rotaPeople: "personas",
     rotaViolations: "infracciones de descanso",
   },
+  footer: {
+    guides: "Guías",
+  },
+  guides: {
+    indexTitle: "Guías de horarios y turnos",
+    indexIntro: "Guías prácticas y claras para quienes arman los horarios de su equipo.",
+    readMore: "Sigue leyendo",
+    ctaSignup: "Regístrate gratis",
+    ctaHome: "Volver al inicio",
+    updated: "Actualizado",
+  },
 };
 
 export default chrome;

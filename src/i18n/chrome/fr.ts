@@ -28,6 +28,17 @@ const chrome: Chrome = {
     rotaPeople: "personnes",
     rotaViolations: "infractions au repos",
   },
+  footer: {
+    guides: "Guides",
+  },
+  guides: {
+    indexTitle: "Guides de planification",
+    indexIntro: "Des guides pratiques et clairs pour les responsables qui construisent les plannings de leurs équipes.",
+    readMore: "À lire aussi",
+    ctaSignup: "Inscription gratuite",
+    ctaHome: "Retour à l'accueil",
+    updated: "Mis à jour le",
+  },
 };
 
 export default chrome;

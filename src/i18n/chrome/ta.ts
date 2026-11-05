@@ -28,6 +28,17 @@ const chrome: Chrome = {
     rotaPeople: "நபர்கள்",
     rotaViolations: "ஓய்வு மீறல்கள்",
   },
+  footer: {
+    guides: "வழிகாட்டிகள்",
+  },
+  guides: {
+    indexTitle: "ஷிஃப்ட் அட்டவணை வழிகாட்டிகள்",
+    indexIntro: "ஷிஃப்ட் அட்டவணைகளை உருவாக்கும் மேலாளர்களுக்கான எளிய, நடைமுறை வழிகாட்டிகள்.",
+    readMore: "மேலும் படிக்க",
+    ctaSignup: "இலவசமாகப் பதிவுசெய்க",
+    ctaHome: "முகப்புக்குத் திரும்பு",
+    updated: "புதுப்பிக்கப்பட்டது",
+  },
 };
 
 export default chrome;

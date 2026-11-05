@@ -28,6 +28,17 @@ const chrome: Chrome = {
     rotaPeople: "человек",
     rotaViolations: "нарушений отдыха",
   },
+  footer: {
+    guides: "Руководства",
+  },
+  guides: {
+    indexTitle: "Руководства по графикам смен",
+    indexIntro: "Практичные и понятные руководства для менеджеров, которые составляют графики смен.",
+    readMore: "Читайте также",
+    ctaSignup: "Зарегистрироваться бесплатно",
+    ctaHome: "На главную",
+    updated: "Обновлено",
+  },
 };
 
 export default chrome;

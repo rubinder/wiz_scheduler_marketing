@@ -1,0 +1,18 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import Guide from "../../../views/Guide.astro";
+import { DEFAULT_LOCALE, type Locale } from "../../../lib/links";
+import { splitId } from "../../../lib/guides";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("guides");
+  return entries
+    .map((entry) => ({ entry, ...splitId(entry.id) }))
+    .filter((g) => g.locale !== DEFAULT_LOCALE)
+    .map((g) => ({ params: { locale: g.locale, slug: g.slug }, props: { entry: g.entry } }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const { entry } = Astro.props as { entry: CollectionEntry<"guides"> };
+---
+<Guide locale={locale} entry={entry} />

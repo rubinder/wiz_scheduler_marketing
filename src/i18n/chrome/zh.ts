@@ -28,6 +28,17 @@ const chrome: Chrome = {
     rotaPeople: "人",
     rotaViolations: "休息违规",
   },
+  footer: {
+    guides: "指南",
+  },
+  guides: {
+    indexTitle: "排班指南",
+    indexIntro: "为负责排班的管理者准备的实用指南，通俗易懂。",
+    readMore: "延伸阅读",
+    ctaSignup: "免费注册",
+    ctaHome: "返回首页",
+    updated: "更新于",
+  },
 };
 
 export default chrome;

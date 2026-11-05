@@ -11,8 +11,11 @@ interface Props {
   description: string;
   path: string;
   noindex?: boolean;
+  /** Only for pages that exist in some locales of `path`, not all (guides); see Seo. */
+  alternates?: { locale: Locale; href: string }[];
+  jsonLd?: Record<string, unknown>;
 }
-const { locale, title, description, path, noindex } = Astro.props;
+const { locale, title, description, path, noindex, alternates, jsonLd } = Astro.props;
 ---
 <!doctype html>
 <html lang={locale} dir={dir(locale)}>
@@ -22,12 +25,12 @@ const { locale, title, description, path, noindex } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/Archivo-2.woff2" />
     <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/SourceSans3-6.woff2" />
-    <Seo locale={locale} title={title} description={description} path={path} noindex={noindex} />
+    <Seo locale={locale} title={title} description={description} path={path} noindex={noindex} alternates={alternates} jsonLd={jsonLd} />
     <slot name="head" />
   </head>
   <body>
     <div class="min-h-screen bg-newsprint text-ink font-body">
-      <Nav locale={locale} path={path} />
+      <Nav locale={locale} path={path} alternates={alternates} />
       <slot />
       <Footer locale={locale} />
     </div>

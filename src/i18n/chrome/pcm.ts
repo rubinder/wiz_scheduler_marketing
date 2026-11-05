@@ -28,6 +28,17 @@ const chrome: Chrome = {
     rotaPeople: "people",
     rotaViolations: "rest violations",
   },
+  footer: {
+    guides: "Guides",
+  },
+  guides: {
+    indexTitle: "Guides for shift schedule",
+    indexIntro: "Simple guides wey go help managers arrange shift schedule for dem team.",
+    readMore: "Read more",
+    ctaSignup: "Sign up free",
+    ctaHome: "Go back to home",
+    updated: "Updated",
+  },
 };
 
 export default chrome;
