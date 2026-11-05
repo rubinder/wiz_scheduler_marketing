@@ -331,6 +331,7 @@ export const COMPARE_PATHS: string[] = [
   "/compare/deputy-alternatives",
   "/compare/homebase",
   "/compare/when-i-work",
+  "/best-scheduling-apps-nyc-restaurants",
 ];
 
 export const DEFAULT_TEAM: Team = { locations: 3, employeesPerLocation: 13 };

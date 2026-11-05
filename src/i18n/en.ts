@@ -116,6 +116,7 @@ const en = {
       "/compare/deputy-alternatives": "Deputy alternatives and pricing compared",
       "/compare/homebase": "Wiz Scheduler vs Homebase",
       "/compare/when-i-work": "Wiz Scheduler vs When I Work",
+      "/best-scheduling-apps-nyc-restaurants": "Best scheduling apps for NYC restaurants",
     },
     pricingCaption: "Monthly list prices",
     pricingSources: "Sources",
@@ -127,6 +128,78 @@ const en = {
     userSize: "Priced per user; {minimum} monthly minimum on monthly billing",
     noLimit: "Per location; no team-size range listed",
     wizProSize: "Unlimited locations; 500 employees included, then {extra} a month per extra 500",
+  },
+  roundup: {
+    metaTitle: "Best scheduling apps for NYC restaurants, compared",
+    metaDescription:
+      "Five restaurant scheduling apps compared for NYC: auto-scheduling, employee preferences, Fair Workweek support and monthly price for 1 to 3 locations, with sources.",
+    eyebrow: "Guide",
+    heading: "Best scheduling apps for NYC restaurants",
+    intro:
+      "Five tools that can build a restaurant's weekly schedule, compared on what a New York owner usually asks. We make Wiz Scheduler, so it is listed first. The order is ours, not a ranking, and every tool gets a fair line on who it is best for.",
+    criteriaTitle: "How we compared them",
+    criteria: [
+      "Auto-scheduling: can the tool draft the week for you, and on which plan?",
+      "Employee preferences: do employees' preferred days, hours and coworkers go into the draft?",
+      "NYC Fair Workweek: how much help does the tool give with notice, rest and premiums?",
+      "Price: the monthly cost for a typical NYC restaurant with 1 to 3 locations.",
+    ],
+    bestForLabel: "Best for",
+    bestFor: {
+      wiz: "Wiz Scheduler is best for teams that want employees to have a say.",
+      "7shifts": "7shifts is best for restaurants that want Fair Workweek alerts and a payroll add-on, and are happy to try an auto-scheduler that is still a beta.",
+      deputy: "Deputy is best for teams that need the strongest NYC Fair Workweek support of the five.",
+      homebase: "Homebase is best for a single small location that wants a free plan to start, with AI scheduling on the paid Plus plan.",
+      wheniwork: "When I Work is best for a single location that wants a low per-user price with auto-assign on every plan.",
+    },
+    wizSay:
+      "Managers can enter preferences for everyone. Employees can send their own once preference requests are turned on in Company Settings, and a manager approves each request.",
+    wizFairWorkweek:
+      "Fair Workweek is where Wiz Scheduler is limited: it has only a minimum-rest rule, set per location and off until you set it, with no notice tracking and no premium tracking. Deputy is far stronger here.",
+    factLabels: { autoScheduling: "Auto-scheduling", preferences: "Employee preferences", fairWorkweek: "NYC Fair Workweek" },
+    price: {
+      wiz: "{plan} costs {total} a month for every location, with {included} employees included. AI Generate is not included and is paid from prepaid credits. The free plan covers {freeLocations} locations and {freeEmployees} employees.",
+      "7shifts": "{plan} costs {price} per location, so {total} a month for {locations} locations with {employees} employees per location. The tier depends on headcount per location: {plan} covers up to {maxEmployees} employees per location. 7shifts' auto-scheduler is a beta that is rolling out to selected accounts.",
+      deputy: "{plan} costs {price} per user a month, so {total} a month for {users} users, counting one user per employee. Monthly plans have a {minimum} minimum.",
+      homebase: "{plan} costs {price} per location, so {total} a month for {locations} locations. Homebase's site shows a $0 promotion on {promoPlan}; it is not counted here.",
+      wheniwork: "{plan} costs {price} per user a month, so {total} a month for {users} users, counting one user per employee.",
+    },
+    compareLink: "Full comparison: Wiz Scheduler vs {name}",
+    sources: "Sources",
+    priceTitle: "What they cost",
+    priceNote:
+      "Prices are for {locations} locations with {employees} employees each, the top of the 1 to 3 location range. They are list prices on monthly billing, excluding taxes, add-ons and annual discounts, and each tool is priced on its cheapest plan with auto-scheduling. Checked on {date}; vendors change prices, so confirm on their pricing pages.",
+    priceHeadings: { tool: "Tool", plan: "Plan", total: "Monthly total" },
+    fairTitle: "NYC Fair Workweek",
+    fairBody:
+      "Deputy has the most complete NYC Fair Workweek support of these tools. Deputy's own help article says NYC fast-food Fair Workweek applies to chains with 30 or more locations nationwide, and NYC retail to employers with 20 or more employees.",
+    fairArticle: "Deputy's Fair Workweek help article",
+    fairNotLegal:
+      "This is not legal advice. Check the rules that apply to your business before you pick a tool for compliance.",
+    fairWiz: "See what Wiz Scheduler covers on the NYC Fair Workweek page",
+    faqTitle: "Frequently asked questions",
+    faq: [
+      {
+        q: "Which scheduling app is best for an NYC restaurant?",
+        a: "No single app is best for everyone. Deputy has the strongest NYC Fair Workweek support of the five tools we compare. Wiz Scheduler is best for teams that want employees to have a say: managers can enter preferences for everyone, and employees can send their own once preference requests are turned on in Company Settings. 7shifts, Homebase and When I Work each suit other needs, described above.",
+      },
+      {
+        q: "How much does restaurant scheduling software cost for 1 to 3 locations in NYC?",
+        a: "For {locations} locations with {employees} employees each, on monthly billing and excluding taxes, add-ons and annual discounts, using each tool's cheapest plan with auto-scheduling: Wiz Scheduler {wizPlan} {wizTotal} a month; 7shifts {sevenPlan} {sevenTotal} a month at {employees} employees per location, with an auto-scheduler that is a beta; Deputy {deputyPlan} {deputyTotal} a month for {users} users, counting one user per employee; Homebase {homebasePlan} {homebaseTotal} a month, without its $0 promotion; When I Work {wiwPlan} {wiwTotal} a month for {users} users, counting one user per employee. List prices checked on {date}.",
+      },
+      {
+        q: "Which scheduling app helps most with NYC Fair Workweek?",
+        a: "Of the five tools we compare, Deputy has the strongest NYC Fair Workweek support, including change consent, premiums, notice and rest. 7shifts has alerts on paid plans. Wiz Scheduler has only an opt-in minimum-rest rule per location, with no notice tracking and no premium tracking. Deputy's own help article says NYC fast-food Fair Workweek applies to chains with 30 or more locations nationwide, and NYC retail to employers with 20 or more employees. This is not legal advice; check the rules that apply to your business.",
+      },
+      {
+        q: "Can employees choose their own shifts in Wiz Scheduler?",
+        a: "Employees state preferences, not shifts. Managers can enter preferences for everyone. Employees can send their own once preference requests are turned on in Company Settings, which is off by default, and a manager approves each request. The generator then builds the week around them and marks every shift that goes against a soft preference.",
+      },
+    ],
+    ctaTitle: "Try Wiz Scheduler free",
+    ctaBody:
+      "Turn on preference requests in Company Settings and your employees can send their preferences for you to approve.",
+    ctaSignup: "Sign up free",
   },
   checker: {
     metaTitle: "Free NYC Fair Workweek schedule checker",

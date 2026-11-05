@@ -117,6 +117,7 @@ const es: Copy = {
       "/compare/deputy-alternatives": "Alternativas a Deputy y sus precios comparados",
       "/compare/homebase": "Wiz Scheduler frente a Homebase",
       "/compare/when-i-work": "Wiz Scheduler frente a When I Work",
+      "/best-scheduling-apps-nyc-restaurants": "Mejores apps de horarios para restaurantes de Nueva York",
     },
     pricingCaption: "Precios de lista mensuales",
     pricingSources: "Fuentes",
@@ -128,6 +129,78 @@ const es: Copy = {
     userSize: "Por usuario; mínimo de {minimum} al mes con facturación mensual",
     noLimit: "Por ubicación; sin rango de equipo indicado",
     wizProSize: "Ubicaciones ilimitadas; 500 empleados incluidos y luego {extra} al mes por cada 500 adicionales",
+  },
+  roundup: {
+    metaTitle: "Mejores apps de horarios para restaurantes de Nueva York, comparadas",
+    metaDescription:
+      "Cinco apps de horarios para restaurantes comparadas para Nueva York: programación automática, preferencias de empleados, Fair Workweek y precio mensual para 1 a 3 ubicaciones, con fuentes.",
+    eyebrow: "Guía",
+    heading: "Mejores apps de horarios para restaurantes de Nueva York",
+    intro:
+      "Cinco herramientas que pueden armar el horario semanal de un restaurante, comparadas según lo que suele preguntar un dueño en Nueva York. Nosotros hacemos Wiz Scheduler, así que va primero. El orden es nuestro, no un ranking, y cada herramienta tiene una línea justa sobre para quién es ideal.",
+    criteriaTitle: "Cómo las comparamos",
+    criteria: [
+      "Programación automática: ¿puede la herramienta armar el borrador de la semana, y en qué plan?",
+      "Preferencias de los empleados: ¿entran al borrador los días, las horas y los compañeros que prefiere cada empleado?",
+      "Fair Workweek de Nueva York: ¿cuánta ayuda da con avisos, descansos y primas?",
+      "Precio: el costo mensual de un restaurante típico de Nueva York con 1 a 3 ubicaciones.",
+    ],
+    bestForLabel: "Ideal para",
+    bestFor: {
+      wiz: "Wiz Scheduler es ideal para equipos que quieren que los empleados tengan voz en su horario.",
+      "7shifts": "7shifts es ideal para restaurantes que quieren alertas de Fair Workweek y un complemento de nómina, y que no tienen problema en probar un programador automático que todavía está en beta.",
+      deputy: "Deputy es ideal para equipos que necesitan el soporte de Fair Workweek de Nueva York más completo de los cinco.",
+      homebase: "Homebase es ideal para una sola ubicación pequeña que quiere empezar con un plan gratuito, con programación con AI en el plan de pago Plus.",
+      wheniwork: "When I Work es ideal para una sola ubicación que busca un precio bajo por usuario con asignación automática en todos los planes.",
+    },
+    wizSay:
+      "Los gerentes pueden ingresar las preferencias de todos. Los empleados pueden enviar las suyas cuando se activan las solicitudes de preferencias en la Configuración de la empresa, y un gerente aprueba cada solicitud.",
+    wizFairWorkweek:
+      "Fair Workweek es donde Wiz Scheduler es limitado: solo tiene una regla de descanso mínimo, fijada por ubicación y desactivada hasta que la configuras, sin seguimiento de avisos ni de primas. Deputy es mucho más completo en esto.",
+    factLabels: { autoScheduling: "Programación automática", preferences: "Preferencias de los empleados", fairWorkweek: "Fair Workweek de Nueva York" },
+    price: {
+      wiz: "{plan} cuesta {total} al mes para todas las ubicaciones, con {included} empleados incluidos. La generación con AI no está incluida y se paga con créditos prepagados. El plan gratuito cubre {freeLocations} ubicaciones y {freeEmployees} empleados.",
+      "7shifts": "{plan} cuesta {price} por ubicación, o sea {total} al mes para {locations} ubicaciones con {employees} empleados por ubicación. El plan depende de los empleados por ubicación: {plan} cubre hasta {maxEmployees} empleados por ubicación. El programador automático de 7shifts está en beta y se está habilitando en cuentas seleccionadas.",
+      deputy: "{plan} cuesta {price} por usuario al mes, o sea {total} al mes para {users} usuarios, si contamos un usuario por empleado. Los planes mensuales tienen un mínimo de {minimum}.",
+      homebase: "{plan} cuesta {price} por ubicación, o sea {total} al mes para {locations} ubicaciones. El sitio de Homebase muestra una promoción de $0 en {promoPlan}; aquí no se cuenta.",
+      wheniwork: "{plan} cuesta {price} por usuario al mes, o sea {total} al mes para {users} usuarios, si contamos un usuario por empleado.",
+    },
+    compareLink: "Comparación completa: Wiz Scheduler frente a {name}",
+    sources: "Fuentes",
+    priceTitle: "Cuánto cuestan",
+    priceNote:
+      "Los precios son para {locations} ubicaciones con {employees} empleados cada una, el tope del rango de 1 a 3 ubicaciones. Son precios de lista con facturación mensual, sin impuestos, complementos ni descuentos anuales, y cada herramienta se calcula con su plan más barato con programación automática. Verificados el {date}; los proveedores cambian sus precios, así que confírmalos en sus páginas de precios.",
+    priceHeadings: { tool: "Herramienta", plan: "Plan", total: "Total mensual" },
+    fairTitle: "Fair Workweek de Nueva York",
+    fairBody:
+      "Deputy tiene el soporte de Fair Workweek de Nueva York más completo de estas herramientas. El propio artículo de ayuda de Deputy indica que Fair Workweek de Nueva York para comida rápida se aplica a cadenas con 30 o más ubicaciones en todo el país, y el de comercio minorista a empleadores con 20 o más empleados.",
+    fairArticle: "Artículo de ayuda de Deputy sobre Fair Workweek",
+    fairNotLegal:
+      "Esto no es asesoría legal. Revisa las reglas que se aplican a tu negocio antes de elegir una herramienta para cumplirlas.",
+    fairWiz: "Mira qué cubre Wiz Scheduler en la página de Fair Workweek de Nueva York",
+    faqTitle: "Preguntas frecuentes",
+    faq: [
+      {
+        q: "¿Cuál es la mejor app de horarios para un restaurante de Nueva York?",
+        a: "Ninguna app es la mejor para todos. Deputy tiene el soporte de Fair Workweek de Nueva York más completo de las cinco herramientas que comparamos. Wiz Scheduler es ideal para equipos que quieren que los empleados tengan voz en su horario: los gerentes pueden ingresar las preferencias de todos, y los empleados pueden enviar las suyas cuando se activan las solicitudes de preferencias en la Configuración de la empresa. 7shifts, Homebase y When I Work sirven para otras necesidades, descritas arriba.",
+      },
+      {
+        q: "¿Cuánto cuesta un software de horarios para restaurantes con 1 a 3 ubicaciones en Nueva York?",
+        a: "Para {locations} ubicaciones con {employees} empleados cada una, con facturación mensual y sin impuestos, complementos ni descuentos anuales, y con el plan más barato con programación automática de cada herramienta: Wiz Scheduler {wizPlan} {wizTotal} al mes; 7shifts {sevenPlan} {sevenTotal} al mes con {employees} empleados por ubicación, y un programador automático que está en beta; Deputy {deputyPlan} {deputyTotal} al mes para {users} usuarios, si contamos un usuario por empleado; Homebase {homebasePlan} {homebaseTotal} al mes, sin contar su promoción de $0; When I Work {wiwPlan} {wiwTotal} al mes para {users} usuarios, si contamos un usuario por empleado. Precios de lista verificados el {date}.",
+      },
+      {
+        q: "¿Qué app de horarios ayuda más con Fair Workweek de Nueva York?",
+        a: "De las cinco herramientas que comparamos, Deputy tiene el soporte de Fair Workweek de Nueva York más completo, con consentimiento para cambios, primas, avisos y descansos. 7shifts tiene alertas en los planes de pago. Wiz Scheduler solo tiene una regla opcional de descanso mínimo por ubicación, sin seguimiento de avisos ni de primas. El propio artículo de ayuda de Deputy indica que Fair Workweek de Nueva York para comida rápida se aplica a cadenas con 30 o más ubicaciones en todo el país, y el de comercio minorista a empleadores con 20 o más empleados. Esto no es asesoría legal; revisa las reglas que se aplican a tu negocio.",
+      },
+      {
+        q: "¿Pueden los empleados elegir sus turnos en Wiz Scheduler?",
+        a: "Los empleados indican preferencias, no turnos. Los gerentes pueden ingresar las preferencias de todos. Los empleados pueden enviar las suyas cuando se activan las solicitudes de preferencias en la Configuración de la empresa, que viene desactivado por defecto, y un gerente aprueba cada solicitud. Luego el generador arma la semana en torno a ellas y marca cada turno que va contra una preferencia flexible.",
+      },
+    ],
+    ctaTitle: "Prueba Wiz Scheduler gratis",
+    ctaBody:
+      "Activa las solicitudes de preferencias en la Configuración de la empresa y tus empleados podrán enviarte sus preferencias para que las apruebes.",
+    ctaSignup: "Regístrate gratis",
   },
   checker: {
     metaTitle: "Verificador gratuito de horarios Fair Workweek NYC",
