@@ -1,7 +1,7 @@
 ---
 import { m } from "../theme";
-import { getCopy } from "../i18n";
-import { localePath, type Locale } from "../lib/links";
+import { getCopy, getSiteCopy } from "../i18n";
+import { isSiteLocale, localePath, type Locale } from "../lib/links";
 
 interface Props {
   locale: Locale;
@@ -18,6 +18,11 @@ const links = [
   { to: "/terms", label: t.gdpr.termsOfService },
   { to: "/dpa", label: t.gdpr.dpa },
 ];
+// The alternatives and roundup pages exist in en/es only; other locales keep the footer as it was.
+if (isSiteLocale(locale)) {
+  const extra = Object.entries(getSiteCopy(locale).footer.compareLinks).map(([to, label]) => ({ to, label }));
+  links.splice(links.findIndex((l) => l.to === "/guides"), 0, ...extra);
+}
 ---
 <footer class={`border-t ${m.rule.heavy} mt-24`}>
   <div class="max-w-[92rem] mx-auto px-6 py-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">

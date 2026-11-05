@@ -1,9 +1,12 @@
 ---
 import Base from "../layouts/Base.astro";
 import SectionRule from "../components/SectionRule.astro";
+import RelatedLinks from "../components/RelatedLinks.astro";
+import PlanQuoteRow from "../components/PlanQuoteRow.astro";
 import Faq from "../components/Faq.astro";
 import CostCalculator from "../islands/CostCalculator.tsx";
 import { m } from "../theme";
+import { fill as fillCopy } from "../lib/fill";
 import { appLink } from "../lib/site";
 import { getSiteCopy, type Copy } from "../i18n";
 import { localePath, type SiteLocale } from "../lib/links";
@@ -19,8 +22,7 @@ interface Props {
 const { locale, focus } = Astro.props;
 const t = getSiteCopy(locale);
 const L = (p: string) => localePath(locale, p);
-const fill = (s: string, vars: Record<string, string | number>) =>
-  Object.entries(vars).reduce((acc, [k, v]) => acc.replaceAll(`{${k}}`, String(v)), s);
+const fill = (s: string, vars: Record<string, string | number>) => fillCopy(s, vars, `alternatives ${locale}/${focus}`);
 /** Fills every string in a copy tree, keeping its shape. */
 function fillDeep<T>(node: T, vars: Record<string, string | number>): T {
   if (typeof node === "string") return fill(node, vars) as T;
@@ -98,9 +100,10 @@ const vars: Record<string, string | number> = {
   wizFreeLocations: need(wizFree.maxLocations, "Wiz Free maxLocations"),
   wizFreeEmployees: need(wizFree.maxTotalEmployees, "Wiz Free maxTotalEmployees"),
 };
-const a = fillDeep(t.alternatives, vars);
+// perLocation and perUser are per-plan templates ({count}, {price}) filled per row below.
+const { perLocation, perUser, ...fillable } = t.alternatives;
+const a = { ...fillDeep(fillable, vars), perLocation, perUser } as typeof t.alternatives;
 const f = a[focus];
-const autoLabel = { yes: t.calculator.autoYes, beta: t.calculator.autoBeta, no: t.calculator.autoNo };
 const example = tools.map((tool) => ({
   tool,
   rows: quotePlans(tool, team).map((q, i) => {
@@ -192,33 +195,18 @@ const example = tools.map((tool) => ({
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr
-                  class={`border-b ${m.rule.line} ${row.highlighted ? "font-bold bg-marker/20" : ""} ${row.fits ? "" : "text-ink/60"}`}
-                  data-highlighted={row.highlighted || undefined}
-                  data-fits={String(row.fits)}
-                >
-                  <th scope="row" class="py-3 pe-4 text-start font-[inherit]">
-                    {tool.name} {row.plan}
-                    {row.highlighted && (
-                      <span class={`${m.text.meta} ms-2 border ${m.rule.heavy} px-1.5 py-0.5 normal-case tracking-normal font-normal`}>
-                        {t.calculator.highlightedLabel}
-                      </span>
-                    )}
-                    {row.range && <span class="block text-sm font-normal text-ink/70">{row.range}</span>}
-                  </th>
-                  <td class={`${m.text.data} py-3 pe-4 text-end`}>
-                    {row.fits ? (
-                      row.price ?? t.calculator.contactSales
-                    ) : (
-                      <>
-                        {row.price && <span class="block">{row.price}</span>}
-                        <span class="block font-body text-sm">{t.calculator.doesNotFit}</span>
-                      </>
-                    )}
-                  </td>
-                  <td class={`${m.text.muted} py-3 pe-4`}>{row.how}</td>
-                  <td class="py-3">{autoLabel[row.autoScheduling]}</td>
-                </tr>
+                <PlanQuoteRow
+                  locale={locale}
+                  toolName={tool.name}
+                  plan={row.plan}
+                  range={row.range}
+                  fits={row.fits}
+                  highlighted={row.highlighted}
+                  price={row.price}
+                  autoScheduling={row.autoScheduling}
+                  calculator={t.calculator}
+                  how={row.how}
+                />
               ))}
             </tbody>
           </table>
@@ -299,6 +287,8 @@ const example = tools.map((tool) => ({
     </section>
 
     <Faq items={f.faq} title={a.faqTitle} />
+
+    <RelatedLinks locale={locale} path={`/compare/${focus}-alternatives`} />
 
     <section class={`max-w-3xl mb-16 pb-16 border-t ${m.rule.line}`}>
       <h2 class={`${m.text.display} text-2xl font-semibold mb-4 mt-12`}>{a.ctaTitle}</h2>

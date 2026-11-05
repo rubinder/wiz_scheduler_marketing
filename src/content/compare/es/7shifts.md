@@ -62,7 +62,6 @@ Wiz Scheduler Pro incluye 500 empleados, 50 puestos de gerente y 25 generaciones
 - **Alertas de Fair Workweek de Nueva York.** Los planes de pago de 7shifts avisan de clopenings, de cambios con menos de 14 días y de primas. Wiz Scheduler solo aplica el descanso entre turnos, una vez que lo configuras.
 - **Nómina.** 7shifts vende un complemento de nómina. Wiz Scheduler no procesa nóminas ni reparte propinas.
 - **Borradores a partir de las ventas.** El programador automático de 7shifts trabaja con tu historial de ventas y horarios. Wiz Scheduler no tiene integración con POS ni previsión de ventas.
-- **Un plan gratuito para una ubicación pequeña.** 7shifts Comp es gratis para una ubicación con hasta {compMaxEmployees} empleados.
 
 Si esas son las razones por las que usas 7shifts, es muy posible que siga siendo la mejor opción para ti.
 

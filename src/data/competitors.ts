@@ -329,6 +329,9 @@ export const COMPARE_PATHS: string[] = [
   "/compare/7shifts-alternatives",
   "/compare/deputy",
   "/compare/deputy-alternatives",
+  "/compare/homebase",
+  "/compare/when-i-work",
+  "/best-scheduling-apps-nyc-restaurants",
 ];
 
 export const DEFAULT_TEAM: Team = { locations: 3, employeesPerLocation: 13 };
@@ -461,4 +464,17 @@ export function planRange(plan: Plan, locale: SiteLocale): string | null {
   else if (plan.maxTotalEmployees !== undefined) parts.push(w.upToEmployees(plan.maxTotalEmployees));
 
   return parts.length > 0 ? parts.join(", ") : null;
+}
+
+const PLAN_LABELS: Record<SiteLocale, Record<string, string>> = {
+  en: {},
+  es: { Free: "Gratis", "One location": "Una ubicación", "Multiple locations": "Varias ubicaciones" },
+};
+
+/**
+ * A plan's name as shown to readers. Product plan names (Pro, Essentials…) stay
+ * as they are; Wiz Free and When I Work's two descriptive names are translated.
+ */
+export function planLabel(name: string, locale: SiteLocale): string {
+  return PLAN_LABELS[locale][name] ?? name;
 }

@@ -1,0 +1,241 @@
+---
+import Base from "../layouts/Base.astro";
+import SectionRule from "../components/SectionRule.astro";
+import PlanQuoteRow from "../components/PlanQuoteRow.astro";
+import Faq from "../components/Faq.astro";
+import { m } from "../theme";
+import { fill as fillCopy } from "../lib/fill";
+import { appLink } from "../lib/site";
+import { getSiteCopy } from "../i18n";
+import { localePath, type SiteLocale } from "../lib/links";
+import { COMPARE_PATHS, DEFAULT_TEAM, TOOLS, formatUsd, planLabel, planRange, quotePlans, type Plan, type ToolId } from "../data/competitors";
+
+interface Props {
+  locale: SiteLocale;
+}
+const { locale } = Astro.props;
+const t = getSiteCopy(locale);
+const r = t.roundup;
+const PATH = "/best-scheduling-apps-nyc-restaurants";
+const L = (p: string) => localePath(locale, p);
+
+/** A data field the copy needs; a missing one fails the build rather than printing blank. */
+function need<T>(value: T | null | undefined, what: string): T {
+  if (value === null || value === undefined) throw new Error(`roundup ${locale}: missing ${what}`);
+  return value;
+}
+// Every price, cap and team size in the copy is a {placeholder} filled from
+// src/data/competitors.ts, so a price change is one edit there.
+const fill = (s: string, vars: Record<string, string | number>) => fillCopy(s, vars, `roundup ${locale}`);
+const usd = (n: number) => (Number.isInteger(n) ? `$${n}` : formatUsd(n));
+function findPlan(id: ToolId, name: string): Plan {
+  const found = TOOLS[id].plans.find((p) => p.name === name);
+  if (!found) throw new Error(`no ${id} plan ${name}`);
+  return found;
+}
+
+const team = DEFAULT_TEAM;
+const users = team.locations * team.employeesPerLocation;
+// Wiz Scheduler first, then the rest; the order is ours, not a ranking.
+const ids: ToolId[] = ["wiz", "7shifts", "deputy", "homebase", "wheniwork"];
+const tools = ids.map((id) => TOOLS[id]);
+const checkedOn = need(tools.map((tool) => tool.checkedOn).sort()[0], "checkedOn");
+
+
+const picks = Object.fromEntries(
+  ids.map((id) => {
+    const quote = need(quotePlans(TOOLS[id], team).find((q) => q.highlighted), `${id} highlighted plan`);
+    const plan = findPlan(id, quote.plan);
+    return [id, { plan, name: planLabel(quote.plan, locale), total: formatUsd(need(quote.monthlyUsd, `${id} total`)), price: usd(need(plan.monthlyUsd, `${id} price`)) }];
+  }),
+) as Record<ToolId, { plan: Plan; name: string; total: string; price: string }>;
+
+// Every plan of every tool, priced for the default team.
+const priceRows = tools.map((tool) => ({
+  tool,
+  rows: quotePlans(tool, team).map((q, i) => {
+    const shown = q.fits ? q.monthlyUsd : q.wouldBeUsd;
+    return { ...q, range: planRange(tool.plans[i], locale), price: shown === null ? null : formatUsd(shown) };
+  }),
+}));
+
+const wizFree = findPlan("wiz", "Free");
+const common = { locations: team.locations, employees: team.employeesPerLocation, users, date: checkedOn };
+const priceVars: Record<ToolId, Record<string, string | number>> = {
+  wiz: {
+    ...common,
+    plan: picks.wiz.name,
+    total: picks.wiz.total,
+    included: 500,
+    freeLocations: need(wizFree.maxLocations, "Wiz Free maxLocations"),
+    freeEmployees: need(wizFree.maxTotalEmployees, "Wiz Free maxTotalEmployees"),
+  },
+  "7shifts": {
+    ...common,
+    plan: picks["7shifts"].name,
+    price: picks["7shifts"].price,
+    total: picks["7shifts"].total,
+    maxEmployees: need(picks["7shifts"].plan.maxEmployeesPerLocation, "7shifts highlighted maxEmployeesPerLocation"),
+  },
+  deputy: {
+    ...common,
+    plan: picks.deputy.name,
+    price: picks.deputy.price,
+    total: picks.deputy.total,
+    minimum: usd(need(picks.deputy.plan.minimumMonthlyUsd, "Deputy minimumMonthlyUsd")),
+  },
+  homebase: {
+    ...common,
+    plan: picks.homebase.name,
+    price: picks.homebase.price,
+    total: picks.homebase.total,
+    promoPlan: findPlan("homebase", "Plus").name,
+  },
+  wheniwork: { ...common, plan: picks.wheniwork.name, price: picks.wheniwork.price, total: picks.wheniwork.total },
+};
+const faqVars = {
+  ...common,
+  wizPlan: picks.wiz.name,
+  wizTotal: picks.wiz.total,
+  sevenPlan: picks["7shifts"].name,
+  sevenTotal: picks["7shifts"].total,
+  deputyPlan: picks.deputy.name,
+  deputyTotal: picks.deputy.total,
+  homebasePlan: picks.homebase.name,
+  homebaseTotal: picks.homebase.total,
+  wiwPlan: picks.wheniwork.name,
+  wiwTotal: picks.wheniwork.total,
+};
+const faq = r.faq.map(({ q, a }) => ({ q: fill(q, faqVars), a: fill(a, faqVars) }));
+
+const compareSlug: Partial<Record<ToolId, string>> = {
+  "7shifts": "/compare/7shifts",
+  deputy: "/compare/deputy",
+  homebase: "/compare/homebase",
+  wheniwork: "/compare/when-i-work",
+};
+const deputyArticle = need(
+  TOOLS.deputy.sources.find((s) => s.label.en === "Deputy Fair Workweek"),
+  "Deputy Fair Workweek source",
+);
+const external = (href: string) => !href.startsWith("/");
+---
+<Base locale={locale} title={`${r.metaTitle} | ${t.common.appName}`} description={r.metaDescription} path={PATH}>
+  <main class="max-w-[92rem] mx-auto px-6">
+    <section class="pt-12 lg:pt-20 pb-12 max-w-[62ch]">
+      <p class={`${m.text.meta} mb-6`}>{r.eyebrow}</p>
+      <h1 class={`${m.text.display} font-display text-5xl lg:text-6xl font-semibold leading-[0.95] mb-6`}>{r.heading}</h1>
+      <p class={`${m.text.muted} text-lg leading-relaxed`}>{r.intro}</p>
+      <p class={`${m.text.meta} mt-4`}>
+        {t.compare.checkedOn} <time datetime={checkedOn}>{checkedOn}</time>
+      </p>
+    </section>
+
+    <section class="pb-16 max-w-3xl">
+      <SectionRule title={r.criteriaTitle} />
+      <ol class="list-decimal ps-6 space-y-2">
+        {r.criteria.map((c) => <li class={`${m.text.muted} text-base`}>{c}</li>)}
+      </ol>
+    </section>
+
+    <section class="pb-16 max-w-4xl" data-price-section>
+      <SectionRule title={r.priceTitle} />
+      <p class={`${m.text.muted} text-base mb-8`}>{fill(r.priceNote, common)}</p>
+      <table class="w-full text-sm border-collapse" data-price-table>
+        <caption class={`${m.text.muted} text-sm text-start mb-3`}>{fill(r.priceBasis, common)}</caption>
+        <thead>
+          <tr class={`border-b ${m.rule.heavy}`}>
+            <th scope="col" class={`${m.text.meta} py-2 pe-4 text-start`}>{r.priceHeadings.plan}</th>
+            <th scope="col" class={`${m.text.meta} py-2 pe-4 text-end`}>{r.priceHeadings.total}</th>
+            <th scope="col" class={`${m.text.meta} py-2 text-start`}>{t.calculator.autoSchedulingHeader}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {priceRows.flatMap(({ tool, rows }) =>
+            rows.map((row) => (
+              <PlanQuoteRow
+                locale={locale}
+                toolName={tool.name}
+                plan={row.plan}
+                range={row.range}
+                fits={row.fits}
+                highlighted={row.highlighted}
+                price={row.price}
+                autoScheduling={row.autoScheduling}
+                calculator={t.calculator}
+              />
+            )),
+          )}
+        </tbody>
+      </table>
+    </section>
+
+    <div class="pb-8 space-y-12 max-w-4xl">
+      {tools.map((tool) => {
+        const text = tool.text[locale];
+        const compare = compareSlug[tool.id];
+        return (
+          <section class={`${m.surface} border ${m.rule.line} p-8`} data-tool={tool.id}>
+            <h2 class={`${m.text.display} text-3xl font-semibold mb-3`}>{tool.name}</h2>
+            <p class="text-lg font-semibold mb-4" data-best-for>
+              <span class="sr-only">{r.bestForLabel}: </span>{r.bestFor[tool.id]}
+            </p>
+            <p class={`${m.text.muted} text-base mb-4`}>{text.description}</p>
+            {tool.id === "wiz" && <p class={`${m.text.muted} text-base mb-4`}>{r.wizSay}</p>}
+            <dl class="space-y-3 mb-4">
+              <div>
+                <dt class="font-semibold">{r.factLabels.autoScheduling}</dt>
+                <dd class={`${m.text.muted} text-base`}>{text.autoScheduling}</dd>
+              </div>
+              <div>
+                <dt class="font-semibold">{r.factLabels.preferences}</dt>
+                <dd class={`${m.text.muted} text-base`}>{text.preferences}</dd>
+              </div>
+              <div>
+                <dt class="font-semibold">{r.factLabels.fairWorkweek}</dt>
+                <dd class={`${m.text.muted} text-base`}>{text.fairWorkweek}</dd>
+              </div>
+            </dl>
+            {tool.id === "wiz" && <p class={`${m.text.muted} text-base mb-4`}>{r.wizFairWorkweek}</p>}
+            <p class={`${m.text.muted} text-base mb-4`}>{fill(r.price[tool.id], priceVars[tool.id])}</p>
+            {compare && COMPARE_PATHS.includes(compare) && (
+              <p class="mb-4"><a href={L(compare)} class={m.btn.link}>{fill(r.compareLink, { name: tool.name })}</a></p>
+            )}
+            <p class={m.text.meta}>
+              {r.sources}:{" "}
+              {tool.sources.map((s, i) => (
+                <>
+                  {i > 0 && " · "}
+                  <a
+                    href={s.href}
+                    rel={external(s.href) ? "noopener nofollow" : undefined}
+                    target={external(s.href) ? "_blank" : undefined}
+                    class={m.btn.link}
+                  >{s.label[locale]}</a>
+                </>
+              ))}
+            </p>
+          </section>
+        );
+      })}
+    </div>
+
+    <section class="py-16 max-w-3xl" data-fair-workweek>
+      <SectionRule title={r.fairTitle} />
+      <p class={`${m.text.muted} text-base mb-4`}>{r.fairBody}</p>
+      <p class="mb-4">
+        <a href={deputyArticle.href} rel="noopener nofollow" target="_blank" class={m.btn.link}>{r.fairArticle}</a>
+      </p>
+      <p class={`${m.text.muted} text-base mb-4`}>{r.fairNotLegal}</p>
+      <p><a href={L("/nyc-fair-workweek-scheduling")} class={m.btn.link}>{r.fairWiz}</a></p>
+    </section>
+
+    <Faq items={faq} title={r.faqTitle} />
+
+    <section class={`max-w-3xl mb-16 pt-12 border-t ${m.rule.line}`}>
+      <h2 class={`${m.text.display} text-2xl font-semibold mb-4`}>{r.ctaTitle}</h2>
+      <p class={`${m.text.muted} text-base mb-8`}>{r.ctaBody}</p>
+      <a href={appLink("/register")} class={m.btn.primary}>{r.ctaSignup}</a>
+    </section>
+  </main>
+</Base>

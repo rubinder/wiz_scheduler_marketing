@@ -2,7 +2,7 @@ import { useId, useState } from "react";
 import { m } from "../theme";
 import type { Copy } from "../i18n/en";
 import type { SiteLocale } from "../lib/links";
-import { clampTeam, DEFAULT_TEAM, formatUsd, planRange, quotePlans, TOOLS } from "../data/competitors";
+import { clampTeam, DEFAULT_TEAM, formatUsd, planLabel, planRange, quotePlans, TOOLS } from "../data/competitors";
 import type { ToolId } from "../data/competitors";
 
 interface Props {
@@ -74,7 +74,7 @@ export default function CostCalculator({ copy: c, toolIds, locale }: Props) {
                     data-fits={q.fits}
                   >
                     <th scope="row" className="py-2 pe-4 text-start font-[inherit]">
-                      {q.plan}
+                      {planLabel(q.plan, locale)}
                       {q.highlighted && (
                         <span className={`${m.text.meta} ms-2 border ${m.rule.heavy} px-1.5 py-0.5 normal-case tracking-normal font-normal`}>
                           {c.highlightedLabel}

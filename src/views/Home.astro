@@ -4,10 +4,10 @@ import SectionRule from "../components/SectionRule.astro";
 import RotaHero from "../islands/RotaHero";
 import FlowFieldStory from "../islands/FlowFieldStory";
 import { m } from "../theme";
-import { getCopy } from "../i18n";
+import { getCopy, getSiteCopy } from "../i18n";
 import { appLink } from "../lib/site";
 import { serializeJsonLd } from "../lib/jsonLd";
-import { localePath, type Locale } from "../lib/links";
+import { isSiteLocale, localePath, type Locale } from "../lib/links";
 
 interface Props {
   locale: Locale;
@@ -15,6 +15,13 @@ interface Props {
 const { locale } = Astro.props;
 const t = getCopy(locale);
 const L = (p: string) => localePath(locale, p);
+// Compare pages exist in en/es only; every other locale's home gets no row.
+const compareRow = isSiteLocale(locale)
+  ? [
+      { to: "/compare/7shifts", label: getSiteCopy(locale).compare.pages["/compare/7shifts"] },
+      ...Object.entries(getSiteCopy(locale).footer.compareLinks).map(([to, label]) => ({ to, label })),
+    ]
+  : [];
 
 const principalFeatures = [
   { title: t.landing.featAITitle, desc: t.landing.featAIDesc },
@@ -347,6 +354,12 @@ const title = `${t.common.appName} — ${t.landing.badge}`;
       <a href={L("/terms")} class={m.btn.link}>{t.gdpr.termsOfService}</a>
       <a href={L("/dpa")} class={m.btn.link}>{t.gdpr.dpa}</a>
     </div>
+
+    {compareRow.length > 0 && (
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm mb-24" data-compare-links>
+        {compareRow.map((l) => <a href={L(l.to)} class={m.btn.link}>{l.label}</a>)}
+      </div>
+    )}
 
     <div class="max-w-2xl mb-24">
       <h2 class={`${m.text.display} font-display text-4xl font-semibold mb-4`}>{t.landing.ctaTitle}</h2>

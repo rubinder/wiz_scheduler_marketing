@@ -1,14 +1,16 @@
 ---
 import { getEntry } from "astro:content";
+import RelatedLinks from "../components/RelatedLinks.astro";
 import Base from "../layouts/Base.astro";
 import Faq from "../components/Faq.astro";
 import CostCalculator from "../islands/CostCalculator.tsx";
 import { m } from "../theme";
 import { getSiteCopy } from "../i18n";
+import { fill as fillCopy } from "../lib/fill";
 import { appLink } from "../lib/site";
 import { localePath, type SiteLocale } from "../lib/links";
 import type { CompareData } from "../lib/compareSchema";
-import { COMPARE_PATHS, DEFAULT_TEAM, TOOLS, formatUsd, planRange, quotePlans, type Plan, type ToolId } from "../data/competitors";
+import { DEFAULT_TEAM, TOOLS, formatUsd, planLabel, planRange, quotePlans, type Plan, type ToolId } from "../data/competitors";
 
 interface Props {
   locale: SiteLocale;
@@ -32,11 +34,7 @@ const entry = await load();
 // Prices, caps and team sizes in the markdown and frontmatter are
 // {placeholders} filled from src/data/competitors.ts, so a price change is one edit there.
 // An unknown placeholder or a missing data field fails the build rather than printing blank.
-const fill = (s: string, vars: Record<string, string | number>) =>
-  s.replace(/\{([a-zA-Z0-9]+)\}/g, (_, key: string) => {
-    if (!(key in vars)) throw new Error(`compare ${locale}/${slug}: no value for {${key}}`);
-    return String(vars[key]);
-  });
+const fill = (s: string, vars: Record<string, string | number>) => fillCopy(s, vars, `compare ${locale}/${slug}`);
 function need<T>(value: T | null | undefined, what: string): T {
   if (value === null || value === undefined) throw new Error(`compare ${locale}/${slug}: missing ${what}`);
   return value;
@@ -74,6 +72,23 @@ function deputyTotal(plan: Plan): string {
   const q = deputyQuotes[TOOLS.deputy.plans.indexOf(plan)];
   return usd(need(q?.fits ? q.monthlyUsd : null, `Deputy ${plan.name} total`));
 }
+const hb = {
+  basic: findPlan("homebase", "Basic"),
+  essentials: findPlan("homebase", "Essentials"),
+  plus: findPlan("homebase", "Plus"),
+  allInOne: findPlan("homebase", "All-in-One"),
+};
+const hbQuotes = quotePlans(TOOLS.homebase, team);
+/** Monthly total for this team on a Homebase plan (per location). Totals print with cents, like the calculator. */
+function hbTotal(plan: Plan): string {
+  const q = hbQuotes[TOOLS.homebase.plans.indexOf(plan)];
+  return formatUsd(need(q?.fits ? q.monthlyUsd : q?.wouldBeUsd, `Homebase ${plan.name} total`));
+}
+const wiw = {
+  one: findPlan("wheniwork", "One location"),
+  multi: findPlan("wheniwork", "Multiple locations"),
+};
+const wiwQuotes = quotePlans(TOOLS.wheniwork, team);
 const wizFree = findPlan("wiz", "Free");
 const wizPro = findPlan("wiz", "Pro");
 const vars: Record<string, string | number> = {
@@ -103,6 +118,20 @@ const vars: Record<string, string | number> = {
   deputyLiteTotal: deputyTotal(deputy.lite),
   deputyCoreTotal: deputyTotal(deputy.core),
   deputyProTotal: deputyTotal(deputy.pro),
+  homebaseBasicLocations: need(hb.basic.maxLocations, "Homebase Basic maxLocations"),
+  homebaseBasicEmployees: need(hb.basic.maxEmployeesPerLocation, "Homebase Basic maxEmployeesPerLocation"),
+  homebaseEssentials: usd(need(hb.essentials.monthlyUsd, "Homebase Essentials price")),
+  homebasePlus: usd(need(hb.plus.monthlyUsd, "Homebase Plus price")),
+  homebaseAllInOne: usd(need(hb.allInOne.monthlyUsd, "Homebase All-in-One price")),
+  homebaseEssentialsAnnual: usd(need(hb.essentials.annualMonthlyUsd, "Homebase Essentials annual price")),
+  homebasePlusAnnual: usd(need(hb.plus.annualMonthlyUsd, "Homebase Plus annual price")),
+  homebaseAllInOneAnnual: usd(need(hb.allInOne.annualMonthlyUsd, "Homebase All-in-One annual price")),
+  homebaseEssentialsTotal: hbTotal(hb.essentials),
+  homebasePlusTotal: hbTotal(hb.plus),
+  homebaseAllInOneTotal: hbTotal(hb.allInOne),
+  wiwOne: usd(need(wiw.one.monthlyUsd, "When I Work One location price")),
+  wiwMulti: usd(need(wiw.multi.monthlyUsd, "When I Work Multiple locations price")),
+  wiwMultiTotal: formatUsd(need(wiwQuotes[TOOLS.wheniwork.plans.indexOf(wiw.multi)]?.monthlyUsd, "When I Work multi-location total")),
   wizPro: usd(need(wizPro.monthlyUsd, "Wiz Pro price")),
   wizExtra500: usd(need(wizPro.extraPer500EmployeesUsd, "Wiz Pro extraPer500EmployeesUsd")),
   wizFreeLocations: need(wizFree.maxLocations, "Wiz Free maxLocations"),
@@ -127,14 +156,14 @@ const pricingTools = (["wiz", entry.data.toolId] as const).filter((id): id is To
 const pricingRows = pricingTools.flatMap((tool) =>
   tool.plans.map((plan) => ({
     tool: tool.name,
-    plan: plan.name,
+    plan: planLabel(plan.name, locale),
     size:
       planRange(plan, locale) ??
       (plan.extraPer500EmployeesUsd !== undefined
         ? fill(c.wizProSize, { extra: usd(plan.extraPer500EmployeesUsd) })
         : plan.minimumMonthlyUsd !== undefined
           ? fill(c.userSize, { minimum: usd(plan.minimumMonthlyUsd) })
-          : ""),
+          : c.noLimit),
     price:
       plan.monthlyUsd === null
         ? t.calculator.contactSales
@@ -150,10 +179,6 @@ const pricingRows = pricingTools.flatMap((tool) =>
 const competitorSources = d.toolId ? TOOLS[d.toolId].sources : [];
 const eyebrow = fill(c.eyebrow, { competitor: d.competitor });
 
-const related = COMPARE_PATHS.filter((p) => p !== path).map((p) => ({
-  href: localePath(locale, p),
-  label: (c.pages as Record<string, string>)[p] ?? p,
-}));
 ---
 <Base locale={locale} title={`${d.title} | ${t.common.appName}`} description={d.description} path={path}>
   <main class="max-w-[92rem] mx-auto px-6">
@@ -222,7 +247,7 @@ const related = COMPARE_PATHS.filter((p) => p !== path).map((p) => ({
     </div>
 
     <p class={m.text.meta}>
-      {c.checkedOn} <time datetime={d.checkedOn}>{d.checkedOn}</time> ·
+      {c.checkedOn} <time datetime={d.checkedOn}>{d.checkedOn}</time>{" · "}
       <a href={d.competitorUrl} rel="noopener nofollow" target="_blank" class={m.btn.link}>{d.competitor}</a>
       {competitorSources.length > 0 && (
         <>
@@ -237,16 +262,7 @@ const related = COMPARE_PATHS.filter((p) => p !== path).map((p) => ({
       )}
     </p>
 
-    {related.length > 0 && (
-      <nav class="mt-12" aria-label={c.related}>
-        <h2 class={`${m.text.display} text-2xl font-semibold mb-4`}>{c.related}</h2>
-        <ul class="space-y-2">
-          {related.map((r) => (
-            <li><a href={r.href} class={m.btn.link}>{r.label}</a></li>
-          ))}
-        </ul>
-      </nav>
-    )}
+    <RelatedLinks locale={locale} path={path} />
 
     <section class={`max-w-3xl mt-12 mb-16 pt-12 border-t ${m.rule.line}`}>
       <p class={`${m.text.muted} text-base mb-8`}>{c.howToTurnOn}</p>
