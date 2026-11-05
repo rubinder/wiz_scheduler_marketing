@@ -11,7 +11,7 @@ faq:
   - q: "How much does Deputy cost?"
     a: "Deputy charges per user per month. On monthly billing, Lite is {deputyLite}, Core {deputyCore} and Pro {deputyPro} per user. Billed annually, they are {deputyLiteAnnual}, {deputyCoreAnnual} and {deputyProAnnual}. Monthly plans have a {deputyMinimum} minimum a month, and there is no free plan. Auto-scheduling is on Core and Pro, not Lite. These are list prices from Deputy's own pricing page."
   - q: "What would Deputy cost for my team?"
-    a: "Deputy counts users, not locations. {locations} locations with {employees} employees each are {users} users: {deputyLiteTotal} a month on Lite, which has no auto-scheduling, {deputyCoreTotal} on Core and {deputyProTotal} on Pro, on monthly billing. Every hire adds to that. Wiz Scheduler Pro is {wizPro} a month for every location, with 500 employees included."
+    a: "Deputy counts users, not locations. {locations} locations with {employees} employees each are {users} users, counting one user per employee: {deputyLiteTotal} a month on Lite, which has no auto-scheduling, {deputyCoreTotal} on Core and {deputyProTotal} on Pro, on monthly billing. Every hire adds to that. Wiz Scheduler Pro is {wizPro} a month for every location, with 500 employees included."
   - q: "How do employees send preferences?"
     a: "Managers can enter preferences for everyone. Turn on preference requests in Company Settings and your employees can send their preferences for you to approve. A manager approves each request and sets how much it counts. Preference requests are off by default."
   - q: "Does Deputy use employee preferences when it auto-schedules?"

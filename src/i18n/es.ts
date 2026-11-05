@@ -308,7 +308,7 @@ const es: Copy = {
         },
         {
           q: "¿Cuánto costaría Deputy para {locations} ubicaciones con {employees} empleados cada una?",
-          a: "Deputy cuenta usuarios, así que ese equipo son {users} usuarios: {deputyLiteTotal} al mes en Lite, que no tiene programación automática, {deputyExampleTotal} en {deputyExamplePlan}, el plan más barato con programación automática, y {deputyProTotal} en Pro, con facturación mensual. Wiz Scheduler Pro cuesta {wizPro} al mes para todas las ubicaciones.",
+          a: "Deputy cuenta usuarios, así que ese equipo son {users} usuarios, si contamos un usuario por empleado: {deputyLiteTotal} al mes en Lite, que no tiene programación automática, {deputyExampleTotal} en {deputyExamplePlan}, el plan más barato con programación automática, y {deputyProTotal} en Pro, con facturación mensual. Wiz Scheduler Pro cuesta {wizPro} al mes para todas las ubicaciones.",
         },
         {
           q: "¿Deputy programa los horarios automáticamente?",

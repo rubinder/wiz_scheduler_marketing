@@ -251,6 +251,7 @@ const deputyPages = [
     notImported: "Preferences and coworker relationships are not imported",
     minimum: `${usd(deputyMinimum)} monthly minimum`,
     exampleLead: "Take 3 locations with 13 employees each.",
+    assumption: "counting one user per employee",
   },
   {
     locale: "es" as const,
@@ -266,6 +267,7 @@ const deputyPages = [
     notImported: "Las preferencias y las relaciones entre compañeros no se importan",
     minimum: `mínimo de ${usd(deputyMinimum)} al mes`,
     exampleLead: "Pongamos 3 ubicaciones con 13 empleados cada una.",
+    assumption: "si contamos un usuario por empleado",
   },
 ];
 
@@ -366,6 +368,14 @@ for (const p of deputyPages) {
         const href = p.locale === "en" ? path : `/es${path}`;
         expect(html).toContain(`href="${href}"`);
       }
+    });
+
+    it("states the one-user-per-employee assumption wherever the FAQ JSON-LD gives a Deputy user count", () => {
+      const users = DEFAULT_TEAM.locations * DEFAULT_TEAM.employeesPerLocation;
+      const word = p.locale === "en" ? "users" : "usuarios";
+      const answers = faqText(html).split("\n").filter((line) => line.includes(`${users} ${word}`));
+      expect(answers.length).toBeGreaterThan(0);
+      for (const a of answers) expect(a).toContain(p.assumption);
     });
 
     it("leaves no unfilled {placeholder}", () => {

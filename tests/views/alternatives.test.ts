@@ -268,8 +268,52 @@ for (const locale of ["en", "es"] as const) {
       expect(html).toContain(locale === "en" ? 'href="/compare/deputy"' : 'href="/es/compare/deputy"');
     });
 
+    it("states the one-user-per-employee assumption wherever the FAQ JSON-LD gives a Deputy user count", () => {
+      const users = DEFAULT_TEAM.locations * DEFAULT_TEAM.employeesPerLocation;
+      const word = locale === "en" ? "users" : "usuarios";
+      const assumption = locale === "en" ? "counting one user per employee" : "si contamos un usuario por empleado";
+      const answers = faqText(html).split("\n").filter((line) => line.includes(`${users} ${word}`));
+      expect(answers.length).toBeGreaterThan(0);
+      for (const a of answers) expect(a).toContain(assumption);
+    });
+
     it("leaves no unfilled {placeholder}", () => {
       expect(visible(html)).not.toMatch(/\{[a-zA-Z]+\}/);
     });
   });
 }
+
+describe("alternatives data fields", () => {
+  async function renderWithout(mutate: () => () => void) {
+    const restore = mutate();
+    try {
+      const renderers = await loadRenderers([getContainerRenderer()]);
+      const c = await AstroContainer.create({ renderers });
+      return await c.renderToString(Alternatives, { props: { locale: "en", focus: "deputy" } });
+    } finally {
+      restore();
+    }
+  }
+
+  it("fails the render when a Deputy field the copy needs is missing", async () => {
+    const core = TOOLS.deputy.plans.find((p) => p.name === "Core")!;
+    await expect(
+      renderWithout(() => {
+        const saved = core.minimumMonthlyUsd;
+        delete core.minimumMonthlyUsd;
+        return () => (core.minimumMonthlyUsd = saved);
+      }),
+    ).rejects.toThrow("missing Deputy minimumMonthlyUsd");
+  });
+
+  it("fails the render when a 7shifts field the copy needs is missing", async () => {
+    const comp = TOOLS["7shifts"].plans.find((p) => p.name === "Comp")!;
+    await expect(
+      renderWithout(() => {
+        const saved = comp.maxEmployeesPerLocation;
+        delete comp.maxEmployeesPerLocation;
+        return () => (comp.maxEmployeesPerLocation = saved);
+      }),
+    ).rejects.toThrow("missing 7shifts Comp maxEmployeesPerLocation");
+  });
+});

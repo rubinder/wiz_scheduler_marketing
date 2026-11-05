@@ -11,7 +11,7 @@ faq:
   - q: "¿Cuánto cuesta Deputy?"
     a: "Deputy cobra por usuario al mes. Con facturación mensual, Lite cuesta {deputyLite}, Core {deputyCore} y Pro {deputyPro} por usuario. Con facturación anual, cuestan {deputyLiteAnnual}, {deputyCoreAnnual} y {deputyProAnnual}. Los planes mensuales tienen un mínimo de {deputyMinimum} al mes, y no hay plan gratuito. La programación automática está en Core y Pro, no en Lite. Son precios de lista de la propia página de precios de Deputy."
   - q: "¿Cuánto costaría Deputy para mi equipo?"
-    a: "Deputy cuenta usuarios, no ubicaciones. {locations} ubicaciones con {employees} empleados cada una son {users} usuarios: {deputyLiteTotal} al mes en Lite, que no tiene programación automática, {deputyCoreTotal} en Core y {deputyProTotal} en Pro, con facturación mensual. Cada contratación suma. Wiz Scheduler Pro cuesta {wizPro} al mes para todas las ubicaciones, con 500 empleados incluidos."
+    a: "Deputy cuenta usuarios, no ubicaciones. {locations} ubicaciones con {employees} empleados cada una son {users} usuarios, si contamos un usuario por empleado: {deputyLiteTotal} al mes en Lite, que no tiene programación automática, {deputyCoreTotal} en Core y {deputyProTotal} en Pro, con facturación mensual. Cada contratación suma. Wiz Scheduler Pro cuesta {wizPro} al mes para todas las ubicaciones, con 500 empleados incluidos."
   - q: "¿Cómo envían sus preferencias los empleados?"
     a: "Los gerentes pueden ingresar las preferencias de todos. Activa las solicitudes de preferencias en la Configuración de la empresa y tus empleados podrán enviarte sus preferencias para que las apruebes. Un gerente aprueba cada solicitud y decide cuánto pesa. Las solicitudes de preferencias vienen desactivadas."
   - q: "¿Deputy tiene en cuenta las preferencias de los empleados al programar automáticamente?"
@@ -24,7 +24,7 @@ faq:
     a: "En el plan de pago, Wiz Scheduler importa desde Deputy ubicaciones, roles y empleados con su correo, con un token de API de tu cuenta de Deputy, y la no disponibilidad de Deputy llega como horarios en que el empleado no puede trabajar. Cada empleado recibe todos los roles de su ubicación con nivel de habilidad 1, así que ajusta las habilidades después de importar. Una importación aparte trae la disponibilidad. Las preferencias y las relaciones entre compañeros no se importan."
 ---
 
-Deputy es una herramienta de horarios muy completa. Con ella, el gerente arma la semana, o en Core y Pro su programación automática asigna los turnos por costo, por igualdad de horas o aprendiendo de tus horarios anteriores, y el equipo trabaja con lo que sale. Wiz Scheduler parte de otro lugar: los días y horas preferidos de cada empleado, su límite de horas semanales y con quién trabaja bien o de quién conviene separarlo entran al generador, y la semana se construye a su alrededor.
+Deputy es una herramienta de horarios muy completa. Con ella, el gerente arma la semana, o en Core y Pro su programación automática asigna los turnos por costo, por igualdad de horas o aprendiendo de tus horarios anteriores, y el equipo trabaja con lo que sale. Wiz Scheduler funciona al revés: los días y horas preferidos de cada empleado, su límite de horas semanales y con quién trabaja bien o de quién conviene separarlo entran al generador, y la semana se construye a su alrededor.
 
 ## Cómo funcionan las preferencias
 

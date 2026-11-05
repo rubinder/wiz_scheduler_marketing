@@ -307,7 +307,7 @@ const en = {
         },
         {
           q: "What would Deputy cost for {locations} locations with {employees} employees each?",
-          a: "Deputy counts users, so that team is {users} users: {deputyLiteTotal} a month on Lite, which has no auto-scheduling, {deputyExampleTotal} on {deputyExamplePlan}, the cheapest plan with auto-scheduling, and {deputyProTotal} on Pro, on monthly billing. Wiz Scheduler Pro is {wizPro} a month for every location.",
+          a: "Deputy counts users, so that team is {users} users, counting one user per employee: {deputyLiteTotal} a month on Lite, which has no auto-scheduling, {deputyExampleTotal} on {deputyExamplePlan}, the cheapest plan with auto-scheduling, and {deputyProTotal} on Pro, on monthly billing. Wiz Scheduler Pro is {wizPro} a month for every location.",
         },
         {
           q: "Does Deputy auto-schedule?",
