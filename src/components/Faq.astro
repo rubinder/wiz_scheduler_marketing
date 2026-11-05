@@ -1,0 +1,26 @@
+---
+import { m } from "../theme";
+import { faqJsonLd, type FaqItem } from "../lib/faq";
+import SectionRule from "./SectionRule.astro";
+
+interface Props {
+  items: FaqItem[];
+  title: string;
+}
+const { items, title } = Astro.props;
+const jsonLd = faqJsonLd(items);
+---
+{items.length > 0 && jsonLd && (
+  <section>
+    <SectionRule title={title} />
+    <dl class="grid gap-8 pb-16 md:ps-48">
+      {items.map(({ q, a }) => (
+        <div>
+          <dt class={`${m.text.display} text-xl font-semibold`}>{q}</dt>
+          <dd class={`${m.text.muted} mt-2 max-w-prose`}>{a}</dd>
+        </div>
+      ))}
+    </dl>
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd).replace(/</g, "\\u003c")} />
+  </section>
+)}
