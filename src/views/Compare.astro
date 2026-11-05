@@ -31,9 +31,18 @@ const entry = await load();
 
 // Prices, caps and team sizes in the markdown and frontmatter are
 // {placeholders} filled from src/data/competitors.ts, so a price change is one edit there.
+// An unknown placeholder or a missing data field fails the build rather than printing blank.
 const fill = (s: string, vars: Record<string, string | number>) =>
-  s.replace(/\{([a-zA-Z0-9]+)\}/g, (whole, key: string) => (key in vars ? String(vars[key]) : whole));
-const usd = (n: number | null) => (n === null ? "" : Number.isInteger(n) ? `$${n}` : formatUsd(n));
+  s.replace(/\{([a-zA-Z0-9]+)\}/g, (_, key: string) => {
+    if (!(key in vars)) throw new Error(`compare ${locale}/${slug}: no value for {${key}}`);
+    return String(vars[key]);
+  });
+function need<T>(value: T | null | undefined, what: string): T {
+  if (value === null || value === undefined) throw new Error(`compare ${locale}/${slug}: missing ${what}`);
+  return value;
+}
+/** One price format for the whole page outside the calculator: "$18", "$49.99". */
+const usd = (n: number) => (Number.isInteger(n) ? `$${n}` : formatUsd(n));
 function findPlan(id: ToolId, name: string, match: (p: Plan) => boolean = () => true): Plan {
   const found = TOOLS[id].plans.find((p) => p.name === name && match(p));
   if (!found) throw new Error(`no ${id} plan ${name}`);
@@ -48,27 +57,34 @@ const s7 = {
   pro: findPlan("7shifts", "Pro"),
   premiumLarge: findPlan("7shifts", "Premium", (p) => p.minEmployeesPerLocation !== undefined),
 };
-const s7Pick = quotePlans(TOOLS["7shifts"], team).find((q) => q.highlighted);
+const s7Quotes = quotePlans(TOOLS["7shifts"], team);
+/** Monthly total for this team on a 7shifts plan: what it pays if the plan fits, else what the tier would cost. */
+function s7Total(plan: Plan): string {
+  const q = s7Quotes[TOOLS["7shifts"].plans.indexOf(plan)];
+  return usd(need(q?.fits ? q.monthlyUsd : q?.wouldBeUsd, `7shifts ${plan.name} total`));
+}
 const wizFree = findPlan("wiz", "Free");
 const wizPro = findPlan("wiz", "Pro");
 const vars: Record<string, string | number> = {
   locations: team.locations,
   employees: team.employeesPerLocation,
-  compMaxEmployees: s7.comp.maxEmployeesPerLocation ?? "",
-  essentials: usd(s7.essentials.monthlyUsd),
-  essentialsMaxEmployees: s7.essentials.maxEmployeesPerLocation ?? "",
-  premium: usd(s7.premium.monthlyUsd),
-  pro: usd(s7.pro.monthlyUsd),
-  proMinEmployees: s7.pro.minEmployeesPerLocation ?? "",
-  proMaxEmployees: s7.pro.maxEmployeesPerLocation ?? "",
-  premiumLarge: usd(s7.premiumLarge.monthlyUsd),
-  sevenShiftsExamplePlan: s7Pick?.plan ?? "",
-  sevenShiftsExampleTotal: usd(s7Pick?.monthlyUsd ?? null),
-  sevenShiftsProTotal: formatUsd((s7.pro.monthlyUsd ?? 0) * team.locations),
-  wizPro: usd(wizPro.monthlyUsd),
-  wizExtra500: usd(wizPro.extraPer500EmployeesUsd ?? null),
-  wizFreeLocations: wizFree.maxLocations ?? "",
-  wizFreeEmployees: wizFree.maxTotalEmployees ?? "",
+  compMaxLocations: need(s7.comp.maxLocations, "7shifts Comp maxLocations"),
+  compMaxEmployees: need(s7.comp.maxEmployeesPerLocation, "7shifts Comp maxEmployeesPerLocation"),
+  essentials: usd(need(s7.essentials.monthlyUsd, "7shifts Essentials price")),
+  essentialsMaxEmployees: need(s7.essentials.maxEmployeesPerLocation, "7shifts Essentials maxEmployeesPerLocation"),
+  premium: usd(need(s7.premium.monthlyUsd, "7shifts Premium price")),
+  pro: usd(need(s7.pro.monthlyUsd, "7shifts Pro price")),
+  proMinEmployees: need(s7.pro.minEmployeesPerLocation, "7shifts Pro minEmployeesPerLocation"),
+  proMaxEmployees: need(s7.pro.maxEmployeesPerLocation, "7shifts Pro maxEmployeesPerLocation"),
+  premiumLarge: usd(need(s7.premiumLarge.monthlyUsd, "7shifts Premium 31+ price")),
+  essentialsTotal: s7Total(s7.essentials),
+  premiumTotal: s7Total(s7.premium),
+  proTotal: s7Total(s7.pro),
+  premiumLargeTotal: s7Total(s7.premiumLarge),
+  wizPro: usd(need(wizPro.monthlyUsd, "Wiz Pro price")),
+  wizExtra500: usd(need(wizPro.extraPer500EmployeesUsd, "Wiz Pro extraPer500EmployeesUsd")),
+  wizFreeLocations: need(wizFree.maxLocations, "Wiz Free maxLocations"),
+  wizFreeEmployees: need(wizFree.maxTotalEmployees, "Wiz Free maxTotalEmployees"),
 };
 
 const d = {
@@ -98,7 +114,7 @@ const pricingRows = pricingTools.flatMap((tool) =>
         ? t.calculator.contactSales
         : plan.monthlyUsd === 0
           ? c.free
-          : fill(plan.basis === "location" ? c.perLocation : c.allLocations, { price: formatUsd(plan.monthlyUsd) }),
+          : fill(plan.basis === "location" ? c.perLocation : c.allLocations, { price: usd(plan.monthlyUsd) }),
     auto: autoLabel[plan.autoScheduling],
   })),
 );
@@ -141,6 +157,25 @@ const related = COMPARE_PATHS.filter((p) => p !== path).map((p) => ({
             ))}
           </tbody>
         </table>
+      )}
+      {hasPricing && (
+        <p data-pricing-sources>
+          {c.pricingSources}:{" "}
+          {pricingTools.map((tool, i) => {
+            const source = need(tool.sources[0], `${tool.id} pricing source`);
+            const external = !source.href.startsWith("/");
+            return (
+              <>
+                {i > 0 && " · "}
+                <a
+                  href={source.href}
+                  rel={external ? "noopener nofollow" : undefined}
+                  target={external ? "_blank" : undefined}
+                >{source.label[locale]}</a>
+              </>
+            );
+          })}
+        </p>
       )}
       <Fragment set:html={bodyAfter} />
     </article>

@@ -69,6 +69,20 @@ function faqText(html: string): string {
 const s7 = TOOLS["7shifts"];
 const pro = s7.plans.find((p) => p.name === "Pro")!;
 const pick = quotePlans(s7, DEFAULT_TEAM).find((q) => q.highlighted)!;
+const wizProUsd = TOOLS.wiz.plans.find((x) => x.name === "Pro")!.monthlyUsd!;
+/** Each 7shifts tier with its total for DEFAULT_TEAM: the price if it fits, else what the tier would cost. */
+const s7Totals = quotePlans(s7, DEFAULT_TEAM).map((q, i) => ({
+  plan: s7.plans[i],
+  fits: q.fits,
+  total: q.fits ? q.monthlyUsd : q.wouldBeUsd,
+}));
+
+/** The worked-example paragraph in the markdown body. */
+function exampleParagraph(html: string, lead: string): string {
+  const para = [...outsideIsland(html).matchAll(/<p>([\s\S]*?)<\/p>/g)].map((m) => m[1]).find((x) => x.startsWith(lead));
+  expect(para, "worked example paragraph missing").toBeDefined();
+  return para!.replaceAll("&#39;", "'");
+}
 
 const pages = [
   {
@@ -81,6 +95,7 @@ const pages = [
     fairWorkweek: "7shifts and Deputy do more",
     notImported: "Preferences and coworker relationships are not imported",
     perLocationRange: "31–60 per location",
+    exampleLead: "Take 3 locations with 13 employees each.",
   },
   {
     locale: "es" as const,
@@ -92,6 +107,7 @@ const pages = [
     fairWorkweek: "7shifts y Deputy hacen más",
     notImported: "Las preferencias y las relaciones entre compañeros no se importan",
     perLocationRange: "31–60 por ubicación",
+    exampleLead: "Pongamos 3 ubicaciones con 13 empleados cada una.",
   },
 ];
 
@@ -131,6 +147,34 @@ for (const p of pages) {
       expect(body).toContain(p.perLocationRange);
     });
 
+    it("names every 7shifts tier in the worked example with its total for 3 locations", () => {
+      const para = exampleParagraph(p.html(), p.exampleLead);
+      const paid = s7Totals.filter((x) => x.total !== null && x.total > 0);
+      expect(paid.map((x) => x.total)).toEqual([149.97, 449.97, 299.97, 599.97]);
+      expect(paid.filter((x) => x.fits).map((x) => x.total)).toEqual([149.97, 449.97]);
+      for (const x of paid) {
+        expect(para).toContain(x.plan.name);
+        expect(para).toContain(formatUsd(x.total!));
+      }
+      expect(para).toContain("Comp");
+      expect(para).toContain(`$${wizProUsd} `);
+      const faq = faqText(p.html());
+      for (const x of paid) expect(faq).toContain(formatUsd(x.total!));
+    });
+
+    it("links Wiz Scheduler's /pricing page (same href in every locale) next to the pricing table", () => {
+      const m = p.html().match(/<p[^>]*data-pricing-sources[^>]*>([\s\S]*?)<\/p>/);
+      expect(m, "pricing sources missing").not.toBeNull();
+      expect(m![1]).toContain('href="/pricing"');
+      expect(m![1]).toContain(`href="${s7.pricingUrl}"`);
+      expect(p.html()).not.toContain('href="/es/pricing"');
+    });
+
+    it("formats Wiz Pro's price one way outside the calculator", () => {
+      expect(pricing(p.html())).toContain(`$${wizProUsd} `);
+      expect(outsideIsland(p.html())).not.toContain(formatUsd(wizProUsd));
+    });
+
     it("lists every 7shifts tier with its headcount range and price, plus Wiz Scheduler's plans", () => {
       const table = pricing(p.html());
       for (const plan of s7.plans) {
@@ -139,7 +183,7 @@ for (const p of pages) {
       }
       const rows = [...table.matchAll(/<tr[^>]*data-plan[^>]*>/g)];
       expect(rows).toHaveLength(s7.plans.length + TOOLS.wiz.plans.length);
-      expect(table).toContain(formatUsd(TOOLS.wiz.plans.find((x) => x.name === "Pro")!.monthlyUsd!));
+      expect(table).toContain(`$${wizProUsd} `);
     });
 
     it("drops the old every-plan rest claim and is honest about Fair Workweek", () => {
@@ -160,13 +204,25 @@ for (const p of pages) {
     });
 
     it("leaves no unfilled {placeholder}", () => {
-      expect(visible(p.html())).not.toMatch(/\{[a-zA-Z]+\}/);
+      expect(visible(p.html())).not.toMatch(/\{[a-zA-Z0-9]+\}/);
       expect(faqText(p.html())).not.toMatch(/[{}]/);
       expect(p.html().match(/<title>([^<]*)<\/title>/)?.[1]).not.toMatch(/[{}]/);
       expect(p.html()).not.toMatch(/<meta name="description" content="[^"]*[{}]/);
     });
   });
 }
+
+describe("placeholder filling", () => {
+  it("fails the render on a placeholder the data module can't fill", async () => {
+    const renderers = await loadRenderers([getContainerRenderer()]);
+    const c = await AstroContainer.create({ renderers });
+    const base = await entry("en", "7shifts");
+    const broken = { ...base, data: { ...base.data, title: "7shifts {noSuchField}" } };
+    await expect(c.renderToString(Compare, { props: { locale: "en", slug: "7shifts", entry: broken } })).rejects.toThrow(
+      "no value for {noSuchField}",
+    );
+  });
+});
 
 describe("/compare/7shifts (es)", () => {
   it("is Spanish and links English pricing (there is no /es/pricing)", () => {

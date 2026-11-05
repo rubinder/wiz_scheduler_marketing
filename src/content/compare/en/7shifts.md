@@ -1,5 +1,5 @@
 ---
-title: "7shifts Pricing vs a Flat {wizPro} Alternative"
+title: "7shifts Pricing vs {wizPro} a Month for Every Location"
 description: "7shifts pricing for every plan and team size, next to Wiz Scheduler: the schedule your team had a say in, at {wizPro} a month for every location."
 qualifier: "Managers can enter preferences for everyone. Employees can send their own once preference requests are turned on in Company Settings."
 competitor: "7shifts"
@@ -11,13 +11,13 @@ faq:
   - q: "How much does 7shifts cost?"
     a: "7shifts charges per location per month, and the plan depends on headcount per location. Comp is free for one location with up to {compMaxEmployees} employees. With 1 to {essentialsMaxEmployees} employees per location, Essentials is {essentials} and Premium {premium}. With {proMinEmployees} or more, Pro is {pro} (up to {proMaxEmployees} employees) and Premium {premiumLarge}. Annual billing takes 10% off. These are list prices from 7shifts' own pricing page."
   - q: "Which 7shifts plan fits my team?"
-    a: "It depends on how many employees each location has, not the company total. {locations} locations with {employees} employees each fit Essentials, {sevenShiftsExampleTotal} a month in total, or Premium. The same {locations} locations with {proMinEmployees} to {proMaxEmployees} employees each would be on Pro, {sevenShiftsProTotal} a month. Wiz Scheduler Pro is {wizPro} a month for every location either way."
+    a: "It depends on how many employees each location has, not the company total. {locations} locations with {employees} employees each fit Essentials, {essentialsTotal} a month in total, or Premium, {premiumTotal}. The same {locations} locations with {proMinEmployees} to {proMaxEmployees} employees each would be on Pro, {proTotal} a month, or Premium, {premiumLargeTotal}. Wiz Scheduler Pro is {wizPro} a month for every location either way."
   - q: "How do employees send preferences?"
     a: "Managers can enter preferences for everyone. Turn on preference requests in Company Settings and your employees can send their preferences for you to approve. A manager approves each request and sets how much it counts. Preference requests are off by default."
   - q: "Will I still need to fix the schedule?"
     a: "Sometimes, yes. Wiz Scheduler reduces fixing; it does not end it. Preferences are already in the draft, every shift that goes against one is marked, and a shift nobody can take without breaking a firm rule is left open rather than forced. You review the week starting from what your team asked for."
   - q: "Does Wiz Scheduler cost less than 7shifts?"
-    a: "Wiz Scheduler Pro is {wizPro} a month for all your locations, with 500 employees included and {wizExtra500} a month per extra 500. AI Generate is not included: it is paid from prepaid credits if you use it. 7shifts charges per location, from {essentials} per location a month on Essentials. Use the calculator on this page for your own team."
+    a: "Wiz Scheduler Pro is {wizPro} a month for all your locations, with 500 employees included and {wizExtra500} a month per extra 500. AI Generate is not included: it is paid from prepaid credits if you use it. 7shifts charges per location, with paid plans from {essentials} per location a month. Use the calculator on this page for your own team."
   - q: "Is Wiz Scheduler enough for NYC Fair Workweek?"
     a: "Only for the rest rule. Wiz Scheduler enforces a minimum rest between shifts, set per location and off until you set it. It does not track advance notice or premium pay. 7shifts flags clopens, changes inside 14 days and premium pay on its paid plans, and Deputy has the most complete support of the tools we compare."
   - q: "Can I bring my data over from 7shifts?"
@@ -53,13 +53,13 @@ That is why there is less to fix. The preferences are already in the draft, and 
 
 <div data-pricing-table></div>
 
-Take {locations} locations with {employees} employees each. Every location fits 7shifts {sevenShiftsExamplePlan}, so the total is {sevenShiftsExampleTotal} a month. If each of those {locations} locations had {proMinEmployees} to {proMaxEmployees} employees, they would be on 7shifts Pro at {sevenShiftsProTotal} a month. On Wiz Scheduler Pro, both teams pay {wizPro} a month, plus any AI credits they choose to buy.
+Take {locations} locations with {employees} employees each. Two 7shifts plans fit: Essentials at {essentialsTotal} a month in total, and Premium at {premiumTotal}. Comp doesn't fit, because it covers only {compMaxLocations} location. Pro and the larger Premium are for {proMinEmployees} or more employees per location: if each of those {locations} locations had {proMinEmployees} to {proMaxEmployees} employees, Pro would be {proTotal} a month and Premium {premiumLargeTotal}. On Wiz Scheduler Pro, either team pays {wizPro} a month, plus any AI credits it chooses to buy.
 
 Wiz Scheduler Pro includes 500 employees, 50 manager seats and 25 schedule generations, with small metered charges above those. AI Generate is not included; it is paid from prepaid credit packs. The free plan covers {wizFreeLocations} locations and {wizFreeEmployees} employees, with one schedule per location a month and no AI Generate. 7shifts takes 10% off for annual billing; Wiz Scheduler has no annual discount.
 
 ## Where 7shifts is stronger
 
-- **NYC Fair Workweek alerts.** 7shifts' paid plans flag clopens, changes inside 14 days and premium pay. Wiz Scheduler only enforces rest between shifts.
+- **NYC Fair Workweek alerts.** 7shifts' paid plans flag clopens, changes inside 14 days and premium pay. Wiz Scheduler only enforces rest between shifts, once you set it.
 - **Payroll.** 7shifts sells a payroll add-on. Wiz Scheduler does not process payroll or pool tips.
 - **Drafts from sales.** 7shifts' auto-scheduler works from your sales and schedule history. Wiz Scheduler has no POS integration or sales forecasting.
 - **A free plan for one small location.** 7shifts Comp is free for one location with up to {compMaxEmployees} employees.

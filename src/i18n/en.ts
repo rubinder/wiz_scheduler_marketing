@@ -113,6 +113,7 @@ const en = {
       "/compare/7shifts-alternatives": "7shifts alternatives and pricing compared",
     },
     pricingCaption: "Monthly list prices",
+    pricingSources: "Sources",
     pricingHeadings: { plan: "Plan", size: "Team size", price: "Price", autoScheduling: "Auto-scheduling" },
     free: "Free",
     perLocation: "{price} per location a month",

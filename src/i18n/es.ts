@@ -114,6 +114,7 @@ const es: Copy = {
       "/compare/7shifts-alternatives": "Alternativas a 7shifts y sus precios comparados",
     },
     pricingCaption: "Precios de lista mensuales",
+    pricingSources: "Fuentes",
     pricingHeadings: { plan: "Plan", size: "Tamaño del equipo", price: "Precio", autoScheduling: "Programación automática" },
     free: "Gratis",
     perLocation: "{price} por ubicación al mes",
