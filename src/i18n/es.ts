@@ -102,6 +102,7 @@ const es: Copy = {
     ctaSignup: "Regístrate gratis",
   },
   compare: {
+    eyebrow: "Comparar con {competitor}",
     checkedOn: "Datos del competidor verificados el",
     ctaSignup: "Regístrate gratis",
     ctaHome: "Volver al inicio",
@@ -112,6 +113,8 @@ const es: Copy = {
     pages: {
       "/compare/7shifts": "Wiz Scheduler frente a 7shifts",
       "/compare/7shifts-alternatives": "Alternativas a 7shifts y sus precios comparados",
+      "/compare/deputy": "Wiz Scheduler frente a Deputy",
+      "/compare/deputy-alternatives": "Alternativas a Deputy y sus precios comparados",
     },
     pricingCaption: "Precios de lista mensuales",
     pricingSources: "Fuentes",
@@ -119,6 +122,8 @@ const es: Copy = {
     free: "Gratis",
     perLocation: "{price} por ubicación al mes",
     allLocations: "{price} al mes para todas las ubicaciones",
+    perUser: "{price} por usuario al mes",
+    userSize: "Por usuario; mínimo de {minimum} al mes con facturación mensual",
     wizProSize: "Ubicaciones ilimitadas; 500 empleados incluidos y luego {extra} al mes por cada 500 adicionales",
   },
   checker: {
@@ -207,6 +212,8 @@ const es: Copy = {
       "Precios de lista mensuales, verificados el {date}, para {locations} ubicaciones con {employees} empleados por ubicación, sin impuestos, complementos ni descuentos anuales. Aparecen todos los planes, cada uno con el tamaño de equipo para el que es. Los que no le sirven a este equipo están marcados, con lo que costarían a este tamaño cuando tiene sentido; el destacado es el plan más barato de cada herramienta que le sirve y tiene programación automática.",
     exampleSevenShifts:
       "7shifts fija el plan según los empleados por ubicación. Con {employees} empleados por ubicación, cada ubicación entra en Essentials o Premium (hasta {essentialsMaxEmployees} empleados cada una), no en Pro (de {proMinEmployees} a {proMaxEmployees}).",
+    exampleDeputy:
+      "Deputy cobra por usuario; aquí contamos un usuario por empleado: {users} usuarios. Los planes mensuales tienen un mínimo de {deputyMinimum} al mes, y Lite no tiene programación automática.",
     exampleWiz: "Wiz Scheduler Pro es un solo precio base para todas las ubicaciones. La generación con AI se paga con créditos prepagados si la usas.",
     exampleHeadings: { plan: "Plan", price: "Al mes", how: "Cómo se calcula", autoScheduling: "Programación automática" },
     perLocation: "{count} ubicaciones × {price}",
@@ -283,6 +290,41 @@ const es: Copy = {
         {
           q: "¿Puedo traer mis datos desde 7shifts?",
           a: "En el plan de pago, Wiz Scheduler importa empresas, ubicaciones, departamentos, roles, empleados y sus asignaciones desde 7shifts con un token de API de tu cuenta de 7shifts. Una importación aparte trae la disponibilidad semanal, la no disponibilidad y los días libres aprobados. Las preferencias y las relaciones entre compañeros no se importan.",
+        },
+      ],
+    },
+    deputy: {
+      title: "Alternativas a Deputy y precios de Deputy comparados | Wiz Scheduler",
+      metaDescription:
+        "Los precios de Deputy junto a 7shifts, Homebase, When I Work y Wiz Scheduler: todos los planes que le sirven a tu equipo, cómo programa cada herramienta, si usa las preferencias de los empleados y el soporte de Fair Workweek de Nueva York.",
+      heading: "Alternativas a Deputy",
+      intro:
+        "Deputy cobra por usuario, y su programación automática, en Core y Pro, asigna los turnos por costo, por igualdad de horas o aprendiendo de tus horarios anteriores. Además, tiene el soporte de Fair Workweek de Nueva York más completo de estas herramientas. Si estás evaluando alternativas, así se comparan cinco herramientas en precio, programación automática, preferencias de los empleados y Fair Workweek de Nueva York, con precios tomados del sitio de cada proveedor.",
+      compareLink: "Wiz Scheduler frente a Deputy",
+      faq: [
+        {
+          q: "¿Cuánto cuesta Deputy?",
+          a: "Deputy cobra por usuario al mes. Con facturación mensual, Lite cuesta {deputyLite}, Core {deputyCore} y Pro {deputyPro} por usuario. Con facturación anual, cuestan {deputyLiteAnnual}, {deputyCoreAnnual} y {deputyProAnnual}. Los planes mensuales tienen un mínimo de {deputyMinimum} al mes, y no hay plan gratuito. Son precios de lista de la propia página de precios de Deputy.",
+        },
+        {
+          q: "¿Cuánto costaría Deputy para {locations} ubicaciones con {employees} empleados cada una?",
+          a: "Deputy cuenta usuarios, así que ese equipo son {users} usuarios, si contamos un usuario por empleado: {deputyLiteTotal} al mes en Lite, que no tiene programación automática, {deputyExampleTotal} en {deputyExamplePlan}, el plan más barato con programación automática, y {deputyProTotal} en Pro, con facturación mensual. Wiz Scheduler Pro cuesta {wizPro} al mes para todas las ubicaciones.",
+        },
+        {
+          q: "¿Deputy programa los horarios automáticamente?",
+          a: "Sí, en Core y Pro; Lite no tiene programación automática. Asigna los turnos por costo, por igualdad de horas o aprendiendo de tus horarios anteriores. Su documentación no menciona preferencias de turnos ni de compañeros.",
+        },
+        {
+          q: "¿Los empleados pueden dar sus propias preferencias en Wiz Scheduler?",
+          a: "Sí. Los gerentes pueden ingresar las preferencias de todos. Los empleados pueden enviar las suyas cuando se activan las solicitudes de preferencias en la Configuración de la empresa, y un gerente aprueba cada solicitud. Las solicitudes de preferencias vienen desactivadas.",
+        },
+        {
+          q: "¿Deputy es mejor para Fair Workweek de Nueva York?",
+          a: "Sí. Deputy tiene el soporte de Fair Workweek de Nueva York más completo de las herramientas comparadas aquí, con consentimiento para los cambios, pago de primas, avisos con antelación y descansos. Su propia documentación indica que las reglas de comida rápida de Nueva York se aplican a cadenas con 30 o más ubicaciones en todo el país, y las de comercio minorista a empleadores con 20 o más empleados. Wiz Scheduler solo aplica un descanso mínimo entre turnos, fijado por ubicación y desactivado hasta que lo configuras.",
+        },
+        {
+          q: "¿Puedo traer mis datos desde Deputy?",
+          a: "En el plan de pago, Wiz Scheduler importa desde Deputy ubicaciones, roles y empleados con su correo, con un token de API de tu cuenta de Deputy, y la no disponibilidad de Deputy llega como horarios en que el empleado no puede trabajar. Cada empleado recibe todos los roles de su ubicación con nivel de habilidad 1, así que ajusta las habilidades después de importar. Una importación aparte trae la disponibilidad. Las preferencias y las relaciones entre compañeros no se importan.",
         },
       ],
     },

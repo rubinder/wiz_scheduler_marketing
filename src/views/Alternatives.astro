@@ -48,7 +48,12 @@ function findPlan(id: ToolId, name: string, match: (p: Plan) => boolean = () => 
   if (!found) throw new Error(`no ${id} plan ${name}`);
   return found;
 }
-const usd = (n: number | null) => (n === null ? "" : Number.isInteger(n) ? `$${n}` : formatUsd(n));
+const usd = (n: number) => (Number.isInteger(n) ? `$${n}` : formatUsd(n));
+/** A data field the copy needs; a missing one fails the build rather than printing blank. */
+function need<T>(value: T | null | undefined, what: string): T {
+  if (value === null || value === undefined) throw new Error(`alternatives ${locale}/${focus}: missing ${what}`);
+  return value;
+}
 const s7 = {
   comp: findPlan("7shifts", "Comp"),
   essentials: findPlan("7shifts", "Essentials"),
@@ -57,24 +62,41 @@ const s7 = {
   premiumLarge: findPlan("7shifts", "Premium", (p) => p.minEmployeesPerLocation !== undefined),
 };
 const s7Pick = quotePlans(TOOLS["7shifts"], team).find((q) => q.highlighted);
+const deputy = { lite: findPlan("deputy", "Lite"), core: findPlan("deputy", "Core"), pro: findPlan("deputy", "Pro") };
+const deputyQuotes = quotePlans(TOOLS.deputy, team);
+const deputyTotal = (plan: Plan) =>
+  usd(need(deputyQuotes[TOOLS.deputy.plans.indexOf(plan)]?.monthlyUsd, `Deputy ${plan.name} total`));
+const deputyPick = deputyQuotes.find((q) => q.highlighted);
 const wizFree = findPlan("wiz", "Free");
 const vars: Record<string, string | number> = {
   locations: team.locations,
   employees: team.employeesPerLocation,
   date: checkedOn,
-  compMaxEmployees: s7.comp.maxEmployeesPerLocation ?? "",
-  essentials: usd(s7.essentials.monthlyUsd),
-  essentialsMaxEmployees: s7.essentials.maxEmployeesPerLocation ?? "",
-  premium: usd(s7.premium.monthlyUsd),
-  pro: usd(s7.pro.monthlyUsd),
-  proMinEmployees: s7.pro.minEmployeesPerLocation ?? "",
-  proMaxEmployees: s7.pro.maxEmployeesPerLocation ?? "",
-  premiumLarge: usd(s7.premiumLarge.monthlyUsd),
-  sevenShiftsExamplePlan: s7Pick?.plan ?? "",
-  sevenShiftsExampleTotal: usd(s7Pick?.monthlyUsd ?? null),
-  wizPro: usd(findPlan("wiz", "Pro").monthlyUsd),
-  wizFreeLocations: wizFree.maxLocations ?? "",
-  wizFreeEmployees: wizFree.maxTotalEmployees ?? "",
+  compMaxEmployees: need(s7.comp.maxEmployeesPerLocation, "7shifts Comp maxEmployeesPerLocation"),
+  essentials: usd(need(s7.essentials.monthlyUsd, "7shifts Essentials price")),
+  essentialsMaxEmployees: need(s7.essentials.maxEmployeesPerLocation, "7shifts Essentials maxEmployeesPerLocation"),
+  premium: usd(need(s7.premium.monthlyUsd, "7shifts Premium price")),
+  pro: usd(need(s7.pro.monthlyUsd, "7shifts Pro price")),
+  proMinEmployees: need(s7.pro.minEmployeesPerLocation, "7shifts Pro minEmployeesPerLocation"),
+  proMaxEmployees: need(s7.pro.maxEmployeesPerLocation, "7shifts Pro maxEmployeesPerLocation"),
+  premiumLarge: usd(need(s7.premiumLarge.monthlyUsd, "7shifts Premium 31+ price")),
+  sevenShiftsExamplePlan: need(s7Pick?.plan, "7shifts highlighted plan"),
+  sevenShiftsExampleTotal: usd(need(s7Pick?.monthlyUsd, "7shifts highlighted total")),
+  users: team.locations * team.employeesPerLocation,
+  deputyLite: usd(need(deputy.lite.monthlyUsd, "Deputy Lite price")),
+  deputyCore: usd(need(deputy.core.monthlyUsd, "Deputy Core price")),
+  deputyPro: usd(need(deputy.pro.monthlyUsd, "Deputy Pro price")),
+  deputyLiteAnnual: usd(need(deputy.lite.annualMonthlyUsd, "Deputy Lite annual price")),
+  deputyCoreAnnual: usd(need(deputy.core.annualMonthlyUsd, "Deputy Core annual price")),
+  deputyProAnnual: usd(need(deputy.pro.annualMonthlyUsd, "Deputy Pro annual price")),
+  deputyMinimum: usd(need(deputy.core.minimumMonthlyUsd, "Deputy minimumMonthlyUsd")),
+  deputyLiteTotal: deputyTotal(deputy.lite),
+  deputyProTotal: deputyTotal(deputy.pro),
+  deputyExamplePlan: need(deputyPick?.plan, "Deputy highlighted plan"),
+  deputyExampleTotal: usd(need(deputyPick?.monthlyUsd, "Deputy highlighted total")),
+  wizPro: usd(need(findPlan("wiz", "Pro").monthlyUsd, "Wiz Pro price")),
+  wizFreeLocations: need(wizFree.maxLocations, "Wiz Free maxLocations"),
+  wizFreeEmployees: need(wizFree.maxTotalEmployees, "Wiz Free maxTotalEmployees"),
 };
 const a = fillDeep(t.alternatives, vars);
 const f = a[focus];
@@ -203,6 +225,7 @@ const example = tools.map((tool) => ({
         ))}
       </div>
       <p class={`${m.text.muted} text-sm mt-6`}>{a.exampleSevenShifts} {t.calculator.sevenShiftsBeta}</p>
+      <p class={`${m.text.muted} text-sm mt-2`}>{a.exampleDeputy}</p>
       <p class={`${m.text.muted} text-sm mt-2`}>{a.exampleWiz}</p>
     </section>
 

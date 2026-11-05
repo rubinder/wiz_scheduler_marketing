@@ -191,3 +191,129 @@ describe("7shifts alternatives (es)", () => {
     expect(es).not.toContain('href="/es/pricing"');
   });
 });
+
+const deputy = TOOLS.deputy;
+const deputyQuotes = quotePlans(deputy, DEFAULT_TEAM);
+
+for (const locale of ["en", "es"] as const) {
+  const copy = locale === "en" ? enCopy : esCopy;
+  describe(`Deputy alternatives (${locale})`, () => {
+    let html = "";
+    beforeAll(async () => {
+      const renderers = await loadRenderers([getContainerRenderer()]);
+      const c = await AstroContainer.create({ renderers });
+      html = await c.renderToString(Alternatives, { props: { locale, focus: "deputy" } });
+    });
+
+    it("targets Deputy alternatives and Deputy pricing in the title", () => {
+      const title = html.match(/<title>([^<]*)<\/title>/)?.[1] ?? "";
+      if (locale === "en") {
+        expect(title).toContain("Deputy Alternatives");
+        expect(title).toContain("Deputy Pricing");
+      } else {
+        expect(title).toContain("Alternativas a Deputy");
+        expect(title).toContain("precios de Deputy");
+      }
+      expect(html).toMatch(new RegExp(`<html[^>]*lang="${locale}"`));
+      expect(html).not.toContain("WizScheduler");
+    });
+
+    it("puts Deputy right after Wiz Scheduler", () => {
+      const captions = [...example(html).matchAll(/<caption[^>]*>([^<]*)<\/caption>/g)].map((m) => m[1]);
+      expect(captions.slice(0, 2)).toEqual(["Wiz Scheduler", "Deputy"]);
+    });
+
+    it("prices every Deputy plan for 39 users: Lite $214.50, Core $282.75 highlighted, Pro $390.00", () => {
+      const rows = exampleRows(html).filter((r) => r.html.includes("Deputy "));
+      expect(rows).toHaveLength(deputy.plans.length);
+      const label = { yes: copy.calculator.autoYes, no: copy.calculator.autoNo, beta: copy.calculator.autoBeta };
+      deputy.plans.forEach((plan, i) => {
+        const q = deputyQuotes[i];
+        const row = rows.find((r) => r.html.includes(`Deputy ${plan.name}`))!;
+        expect(row).toMatchObject({ fits: true, highlighted: q.highlighted });
+        expect(row.html).toContain(formatUsd(q.monthlyUsd!));
+        expect(row.html).toContain(`39 ${locale === "en" ? "employees" : "empleados"} × ${formatUsd(plan.monthlyUsd!)}`);
+        expect(row.html).toContain(`<td class="py-3">${label[plan.autoScheduling]}</td>`);
+      });
+      expect(deputyQuotes.map((q) => q.monthlyUsd)).toEqual([214.5, 282.75, 390]);
+      expect(rows.find((r) => r.highlighted)!.html).toContain("Core");
+      expect(rows.find((r) => r.highlighted)!.html).toContain("$282.75");
+    });
+
+    it("states Deputy's per-user pricing and $30 minimum in the example", () => {
+      const ex = example(html);
+      expect(ex).toContain(`$${deputy.plans[0].minimumMonthlyUsd}`);
+    });
+
+    it("links every tool's pricing page", () => {
+      for (const tool of Object.values(TOOLS)) {
+        const href = tool.pricingUrl.startsWith("/") ? `href="${tool.pricingUrl}"` : `href="${tool.pricingUrl}"`;
+        expect(html, tool.id).toContain(href);
+      }
+      expect(html).not.toContain('href="/es/pricing"');
+    });
+
+    it("has FAQPage JSON-LD with Deputy prices from the data module, and the hero qualifier", () => {
+      expect(html).toContain('"@type":"FAQPage"');
+      expect(html).toContain(copy.alternatives.heroQualifier);
+      const faq = faqText(html);
+      for (const p of deputy.plans) expect(faq).toContain(price(p.monthlyUsd));
+      for (const q of deputyQuotes) expect(faq).toContain(price(q.monthlyUsd)); // prose uses $390, the table $390.00
+      expect(faq).toContain(locale === "en" ? "30 or more locations" : "30 o más ubicaciones");
+      expect(faq).toContain(locale === "en" ? "Company Settings" : "Configuración de la empresa");
+      expect(faq).not.toMatch(/[{}]/);
+    });
+
+    it("links the Deputy compare page in its own locale", () => {
+      expect(html).toContain(locale === "en" ? 'href="/compare/deputy"' : 'href="/es/compare/deputy"');
+    });
+
+    it("states the one-user-per-employee assumption wherever the FAQ JSON-LD gives a Deputy user count", () => {
+      const users = DEFAULT_TEAM.locations * DEFAULT_TEAM.employeesPerLocation;
+      const word = locale === "en" ? "users" : "usuarios";
+      const assumption = locale === "en" ? "counting one user per employee" : "si contamos un usuario por empleado";
+      const answers = faqText(html).split("\n").filter((line) => line.includes(`${users} ${word}`));
+      expect(answers.length).toBeGreaterThan(0);
+      for (const a of answers) expect(a).toContain(assumption);
+    });
+
+    it("leaves no unfilled {placeholder}", () => {
+      expect(visible(html)).not.toMatch(/\{[a-zA-Z]+\}/);
+    });
+  });
+}
+
+describe("alternatives data fields", () => {
+  async function renderWithout(mutate: () => () => void) {
+    const restore = mutate();
+    try {
+      const renderers = await loadRenderers([getContainerRenderer()]);
+      const c = await AstroContainer.create({ renderers });
+      return await c.renderToString(Alternatives, { props: { locale: "en", focus: "deputy" } });
+    } finally {
+      restore();
+    }
+  }
+
+  it("fails the render when a Deputy field the copy needs is missing", async () => {
+    const core = TOOLS.deputy.plans.find((p) => p.name === "Core")!;
+    await expect(
+      renderWithout(() => {
+        const saved = core.minimumMonthlyUsd;
+        delete core.minimumMonthlyUsd;
+        return () => (core.minimumMonthlyUsd = saved);
+      }),
+    ).rejects.toThrow("missing Deputy minimumMonthlyUsd");
+  });
+
+  it("fails the render when a 7shifts field the copy needs is missing", async () => {
+    const comp = TOOLS["7shifts"].plans.find((p) => p.name === "Comp")!;
+    await expect(
+      renderWithout(() => {
+        const saved = comp.maxEmployeesPerLocation;
+        delete comp.maxEmployeesPerLocation;
+        return () => (comp.maxEmployeesPerLocation = saved);
+      }),
+    ).rejects.toThrow("missing 7shifts Comp maxEmployeesPerLocation");
+  });
+});
