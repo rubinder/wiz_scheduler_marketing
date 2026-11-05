@@ -27,7 +27,12 @@ gum read searchconsole.searchanalytics.query --format json --max-items all --arg
 - Dates are UTC `YYYY-MM-DD`; the window is the last 28 days, ending 2 days back because the freshest days are partial.
 - Each row's `page` URL tells you the locale: `/<locale>/...` for a prefixed locale, no prefix for `en`. A query's language is the language of its page's locale unless the query text is plainly another one.
 - If the flat `startDate` and `endDate` args are rejected, `gum describe searchconsole.searchanalytics.query` lists the request fields; the operation takes them in the request body. Do not guess other flags.
-- Optional ranking input: Keyword Planner via `gum read googleads.keywordPlanIdeas.generateKeywordHistoricalMetrics` (arguments from `gum describe`, needs `customerId` and a Google Ads developer token). If it is not set up, skip it silently and rank on Search Console data alone. Never fail the run over it.
+- Optional ranking input: Keyword Planner. Always pass `"customerId":"2409053262"` (the ad-free Ads account) and `"loginCustomerId":"7055948448"` (the manager account it is reached through); the developer token is in gum's keychain. Verified 2026-11-05 with Basic access:
+  ```
+  gum read googleads.keywordPlanIdeas.generateKeywordHistoricalMetrics --format json --args '{"customerId":"2409053262","loginCustomerId":"7055948448","keywords":["<query>", "..."],"geoTargetConstants":["2840"],"language":"1000"}'
+  gum read googleads.keywordPlanIdeas.generateKeywordIdeas --format json --args '{"customerId":"2409053262","loginCustomerId":"7055948448","keywords":["<seed>", "..."],"geoTargetConstants":["2840"],"language":"1000"}'
+  ```
+  Volume is `keywordMetrics.avgMonthlySearches` (historical metrics) or `keywordIdeaMetrics.avgMonthlySearches` (ideas). `2840` and `1000` are United States and English: use them only for `en` queries, and rank other locales on Search Console alone. If either call errors, skip it silently and rank on Search Console data alone. Never fail the run over it.
 
 Candidate rule: a query is a candidate when it has high impressions, CTR near 0, and average position worse than about 20, and no existing guide already targets it (compare against the `targetKeyword` of every file under `src/content/guides/`, in any locale; also skip near-duplicates of the same intent).
 
