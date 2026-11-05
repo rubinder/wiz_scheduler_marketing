@@ -1,6 +1,6 @@
 # Directory listing copy: G2, Capterra, GetApp, AlternativeTo
 
-Ready to paste. The site owner submits these listings; nothing here has been submitted. Product name everywhere: Wiz Scheduler. Category names are suggestions to confirm on each site, since each directory's taxonomy could not be verified. Any field limits are marked 'check on submission'.
+Ready to paste. Competitor facts come from vendor pricing and help pages (vendor pricing checked 2026-11-04). The site owner submits these listings; nothing here has been submitted. Product name everywhere: Wiz Scheduler. Category names are suggestions to confirm on each site, since each directory's taxonomy could not be verified. Any field limits are marked 'check on submission'.
 
 ## Shared facts
 
@@ -18,7 +18,7 @@ Ready to paste. The site owner submits these listings; nothing here has been sub
 ### Pricing summary (same on every listing)
 
 - Free: 2 locations, 25 employees, 1 schedule per location a month, 2 attempts, no AI Generate.
-- Pro: $18 a month flat, unlimited locations. Includes 500 employees (extra charge of $1 for each additional 500), 50 manager seats ($5 per extra 50), 25 schedule generations ($0.10 per extra 25), 0.5 GB storage ($0.50 per GB). No annual discount, no employee cap.
+- Pro: from $18 a month, flat, unlimited locations. Includes 500 employees (extra charge of $1 for each additional 500), 50 manager seats ($5 per extra 50), 25 schedule generations ($0.10 per extra 25), 0.5 GB storage ($0.50 per GB). No annual discount, no employee cap.
 - AI Generate is not included in Pro. It is paid from prepaid credit packs ($10, $25 or $50).
 
 ### Screenshots to capture from the app (describe only; capture real screens)
@@ -37,15 +37,15 @@ Captions should not claim more than the screen shows. Preference requests are of
 
 **Product name:** Wiz Scheduler
 
-**Tagline:** The schedule your team had a say in.
+**Tagline:** Employee scheduling that builds the draft from preferences.
 
-**Short description (149 characters, limit 160):**
+**Short description (137 characters, limit 160):**
 
-Employee scheduling built from manager and employee preferences, so managers fix less afterwards. Free plan, then $18 a month flat for all locations.
+Employee scheduling built from preferences managers enter and employees can send, so managers fix less. Free plan, then from $18 a month.
 
-**Long description (435 words, under 1000 words):**
+**Long description (462 words, under 1000 words):**
 
-Wiz Scheduler is a multi-location employee scheduling app. It builds the weekly schedule from manager and employee preferences, together with availability, roles and skill levels, so the draft already reflects what people asked for.
+Wiz Scheduler is a multi-location employee scheduling app. It builds the weekly schedule from manager and employee preferences, together with availability, roles and skill levels, reflects the preferences on file.
 
 Managers can enter preferences for everyone: preferred days (up to 3), preferred time ranges, a weekly maximum of hours, caps such as "at most N shifts in this time range a week", unavailable times, and coworker relationships (work with, keep apart, or do not schedule together, limited to people who share a location). Employees can send their own preferences once an admin turns on preference requests in Company Settings. Preference requests are off by default, and a manager approves each request and sets its weight.
 
@@ -57,31 +57,31 @@ Other features: QR check-in on the paid plan, employee pages in 19 languages, an
 
 What it does not do: there is no POS integration, sales forecasting, tip pooling or payroll processing. On Fair Workweek, Wiz Scheduler offers only the opt-in per-location minimum-rest rule, with no advance-notice tracking or premium-pay handling, so it is not Fair Workweek compliance software. Teams that need those features should look at Deputy.
 
-Pricing: a Free plan with 2 locations, 25 employees and one schedule a month for each location (no AI Generate). Pro is $18 a month, flat, for unlimited locations, with 500 employees included.
+Pricing: Free plan with 2 locations, 25 employees and one schedule a month for each location, 2 attempts and no AI Generate. Pro starts at $18 a month, flat, for unlimited locations, and includes 500 employees, plus $1 for each additional 500 employees above 500. AI Generate is not included in Pro; it is paid from prepaid credit packs of $10, $25 or $50.
 
 **Suggested categories (confirm on the site):**
 - Employee Scheduling
 - Workforce Management (check the exact G2 name on submission)
 
 **List as an alternative to:**
-- 7shifts: 7shifts is priced per location and builds its draft from sales and schedule history; Wiz Scheduler is one flat price for all locations and builds from preferences, but 7shifts is stronger on Fair Workweek alerts and offers a payroll add-on.
+- 7shifts: 7shifts is priced per location, and its auto-scheduler is a beta rolling out to selected accounts that drafts from at least 6 weeks of sales and schedule history; Wiz Scheduler is priced from $18 a month for all locations and builds from preferences, while 7shifts is stronger on Fair Workweek alerts and offers a payroll add-on.
 - Deputy: Deputy is priced per user and can auto-fill by cost or equal hours; Wiz Scheduler is flat-priced and builds from preferences and coworker pairings, but Deputy is stronger on Fair Workweek (consent, premiums, notice, rest).
-- Homebase: Homebase is priced per location, with a free single-location plan and an AI scheduling assistant from its Plus plan; Wiz Scheduler is flat-priced across locations and marks every shift that goes against a preference, but has no POS integration or payroll processing.
-- When I Work: When I Work is priced per user and its auto-assign can require overlap with preferred availability; Wiz Scheduler adds coworker preferences and flat pricing, but has no payroll processing or tip pooling.
+- Homebase: Homebase is priced per location and Wiz Scheduler is flat-priced across locations, marking every shift that goes against a preference; Homebase is stronger with a free plan for 1 location and 10 employees, and its AI scheduling assistant comes with its Plus plan.
+- When I Work: When I Work is priced per user and Wiz Scheduler is flat-priced with coworker preferences; When I Work is stronger with a low per-user price at a single location ($2.50) and auto-assign on every plan.
 
 ## Capterra
 
 **Product name:** Wiz Scheduler
 
-**Tagline:** Shift schedules built around your team's preferences.
+**Tagline:** Shift scheduling that builds the draft from preferences.
 
-**Short description (154 characters, limit 160):**
+**Short description (134 characters, limit 160):**
 
-Shift scheduling built from manager and employee preferences, so managers have less to fix afterwards. Free plan, then $18 a month flat for all locations.
+Shift scheduling built from preferences managers enter and employees can send, so managers fix less. Free plan, then from $18 a month.
 
-**Long description (435 words, under 1000 words):**
+**Long description (462 words, under 1000 words):**
 
-Wiz Scheduler is a multi-location employee scheduling app. It builds the weekly schedule from manager and employee preferences, together with availability, roles and skill levels, so the draft already reflects what people asked for.
+Wiz Scheduler is a multi-location employee scheduling app. It builds the weekly schedule from manager and employee preferences, together with availability, roles and skill levels, reflects the preferences on file.
 
 Managers can enter preferences for everyone: preferred days (up to 3), preferred time ranges, a weekly maximum of hours, caps such as "at most N shifts in this time range a week", unavailable times, and coworker relationships (work with, keep apart, or do not schedule together, limited to people who share a location). Employees can send their own preferences once an admin turns on preference requests in Company Settings. Preference requests are off by default, and a manager approves each request and sets its weight.
 
@@ -93,7 +93,7 @@ Other features: QR check-in on the paid plan, employee pages in 19 languages, an
 
 What it does not do: there is no POS integration, sales forecasting, tip pooling or payroll processing. On Fair Workweek, Wiz Scheduler offers only the opt-in per-location minimum-rest rule, with no advance-notice tracking or premium-pay handling, so it is not Fair Workweek compliance software. Teams that need those features should look at Deputy.
 
-Pricing: a Free plan with 2 locations, 25 employees and one schedule a month for each location (no AI Generate). Pro is $18 a month, flat, for unlimited locations, with 500 employees included.
+Pricing: Free plan with 2 locations, 25 employees and one schedule a month for each location, 2 attempts and no AI Generate. Pro starts at $18 a month, flat, for unlimited locations, and includes 500 employees, plus $1 for each additional 500 employees above 500. AI Generate is not included in Pro; it is paid from prepaid credit packs of $10, $25 or $50.
 
 **Suggested categories (confirm on the site):**
 - Employee Scheduling
@@ -101,24 +101,24 @@ Pricing: a Free plan with 2 locations, 25 employees and one schedule a month for
 - Restaurant Scheduling or Workforce Management, only if offered
 
 **List as an alternative to:**
-- 7shifts: 7shifts is priced per location and builds its draft from sales and schedule history; Wiz Scheduler is one flat price for all locations and builds from preferences, but 7shifts is stronger on Fair Workweek alerts and offers a payroll add-on.
+- 7shifts: 7shifts is priced per location, and its auto-scheduler is a beta rolling out to selected accounts that drafts from at least 6 weeks of sales and schedule history; Wiz Scheduler is priced from $18 a month for all locations and builds from preferences, while 7shifts is stronger on Fair Workweek alerts and offers a payroll add-on.
 - Deputy: Deputy is priced per user and can auto-fill by cost or equal hours; Wiz Scheduler is flat-priced and builds from preferences and coworker pairings, but Deputy is stronger on Fair Workweek (consent, premiums, notice, rest).
-- Homebase: Homebase is priced per location, with a free single-location plan and an AI scheduling assistant from its Plus plan; Wiz Scheduler is flat-priced across locations and marks every shift that goes against a preference, but has no POS integration or payroll processing.
-- When I Work: When I Work is priced per user and its auto-assign can require overlap with preferred availability; Wiz Scheduler adds coworker preferences and flat pricing, but has no payroll processing or tip pooling.
+- Homebase: Homebase is priced per location and Wiz Scheduler is flat-priced across locations, marking every shift that goes against a preference; Homebase is stronger with a free plan for 1 location and 10 employees, and its AI scheduling assistant comes with its Plus plan.
+- When I Work: When I Work is priced per user and Wiz Scheduler is flat-priced with coworker preferences; When I Work is stronger with a low per-user price at a single location ($2.50) and auto-assign on every plan.
 
 ## GetApp
 
 **Product name:** Wiz Scheduler
 
-**Tagline:** Shift schedules built around your team's preferences.
+**Tagline:** Shift scheduling that builds the draft from preferences.
 
-**Short description (154 characters, limit 160):**
+**Short description (134 characters, limit 160):**
 
-Shift scheduling built from manager and employee preferences, so managers have less to fix afterwards. Free plan, then $18 a month flat for all locations.
+Shift scheduling built from preferences managers enter and employees can send, so managers fix less. Free plan, then from $18 a month.
 
-**Long description (435 words, under 1000 words):**
+**Long description (462 words, under 1000 words):**
 
-Wiz Scheduler is a multi-location employee scheduling app. It builds the weekly schedule from manager and employee preferences, together with availability, roles and skill levels, so the draft already reflects what people asked for.
+Wiz Scheduler is a multi-location employee scheduling app. It builds the weekly schedule from manager and employee preferences, together with availability, roles and skill levels, reflects the preferences on file.
 
 Managers can enter preferences for everyone: preferred days (up to 3), preferred time ranges, a weekly maximum of hours, caps such as "at most N shifts in this time range a week", unavailable times, and coworker relationships (work with, keep apart, or do not schedule together, limited to people who share a location). Employees can send their own preferences once an admin turns on preference requests in Company Settings. Preference requests are off by default, and a manager approves each request and sets its weight.
 
@@ -130,7 +130,7 @@ Other features: QR check-in on the paid plan, employee pages in 19 languages, an
 
 What it does not do: there is no POS integration, sales forecasting, tip pooling or payroll processing. On Fair Workweek, Wiz Scheduler offers only the opt-in per-location minimum-rest rule, with no advance-notice tracking or premium-pay handling, so it is not Fair Workweek compliance software. Teams that need those features should look at Deputy.
 
-Pricing: a Free plan with 2 locations, 25 employees and one schedule a month for each location (no AI Generate). Pro is $18 a month, flat, for unlimited locations, with 500 employees included.
+Pricing: Free plan with 2 locations, 25 employees and one schedule a month for each location, 2 attempts and no AI Generate. Pro starts at $18 a month, flat, for unlimited locations, and includes 500 employees, plus $1 for each additional 500 employees above 500. AI Generate is not included in Pro; it is paid from prepaid credit packs of $10, $25 or $50.
 
 **Suggested categories (confirm on the site):**
 - Employee Scheduling
@@ -138,24 +138,24 @@ Pricing: a Free plan with 2 locations, 25 employees and one schedule a month for
 - Workforce Management
 
 **List as an alternative to:**
-- 7shifts: 7shifts is priced per location and builds its draft from sales and schedule history; Wiz Scheduler is one flat price for all locations and builds from preferences, but 7shifts is stronger on Fair Workweek alerts and offers a payroll add-on.
+- 7shifts: 7shifts is priced per location, and its auto-scheduler is a beta rolling out to selected accounts that drafts from at least 6 weeks of sales and schedule history; Wiz Scheduler is priced from $18 a month for all locations and builds from preferences, while 7shifts is stronger on Fair Workweek alerts and offers a payroll add-on.
 - Deputy: Deputy is priced per user and can auto-fill by cost or equal hours; Wiz Scheduler is flat-priced and builds from preferences and coworker pairings, but Deputy is stronger on Fair Workweek (consent, premiums, notice, rest).
-- Homebase: Homebase is priced per location, with a free single-location plan and an AI scheduling assistant from its Plus plan; Wiz Scheduler is flat-priced across locations and marks every shift that goes against a preference, but has no POS integration or payroll processing.
-- When I Work: When I Work is priced per user and its auto-assign can require overlap with preferred availability; Wiz Scheduler adds coworker preferences and flat pricing, but has no payroll processing or tip pooling.
+- Homebase: Homebase is priced per location and Wiz Scheduler is flat-priced across locations, marking every shift that goes against a preference; Homebase is stronger with a free plan for 1 location and 10 employees, and its AI scheduling assistant comes with its Plus plan.
+- When I Work: When I Work is priced per user and Wiz Scheduler is flat-priced with coworker preferences; When I Work is stronger with a low per-user price at a single location ($2.50) and auto-assign on every plan.
 
 ## AlternativeTo
 
 **Product name:** Wiz Scheduler
 
-**Tagline:** Employee scheduling that starts from preferences, not from a blank grid.
+**Tagline:** Employee scheduling that builds the draft from preferences.
 
-**Short description (154 characters, limit 160):**
+**Short description (153 characters, limit 160):**
 
-Employee scheduling built from manager and employee preferences. Free plan, then $18 a month flat for all locations. An alternative to 7shifts and Deputy.
+Employee scheduling built from preferences managers enter and employees can send. Free plan, then from $18 a month. An alternative to 7shifts and Deputy.
 
-**Long description (435 words, under 1000 words):**
+**Long description (462 words, under 1000 words):**
 
-Wiz Scheduler is a multi-location employee scheduling app. It builds the weekly schedule from manager and employee preferences, together with availability, roles and skill levels, so the draft already reflects what people asked for.
+Wiz Scheduler is a multi-location employee scheduling app. It builds the weekly schedule from manager and employee preferences, together with availability, roles and skill levels, reflects the preferences on file.
 
 Managers can enter preferences for everyone: preferred days (up to 3), preferred time ranges, a weekly maximum of hours, caps such as "at most N shifts in this time range a week", unavailable times, and coworker relationships (work with, keep apart, or do not schedule together, limited to people who share a location). Employees can send their own preferences once an admin turns on preference requests in Company Settings. Preference requests are off by default, and a manager approves each request and sets its weight.
 
@@ -167,7 +167,7 @@ Other features: QR check-in on the paid plan, employee pages in 19 languages, an
 
 What it does not do: there is no POS integration, sales forecasting, tip pooling or payroll processing. On Fair Workweek, Wiz Scheduler offers only the opt-in per-location minimum-rest rule, with no advance-notice tracking or premium-pay handling, so it is not Fair Workweek compliance software. Teams that need those features should look at Deputy.
 
-Pricing: a Free plan with 2 locations, 25 employees and one schedule a month for each location (no AI Generate). Pro is $18 a month, flat, for unlimited locations, with 500 employees included.
+Pricing: Free plan with 2 locations, 25 employees and one schedule a month for each location, 2 attempts and no AI Generate. Pro starts at $18 a month, flat, for unlimited locations, and includes 500 employees, plus $1 for each additional 500 employees above 500. AI Generate is not included in Pro; it is paid from prepaid credit packs of $10, $25 or $50.
 
 **Suggested categories (confirm on the site):**
 - Employee scheduling
@@ -175,7 +175,7 @@ Pricing: a Free plan with 2 locations, 25 employees and one schedule a month for
 - Work management or HR tools, whichever tag AlternativeTo offers
 
 **List as an alternative to:**
-- 7shifts: 7shifts is priced per location and builds its draft from sales and schedule history; Wiz Scheduler is one flat price for all locations and builds from preferences, but 7shifts is stronger on Fair Workweek alerts and offers a payroll add-on.
+- 7shifts: 7shifts is priced per location, and its auto-scheduler is a beta rolling out to selected accounts that drafts from at least 6 weeks of sales and schedule history; Wiz Scheduler is priced from $18 a month for all locations and builds from preferences, while 7shifts is stronger on Fair Workweek alerts and offers a payroll add-on.
 - Deputy: Deputy is priced per user and can auto-fill by cost or equal hours; Wiz Scheduler is flat-priced and builds from preferences and coworker pairings, but Deputy is stronger on Fair Workweek (consent, premiums, notice, rest).
-- Homebase: Homebase is priced per location, with a free single-location plan and an AI scheduling assistant from its Plus plan; Wiz Scheduler is flat-priced across locations and marks every shift that goes against a preference, but has no POS integration or payroll processing.
-- When I Work: When I Work is priced per user and its auto-assign can require overlap with preferred availability; Wiz Scheduler adds coworker preferences and flat pricing, but has no payroll processing or tip pooling.
+- Homebase: Homebase is priced per location and Wiz Scheduler is flat-priced across locations, marking every shift that goes against a preference; Homebase is stronger with a free plan for 1 location and 10 employees, and its AI scheduling assistant comes with its Plus plan.
+- When I Work: When I Work is priced per user and Wiz Scheduler is flat-priced with coworker preferences; When I Work is stronger with a low per-user price at a single location ($2.50) and auto-assign on every plan.
