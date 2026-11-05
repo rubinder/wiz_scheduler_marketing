@@ -88,7 +88,9 @@ Daily guide PRs (branches `content/guide-*`) may touch only
 `.claude`, `src/content/legal`) is out of bounds.
 
 The boundary is enforced twice: by CI (`scripts/check-guide-boundary.mjs`,
-on pull_request runs and on push runs of `content/guide-*` branches) and
+on pull_request runs and on push runs of `content/guide-*` branches, run
+from main's committed copy, never the branch's, with paths checked before
+`npm ci`) and
 again at merge time by the factory. Do not rely on either; stay inside it.
 Both use one name policy: `src/content/guides/<locale>/<slug>.md` and
 `public/guides/<seg>/.../<name>.<png|jpg|jpeg|webp|avif>`, every segment
@@ -96,7 +98,8 @@ lowercase-hyphenated, extensions lowercase.
 
 Guide markdown also may not contain raw HTML or script, an `h1`, invisible
 characters, or links other than `https://` to `wizscheduler.com` and
-`app.wizscheduler.com`. Images go in `public/guides/**`. Tailwind does not
+`app.wizscheduler.com`. Images go in `public/guides/**` and are referenced
+only as same-site `/guides/...` paths (or relative), never absolute URLs. Tailwind does not
 scan `src/content/guides/**`, so guide text never becomes CSS. Changing how guides render is a normal feature PR on a
 `feat/` branch, never a guide PR.
 

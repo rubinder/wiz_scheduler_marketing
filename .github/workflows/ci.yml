@@ -17,12 +17,35 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      # The guide boundary check runs from main's committed copy (a worktree of origin/main, with
+      # everything it imports), never the branch's own, so a branch cannot rewrite the check that
+      # judges it. The branch's files are only data to it.
+      # Bootstrap: until the PR that adds the check merges, main has no copy, and the branch's own
+      # is used; once main has it, every run takes main's.
+      - name: Pick the guide check from main
+        run: |
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          if git cat-file -e origin/main:scripts/check-guide-boundary.mjs 2>/dev/null; then
+            git worktree add --detach "$RUNNER_TEMP/base" origin/main
+            echo "GUIDE_CHECK=$RUNNER_TEMP/base/scripts/check-guide-boundary.mjs" >> "$GITHUB_ENV"
+          else
+            echo "GUIDE_CHECK=$GITHUB_WORKSPACE/scripts/check-guide-boundary.mjs" >> "$GITHUB_ENV"
+          fi
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
+      # Paths first, before npm ci: nothing the branch controls (package scripts, the lockfile,
+      # .npmrc) has run yet. Once it passes, a guide branch differs from main only in guide
+      # markdown and images, so the install below is main's dependencies.
+      - name: Guide boundary (paths)
+        run: node "$GUIDE_CHECK" --paths-only
       - run: npm ci
-      - run: node scripts/check-guide-boundary.mjs
+      # The rendered-content check, still main's code, rendering with main's satteri.
+      - name: Guide boundary (content)
+        run: |
+          if [ -d "$RUNNER_TEMP/base" ]; then ln -s "$GITHUB_WORKSPACE/node_modules" "$RUNNER_TEMP/base/node_modules"; fi
+          node "$GUIDE_CHECK"
       - run: npm run check
       - run: npm test
       - run: npm run build

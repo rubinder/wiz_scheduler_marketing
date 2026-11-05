@@ -45,9 +45,16 @@ export function symlinks(files, lstat = lstatSync) {
 
 const FM_KEYS = new Set(["title", "description", "targetKeyword", "sourceLocale", "publishedOn", "updatedOn", "related"]);
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-// Markup, template and escape characters, a `scheme:` prefix, and invisible characters (controls,
-// bidi overrides, zero-width marks; ZWNJ/ZWJ stay allowed because Indic and Urdu text needs them).
-const BAD_STRING = /[<>{}`\\]|(?:^|[^a-zA-Z0-9+.-])[a-zA-Z][a-zA-Z0-9+.-]*:(?=\S)|(?![\u200c\u200d])[\p{Cc}\p{Cf}\p{Co}\p{Cn}\u2028\u2029]/u;
+// Every character that renders as nothing or reorders text: controls, format characters (bidi
+// controls, zero-width marks, BOM, soft hyphen, tag characters), every default-ignorable code point
+// (variation selectors, Hangul fillers, the combining grapheme joiner, ...), private-use,
+// unassigned and surrogate code points, and the line/paragraph separators. Each use below allows
+// back only the few that real scripts need.
+const INVISIBLE_SET = String.raw`\p{Cc}\p{Cf}\p{Co}\p{Cn}\p{Cs}\p{Zl}\p{Zp}\p{Default_Ignorable_Code_Point}\p{Bidi_Control}`;
+// Front matter allows ZWNJ/ZWJ only (Indic and Urdu text needs them).
+const FM_INVISIBLE = new RegExp(String.raw`(?![\u200c\u200d])[${INVISIBLE_SET}]`, "u");
+// Markup, template and escape characters, and a `scheme:` prefix.
+const BAD_STRING = /[<>{}`\\]|(?:^|[^a-zA-Z0-9+.-])[a-zA-Z][a-zA-Z0-9+.-]*:(?=\S)/u;
 
 // Plain (unquoted) scalars that YAML would type as something other than a string: null, booleans
 // (YAML 1.1's yes/no/on/off/y/n too, in case a stricter parser ever reads the file), numbers in
@@ -126,7 +133,7 @@ function frontMatterLineProblems(lines, locales) {
       if (!locales.includes(value)) problems.push("front matter: sourceLocale is not a site locale");
     } else if (isNonStringPlain(s) || (!s.quoted && TIMESTAMP.test(value))) {
       problems.push(`front matter: ${key} would not load as a string; quote it`);
-    } else if (BAD_STRING.test(value)) {
+    } else if (BAD_STRING.test(value) || FM_INVISIBLE.test(value)) {
       problems.push(`front matter: ${key} contains markup, a URL or invisible characters`);
     }
   }
@@ -198,6 +205,10 @@ export function contrast(a, b) {
 }
 
 const BASE = "https://wizscheduler.com/";
+// An image the page loads by itself is a path on this site under /guides/ (public/guides/ is
+// served there), in the shared lowercase name policy: never an absolute URL, so the reader's
+// browser requests nothing from another origin, the app included. Only links leave the site.
+const GUIDE_IMAGE_URL = /^\/guides\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\/)+[a-z0-9]+(?:-[a-z0-9]+)*\.(?:png|jpg|jpeg|webp|avif)$/;
 const isRelative = (v) => !/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(v) && !/^[\\/]{2}/.test(v);
 const IMAGE_PATH = /^[A-Za-z0-9_./-]+\.(?:png|jpe?g|webp|avif)$/;
 
@@ -213,7 +224,8 @@ function relativeImageOk(v, file) {
   }
 }
 
-function urlProblem(raw, el, file) {
+function urlProblem(raw, el) {
+  if (el === "img") return GUIDE_IMAGE_URL.test(raw) ? null : "image must be a /guides/<folder>/<name>.<ext> path on this site";
   // Only `&amp;` is a legitimate entity in an emitted URL; any other `&` could hide a scheme.
   const v = raw.replace(/&amp;/g, "&");
   if (/&[#a-zA-Z]/.test(v)) return "entity in URL";
@@ -227,7 +239,6 @@ function urlProblem(raw, el, file) {
   if (u.username || u.password) return "credentials in URL";
   if (!ALLOWED_HOSTS.has(u.hostname)) return `off-site host ${u.hostname}`;
   if (u.port) return "port in URL";
-  if (el === "img" && isRelative(v.trim()) && !relativeImageOk(v, file)) return "relative image outside guide folders";
   return null;
 }
 
@@ -244,6 +255,11 @@ function imageMarkerProblem(raw, srcAttr, file) {
   if (Object.keys(o).some((k) => !["src", "alt", "title", "index"].includes(k))) return "unexpected image marker key";
   if (!Number.isInteger(o.index) || ["alt", "title"].some((k) => k in o && typeof o[k] !== "string")) return "bad image marker";
   if (typeof o.src !== "string" || !relativeImageOk(o.src, file)) return "image marker src outside guide folders";
+  // JSON escapes (`\u0007`) hide characters from the check on the HTML; Astro renders the decoded strings.
+  for (const k of ["alt", "title"]) {
+    const why = k in o ? invisibleProblem(o[k]) : null;
+    if (why) return `${why} in image ${k}`;
+  }
   if (srcAttr !== undefined) return "image marker next to a src";
   return null;
 }
@@ -277,21 +293,43 @@ function attrProblem(el, name, value, ctx) {
 
 const DEFAULT_FILE = "src/content/guides/en/guide.md";
 
-// The front matter's invisible-character class, applied to everything the body renders to (text, alt,
-// title, code). Allowed: tab and newline, ZWNJ/ZWJ (Indic and Urdu need them) and the directional
-// marks LRM, RLM and ALM (Arabic and Urdu text mixed with numbers or Latin needs them). Bidi
-// overrides and isolates, zero-width spaces, tag characters, BOM and soft hyphen all fail.
-const INVISIBLE = /(?![\t\n\u200c\u200d\u200e\u200f\u061c])[\p{Cc}\p{Cf}\p{Co}\p{Cn}\p{Cs}\u2028\u2029]/u;
-// Numeric character references decoded the way a browser would, so `&#x202E;` is judged as U+202E.
-const decodeNumericRefs = (html) =>
-  html.replace(/&#(?:[xX]([0-9a-fA-F]+)|([0-9]+));/g, (_, hex, dec) => {
-    const cp = hex ? parseInt(hex, 16) : parseInt(dec, 10);
-    return cp <= 0x10ffff ? String.fromCodePoint(cp) : "\ufffd";
-  });
+// The invisible set as the body may use it. Allowed back: tab and newline, ZWNJ/ZWJ (Indic and Urdu
+// need them) and the directional marks LRM, RLM and ALM (Arabic and Urdu text mixed with numbers or
+// Latin needs them). Bidi overrides and isolates, zero-width spaces, tag characters, BOM, soft
+// hyphen and variation selectors all fail.
+const INVISIBLE = new RegExp(String.raw`(?![\t\n\u200c\u200d\u200e\u200f\u061c])[${INVISIBLE_SET}]`, "u");
 
-function invisibleProblem(html) {
-  const m = INVISIBLE.exec(decodeNumericRefs(html));
-  return m ? `invisible character U+${m[0].codePointAt(0).toString(16).toUpperCase().padStart(4, "0")}` : null;
+const NAMED_REFS = { "amp;": "&", "lt;": "<", "gt;": ">", "quot;": '"', "apos;": "'" };
+// Character references decoded the way a browser decodes them, in one pass (so `&amp;#x202E;` stays
+// text): numeric ones with or without the `;`, invalid code points as U+FFFD. The renderer emits only
+// the five escapes above, so any other named reference is reported rather than decoded.
+export function decodeReferences(html) {
+  const unknown = [];
+  const text = html.replace(/&(?:#[xX]([0-9a-fA-F]+);?|#([0-9]+);?|([a-zA-Z][a-zA-Z0-9]*;?))/g, (ref, hex, dec, name) => {
+    if (name !== undefined) {
+      if (Object.hasOwn(NAMED_REFS, name)) return NAMED_REFS[name];
+      unknown.push(ref);
+      return ref;
+    }
+    const cp = parseInt(hex ?? dec, hex ? 16 : 10);
+    return cp === 0 || cp > 0x10ffff || (cp >= 0xd800 && cp <= 0xdfff) ? "\ufffd" : String.fromCodePoint(cp);
+  });
+  return { text, unknown };
+}
+
+const codePoint = (ch) => `U+${ch.codePointAt(0).toString(16).toUpperCase().padStart(4, "0")}`;
+
+function invisibleProblem(text) {
+  const m = INVISIBLE.exec(text);
+  return m ? `invisible character ${codePoint(m[0])}` : null;
+}
+
+// Judged on the decoded HTML (text and attribute values alike), which is what the reader sees.
+function htmlInvisibleProblems(html) {
+  const { text, unknown } = decodeReferences(html);
+  const problems = unknown.length ? [`unexpected character reference ${unknown[0]}`] : [];
+  const why = invisibleProblem(text);
+  return why ? [...problems, why] : problems;
 }
 
 // The renderer escapes `<` in text, so every `<` in its output must open a well-formed tag.
@@ -299,8 +337,7 @@ function invisibleProblem(html) {
 // `file` is the guide's path, against which relative images resolve.
 export function htmlProblems(html, file = DEFAULT_FILE) {
   const problems = [];
-  const invisible = invisibleProblem(html);
-  if (invisible) problems.push(invisible);
+  problems.push(...htmlInvisibleProblems(html));
   const stack = [];
   const preBg = []; // background colour of each open <pre> (null when it has no highlighter style)
   let i = 0;
@@ -351,7 +388,7 @@ export function htmlProblems(html, file = DEFAULT_FILE) {
         problems.push(`attribute ${name} on <${el}>: ${why}`);
         ok = false;
       } else if (name === "href" || name === "src") {
-        const u = urlProblem(value, el, file);
+        const u = urlProblem(value, el);
         if (u) problems.push(`${name} on <${el}>: ${u}`);
       } else if (name === "__astro_image_") {
         const u = imageMarkerProblem(value, attrs.src, file);
@@ -399,6 +436,9 @@ export async function contentProblems(markdown, { file = DEFAULT_FILE, load = de
     return [`renderer unavailable: ${e instanceof Error ? e.message : String(e)}`];
   }
   const problems = frontMatterProblems(markdown, env.locales);
+  // The raw source too, rendered or not (an unused reference definition, say).
+  const raw = invisibleProblem(markdown);
+  if (raw) problems.push(`${raw} in the source`);
   const folder = GUIDE_FILE.exec(file)?.[1];
   if (!folder || !env.locales.includes(folder)) problems.push(`guide path ${file} is not src/content/guides/<locale>/<slug>.md`);
   const fm = splitFrontMatter(markdown);
@@ -455,17 +495,27 @@ export function headRef(env) {
   return env.GITHUB_HEAD_REF || (env.GITHUB_EVENT_NAME === "push" ? env.GITHUB_REF_NAME || "" : "");
 }
 
-async function main() {
-  const head = headRef(process.env);
+// `--paths-only` checks the diff (files, modes, symlinks) and stops before reading or rendering
+// any content: CI runs it before `npm ci`, so it decides before anything the branch controls runs.
+export async function main(
+  argv = process.argv.slice(2),
+  { env = process.env, diff = gitDiff, read = (f) => readFileSync(f, "utf8"), lstat = lstatSync, load = defaultLoad, log = console.log, error = console.error } = {},
+) {
+  if (argv.some((a) => a !== "--paths-only")) {
+    error(`unknown arguments: ${argv.join(" ")}`);
+    return 2;
+  }
+  const pathsOnly = argv.includes("--paths-only");
+  const head = headRef(env);
   if (!head.startsWith("content/guide-")) {
-    console.log(`not a guide PR (${head || "no head ref"}); skipping`);
+    log(`not a guide PR (${head || "no head ref"}); skipping`);
     return 0;
   }
-  const entries = gitDiff();
+  const entries = diff();
   const files = entries.map((e) => e.path);
   const bad = outsideBoundary(files);
   if (bad.length) {
-    console.error(
+    error(
       "Guide PRs may only touch src/content/guides/<locale>/<slug>.md and public/guides/<folder>/<name>.<png|jpg|jpeg|webp|avif>, all lowercase-hyphenated:\n" +
         bad.join("\n"),
     );
@@ -473,25 +523,29 @@ async function main() {
   }
   const structural = diffProblems(entries);
   if (structural.length) {
-    console.error("Guide PRs may only add or modify regular files:\n" + structural.join("\n"));
+    error("Guide PRs may only add or modify regular files:\n" + structural.join("\n"));
     return 1;
   }
   const live = entries.filter((e) => ["A", "M", "T"].includes(e.status)).map((e) => e.path);
-  const links = symlinks(live);
+  const links = symlinks(live, lstat);
   if (links.length) {
-    console.error("Guide PRs may not contain symlinks:\n" + links.join("\n"));
+    error("Guide PRs may not contain symlinks:\n" + links.join("\n"));
     return 1;
+  }
+  if (pathsOnly) {
+    log(`guide paths ok (${files.length} files)`);
+    return 0;
   }
   const failures = [];
   for (const f of live) {
     if (!f.startsWith(CONTENT_PREFIX)) continue;
-    for (const p of await contentProblems(readFileSync(f, "utf8"), { file: f })) failures.push(`${f}: ${p}`);
+    for (const p of await contentProblems(read(f), { file: f, load })) failures.push(`${f}: ${p}`);
   }
   if (failures.length) {
-    console.error("Guide markdown must have plain front matter and render to plain HTML linking only to wizscheduler.com:\n" + failures.join("\n"));
+    error("Guide markdown must have plain front matter and render to plain HTML linking only to wizscheduler.com:\n" + failures.join("\n"));
     return 1;
   }
-  console.log(`guide boundary ok (${files.length} files)`);
+  log(`guide boundary ok (${files.length} files)`);
   return 0;
 }
 

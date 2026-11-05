@@ -9,6 +9,7 @@ import {
   frontMatterProblems,
   headRef,
   htmlProblems,
+  main,
   outsideBoundary,
   parseRawDiff,
   symlinks,
@@ -546,5 +547,100 @@ describe("renderer pin (item 12)", () => {
     expect(copies).toEqual(["node_modules/@astrojs/markdown-satteri"]);
     expect(installed.version).toBe(lock.packages["node_modules/@astrojs/markdown-satteri"].version);
     expect(installed.version).toBe(lock.packages["node_modules/astro"].dependencies["@astrojs/markdown-satteri"]);
+  });
+});
+
+describe("guide images are same-site paths", () => {
+  it("fails absolute image URLs, even to the site's own hosts", async () => {
+    for (const md of [
+      "![x](https://app.wizscheduler.com/logo.png)",
+      "![x](https://wizscheduler.com/guides/x/a.png)",
+      "![x](HTTPS://APP.WIZSCHEDULER.COM/guides/x/a.png)",
+      "[![x](https://app.wizscheduler.com/a.png)](https://app.wizscheduler.com/register)",
+    ]) await fails(md);
+    expect(htmlProblems('<p><img src="https://app.wizscheduler.com/a.png" alt="x"></p>')).not.toEqual([]);
+  });
+  it("fails root-relative images outside /guides/<folder>/", async () => {
+    for (const md of ["![x](/public/guides/x/a.png)", "![x](/guides/a.png)", "![x](/guides/x/A.png)", "![x](/guides/x/./a.png)"]) await fails(md);
+  });
+  it("still passes /guides/ images and links to the app", async () => {
+    await passes("![x](/guides/x/a.png)\n\n![y](/guides/x/y/b-c.webp)\n\n[app](https://app.wizscheduler.com/register)\n\n[![x](/guides/x/a.png)](https://app.wizscheduler.com/register)");
+  });
+});
+
+describe("invisible characters, decoded the way the page shows them", () => {
+  it("fails default-ignorable characters that are not format controls", async () => {
+    for (const ch of ["\ufe0f", "\u{e0100}", "\u034f", "\u3164", "\u115f", "\uffa0", "\u17b4", "\u180b", "\u{1d173}"]) {
+      for (const md of [`a${ch}b`, `\`a${ch}b\``, `![a${ch}](/guides/x/a.png)`, `![a${ch}](./a.webp)`, `[l](/x "t${ch}")`]) await fails(md);
+    }
+  });
+  it("fails characters the image marker carries as JSON escapes", async () => {
+    for (const md of ["![a\u0007b](./a.webp)", "![a](./a.webp \"t\u0001\")", "![a\u001bb](../ar/b.png)"]) await fails(md);
+    const marker = (json: string) => `<p><img __ASTRO_IMAGE_="${json.replace(/"/g, "&quot;")}"></p>`;
+    expect(htmlProblems(marker('{"alt":"a\\u202eb","src":"./a.webp","index":0}'))).not.toEqual([]);
+    expect(htmlProblems(marker('{"alt":"a","title":"\\u200b","src":"./a.webp","index":0}'))).not.toEqual([]);
+    expect(htmlProblems(marker('{"alt":"a\\\\u202eb","src":"./a.webp","index":0}'))).toEqual([]); // a literal backslash-u
+  });
+  it("decodes references the way a browser does, and fails closed on any it does not know", () => {
+    expect(htmlProblems("<p>a&#8238b</p>")).toEqual(["invisible character U+202E"]);
+    expect(htmlProblems('<p title="&#x202e">x</p>')).toEqual(["invisible character U+202E"]);
+    expect(htmlProblems("<p>a&#x0000202e;b</p>")).toEqual(["invisible character U+202E"]);
+    expect(htmlProblems("<p>a&ZeroWidthSpace;b</p>")).not.toEqual([]);
+    expect(htmlProblems("<p>a&shy b</p>")).not.toEqual([]);
+    expect(htmlProblems('<p title="&NoBreak;">x</p>')).not.toEqual([]);
+    // Escaped text is not decoded twice.
+    expect(htmlProblems("<p>a&amp;#x202e;b &amp;shy; &lt;b&gt; &quot;q&quot; &#39;s&#39; R&amp;D &amp; co</p>")).toEqual([]);
+  });
+  it("fails invisible characters anywhere in the source, rendered or not", async () => {
+    await fails('[x]: /a "t\u202e"\n\nText');
+    await fails("Text\n\n[x]: /a\u200b");
+  });
+  it("holds front matter to the same character set", () => {
+    const fm = (lines: string) => `---\n${lines}\n---\n\nBody`;
+    for (const v of ["a\ufe0fb", "a\u034fb", "a\u3164b", "a\u{e0100}b", "a\u200eb"]) {
+      expect(frontMatterProblems(fm(`title: "${v}"`), [...LOCALES]), v).not.toEqual([]);
+    }
+    expect(frontMatterProblems(fm("title: हिन्दी\u200d पाठ\ndescription: کتاب\u200cها"), [...LOCALES])).toEqual([]);
+  });
+});
+
+describe("paths-only mode", () => {
+  const sha = (c: string) => c.repeat(40);
+  const entries = (path: string) => parseRawDiff(`:000000 100644 ${sha("a")} ${sha("b")} A\0${path}\0`);
+  const deps = (path: string) => ({
+    env: { GITHUB_EVENT_NAME: "pull_request", GITHUB_HEAD_REF: "content/guide-a" },
+    diff: () => entries(path),
+    read: () => "not front matter",
+    lstat: (() => ({ isSymbolicLink: () => false })) as never,
+    load: () => Promise.reject(new Error("must not load the renderer")),
+    log: () => {},
+    error: () => {},
+  });
+  it("checks paths without loading the renderer or reading content", async () => {
+    expect(await main(["--paths-only"], deps("src/content/guides/en/x.md"))).toBe(0);
+    expect(await main(["--paths-only"], deps("package.json"))).toBe(1);
+    expect(await main(["--paths-only"], deps(".github/workflows/ci.yml"))).toBe(1);
+  });
+  it("checks content too without the flag", async () => {
+    expect(await main([], deps("src/content/guides/en/x.md"))).toBe(1);
+  });
+});
+
+describe("CI runs the guide check from the base branch", () => {
+  const ci = readFileSync(".github/workflows/ci.yml", "utf8");
+  const steps = ci.split(/\n\s+- /);
+  const at = (re: RegExp) => steps.findIndex((s) => re.test(s));
+  it("checks paths before installing anything the branch controls, content after", () => {
+    const install = at(/run: npm ci/);
+    const paths = at(/node "\$GUIDE_CHECK" --paths-only/);
+    expect(paths).toBeGreaterThan(at(/GUIDE_CHECK=/));
+    expect(paths).toBeLessThan(install);
+    expect(at(/node "\$GUIDE_CHECK"\s*$/m)).toBeGreaterThan(install);
+  });
+  it("takes the checker from origin/main, never the branch's copy (once main has one)", () => {
+    const pick = steps[at(/GUIDE_CHECK=/)];
+    expect(pick).toMatch(/git cat-file -e origin\/main:scripts\/check-guide-boundary\.mjs/);
+    expect(pick).toMatch(/git worktree add --detach "\$RUNNER_TEMP\/base" origin\/main/);
+    expect(ci).not.toMatch(/node scripts\/check-guide-boundary\.mjs/);
   });
 });
