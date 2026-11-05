@@ -29,6 +29,7 @@ const L = {
     excluded: "taxes, add-ons and annual discounts",
     cheapest: "cheapest plan with auto-scheduling",
     stronger: "Deputy",
+    farStronger: "far stronger",
     limits: "no notice tracking and no premium tracking",
     promo: "not counted",
   },
@@ -48,6 +49,7 @@ const L = {
     excluded: "impuestos, complementos ni descuentos anuales",
     cheapest: "plan más barato con programación automática",
     stronger: "Deputy",
+    farStronger: "mucho más completo",
     limits: "sin seguimiento de avisos ni de primas",
     promo: "no se cuenta",
   },
@@ -126,6 +128,15 @@ for (const l of Object.values(L)) {
       const table = page().match(/<table[^>]*data-price-table[^>]*>([\s\S]*?)<\/table>/);
       expect(table, "price table missing").not.toBeNull();
       for (const id of ORDER) expect(plain(table![1])).toContain(total(id));
+      const caption = plain(table![1].match(/<caption[^>]*>([\s\S]*?)<\/caption>/)?.[1] ?? "");
+      expect(caption).toContain(l.assumption);
+      expect(caption).toContain(`${users} ${l.usersWord}`);
+      const rows = table![1].match(/<tr[\s\S]*?<\/tr>/g)!.map(plain);
+      for (const id of ["deputy", "wheniwork"] as const) {
+        const row = rows.find((x) => x.includes(total(id)));
+        expect(row, `${id} row`).toBeDefined();
+        expect(caption).toContain(TOOLS[id].name);
+      }
     });
 
     it("states the 7shifts headcount per location and that its auto-scheduler is a beta", () => {
@@ -145,7 +156,8 @@ for (const l of Object.values(L)) {
         for (const x of own) expect(x).toContain(l.assumption);
       }
       for (const e of faq(page())) {
-        for (const x of sentences(e.text).filter((y) => y.includes(`${users} ${l.usersWord}`) || y.includes(total("deputy")) || y.includes(total("wheniwork"))))
+        const parts = e.text.split(/;|(?<=[.!?])\s+/);
+        for (const x of parts.filter((y) => y.includes(`${users} ${l.usersWord}`) || y.includes(total("deputy")) || y.includes(total("wheniwork"))))
           expect(x).toContain(l.assumption);
       }
     });
@@ -179,6 +191,7 @@ for (const l of Object.values(L)) {
       const wiz = plain(section(page(), "wiz"));
       expect(wiz).toContain(l.limits);
       expect(wiz).toContain(l.stronger);
+      expect(wiz).toContain(l.farStronger);
       expect(plain(section(page(), "deputy"))).toMatch(l.locale === "en" ? /strongest/ : /más (fuerte|completo)/);
     });
 

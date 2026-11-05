@@ -169,6 +169,8 @@ const en = {
     priceTitle: "What they cost",
     priceNote:
       "Prices are for {locations} locations with {employees} employees each, the top of the 1 to 3 location range. They are list prices on monthly billing, excluding taxes, add-ons and annual discounts, and each tool is priced on its cheapest plan with auto-scheduling. Checked on {date}; vendors change prices, so confirm on their pricing pages.",
+    priceBasis:
+      "Deputy and When I Work charge per user; their totals are for {users} users, counting one user per employee.",
     priceHeadings: { tool: "Tool", plan: "Plan", total: "Monthly total" },
     fairTitle: "NYC Fair Workweek",
     fairBody:
@@ -181,7 +183,7 @@ const en = {
     faq: [
       {
         q: "Which scheduling app is best for an NYC restaurant?",
-        a: "No single app is best for everyone. Deputy has the strongest NYC Fair Workweek support of the five tools we compare. Wiz Scheduler is best for teams that want employees to have a say: managers can enter preferences for everyone, and employees can send their own once preference requests are turned on in Company Settings. 7shifts, Homebase and When I Work each suit other needs, described above.",
+        a: "No single app is best for everyone. Deputy has the strongest NYC Fair Workweek support of the five tools we compare. Wiz Scheduler is best for teams that want employees to have a say: managers can enter preferences for everyone, and employees can send their own once preference requests are turned on in Company Settings. 7shifts suits restaurants that want Fair Workweek alerts and a payroll add-on, Homebase suits a single small location that wants to start on a free plan, and When I Work suits a single location that wants a low per-user price with auto-assign on every plan.",
       },
       {
         q: "How much does restaurant scheduling software cost for 1 to 3 locations in NYC?",

@@ -170,6 +170,8 @@ const es: Copy = {
     priceTitle: "Cuánto cuestan",
     priceNote:
       "Los precios son para {locations} ubicaciones con {employees} empleados cada una, el tope del rango de 1 a 3 ubicaciones. Son precios de lista con facturación mensual, sin impuestos, complementos ni descuentos anuales, y cada herramienta se calcula con su plan más barato con programación automática. Verificados el {date}; los proveedores cambian sus precios, así que confírmalos en sus páginas de precios.",
+    priceBasis:
+      "Deputy y When I Work cobran por usuario; sus totales son para {users} usuarios, si contamos un usuario por empleado.",
     priceHeadings: { tool: "Herramienta", plan: "Plan", total: "Total mensual" },
     fairTitle: "Fair Workweek de Nueva York",
     fairBody:
@@ -182,7 +184,7 @@ const es: Copy = {
     faq: [
       {
         q: "¿Cuál es la mejor app de horarios para un restaurante de Nueva York?",
-        a: "Ninguna app es la mejor para todos. Deputy tiene el soporte de Fair Workweek de Nueva York más completo de las cinco herramientas que comparamos. Wiz Scheduler es ideal para equipos que quieren que los empleados tengan voz en su horario: los gerentes pueden ingresar las preferencias de todos, y los empleados pueden enviar las suyas cuando se activan las solicitudes de preferencias en la Configuración de la empresa. 7shifts, Homebase y When I Work sirven para otras necesidades, descritas arriba.",
+        a: "Ninguna app es la mejor para todos. Deputy tiene el soporte de Fair Workweek de Nueva York más completo de las cinco herramientas que comparamos. Wiz Scheduler es ideal para equipos que quieren que los empleados tengan voz en su horario: los gerentes pueden ingresar las preferencias de todos, y los empleados pueden enviar las suyas cuando se activan las solicitudes de preferencias en la Configuración de la empresa. 7shifts sirve a restaurantes que quieren alertas de Fair Workweek y un complemento de nómina, Homebase a una sola ubicación pequeña que quiere empezar con un plan gratuito, y When I Work a una sola ubicación que busca un precio bajo por usuario con asignación automática en todos los planes.",
       },
       {
         q: "¿Cuánto cuesta un software de horarios para restaurantes con 1 a 3 ubicaciones en Nueva York?",
@@ -194,7 +196,7 @@ const es: Copy = {
       },
       {
         q: "¿Pueden los empleados elegir sus turnos en Wiz Scheduler?",
-        a: "Los empleados indican preferencias, no turnos. Los gerentes pueden ingresar las preferencias de todos. Los empleados pueden enviar las suyas cuando se activan las solicitudes de preferencias en la Configuración de la empresa, que viene desactivado por defecto, y un gerente aprueba cada solicitud. Luego el generador arma la semana en torno a ellas y marca cada turno que va contra una preferencia flexible.",
+        a: "Los empleados indican preferencias, no turnos. Los gerentes pueden ingresar las preferencias de todos. Los empleados pueden enviar las suyas cuando se activan las solicitudes de preferencias en la Configuración de la empresa (vienen desactivadas por defecto), y un gerente aprueba cada solicitud. Luego el generador arma la semana en torno a ellas y marca cada turno que va contra una preferencia flexible.",
       },
     ],
     ctaTitle: "Prueba Wiz Scheduler gratis",
