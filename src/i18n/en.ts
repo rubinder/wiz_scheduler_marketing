@@ -179,7 +179,7 @@ const en = {
       "Prices are for {locations} locations with {employees} employees each. They are list prices on monthly billing, excluding taxes, add-ons and annual discounts, and each tool is priced on its cheapest plan with auto-scheduling. Checked on {date}; vendors change prices, so confirm on their pricing pages.",
     priceBasis:
       "Deputy and When I Work charge per user; their totals are for {users} users, counting one user per employee.",
-    priceHeadings: { tool: "Tool", plan: "Plan", total: "Monthly total" },
+    priceHeadings: { plan: "Plan", total: "Monthly total" },
     fairTitle: "NYC Fair Workweek",
     fairBody:
       "Deputy has the most complete NYC Fair Workweek support of these tools. Deputy's own help article says NYC fast-food Fair Workweek applies to chains with 30 or more locations nationwide, and NYC retail to employers with 20 or more employees.",

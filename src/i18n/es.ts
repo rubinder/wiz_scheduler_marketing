@@ -180,7 +180,7 @@ const es: Copy = {
       "Los precios son para {locations} ubicaciones con {employees} empleados cada una. Son precios de lista con facturación mensual, sin impuestos, complementos ni descuentos anuales, y cada herramienta se calcula con su plan más barato con programación automática. Verificados el {date}; los proveedores cambian sus precios, así que confírmalos en sus páginas de precios.",
     priceBasis:
       "Deputy y When I Work cobran por usuario; sus totales son para {users} usuarios, si contamos un usuario por empleado.",
-    priceHeadings: { tool: "Herramienta", plan: "Plan", total: "Total mensual" },
+    priceHeadings: { plan: "Plan", total: "Total mensual" },
     fairTitle: "Fair Workweek de Nueva York",
     fairBody:
       "Deputy tiene el soporte de Fair Workweek de Nueva York más completo de estas herramientas. El propio artículo de ayuda de Deputy indica que Fair Workweek de Nueva York para comida rápida se aplica a cadenas con 30 o más ubicaciones en todo el país, y el de comercio minorista a empleadores con 20 o más empleados.",
