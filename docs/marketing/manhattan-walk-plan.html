@@ -1,0 +1,599 @@
+<title>Manhattan Walk Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one phone-width column; session strip on top, a street-sign card per session, bottom tab bar. */
+:root {
+  --bg: #F3F5F2;
+  --surface: #FFFFFF;
+  --ink: #15201A;
+  --muted: #5A665F;
+  --line: #D9E0DB;
+  --sign: #12704A;        /* NYC street-sign green */
+  --sign-ink: #FFFFFF;
+  --sign-soft: #E3F0E8;
+  --warn: #9A5B00;
+  --warn-soft: #FBEFD9;
+  --bad: #A3322B;
+  --mta-red: #EE352E; --mta-blue: #0039A6; --mta-orange: #FF6319; --mta-grey: #A7A9AC;
+  --mta-brown: #996633; --mta-yellow: #FCCC0A; --mta-bullet-ink: #FFFFFF; --mta-yellow-ink: #111111;
+  --f-display: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1411; --surface: #17201B; --ink: #E7EEE9; --muted: #9AA7A0; --line: #2A3631;
+    --sign: #2E9D6B; --sign-ink: #FFFFFF; --sign-soft: #1C3328;
+    --warn: #F0B85A; --warn-soft: #3A2C14; --bad: #F08A80;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1411; --surface: #17201B; --ink: #E7EEE9; --muted: #9AA7A0; --line: #2A3631;
+  --sign: #2E9D6B; --sign-ink: #FFFFFF; --sign-soft: #1C3328;
+  --warn: #F0B85A; --warn-soft: #3A2C14; --bad: #F08A80;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--f-body); font-size: 16px; line-height: 1.5;
+}
+.wrap {
+  max-width: 640px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 104px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+h1, h2, h3 { font-family: var(--f-display); font-weight: 700; line-height: 1.05; margin: 0; text-wrap: balance; letter-spacing: .01em; }
+h1 { font-size: 2.1rem; text-transform: uppercase; }
+h2 { font-size: 1.55rem; text-transform: uppercase; }
+h3 { font-size: 1.2rem; text-transform: uppercase; letter-spacing: .03em; }
+p { margin: 0; }
+a { color: var(--sign); }
+.eyebrow { font-family: var(--f-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+button, select, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--sign); outline-offset: 2px; }
+
+/* header + stats */
+.top { display: flex; flex-direction: column; gap: 10px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 10px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.stat b { font-family: var(--f-display); font-size: 1.7rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.stat small { font-size: .78rem; color: var(--muted); line-height: 1.25; }
+.bar { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--sign); width: 0; }
+.note { font-size: .88rem; padding: 8px 12px; border-radius: 8px; background: var(--warn-soft); color: var(--warn); }
+
+/* session strip */
+.strip { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+.chip {
+  flex: 0 0 auto; border: 1px solid var(--line); background: var(--surface); border-radius: 8px;
+  padding: 6px 10px; text-decoration: none; color: var(--ink); display: flex; flex-direction: column; align-items: flex-start; gap: 0;
+  min-width: 64px;
+}
+.chip .k { font-family: var(--f-display); font-weight: 700; font-size: 1.05rem; line-height: 1.1; }
+.chip .d { font-family: var(--f-mono); font-size: .66rem; color: var(--muted); letter-spacing: .04em; }
+.chip.f { border-style: dashed; }
+.chip[aria-current="true"] { background: var(--sign); border-color: var(--sign); color: var(--sign-ink); }
+.chip[aria-current="true"] .d { color: var(--sign-ink); opacity: .85; }
+.chip .done { font-size: .66rem; font-family: var(--f-mono); }
+
+/* street sign header */
+.sign { background: var(--sign); color: var(--sign-ink); border-radius: var(--r); padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.sign .eyebrow { color: var(--sign-ink); opacity: .85; }
+.sign h2 { font-size: 2rem; }
+.sign p { font-size: .95rem; opacity: .95; }
+
+.section { display: flex; flex-direction: column; gap: 10px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+
+.facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+.facts > div { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.station { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-weight: 700; }
+.bullet {
+  display: inline-grid; place-items: center; width: 1.45em; height: 1.45em; border-radius: 50%;
+  font-family: var(--f-body); font-weight: 700; font-size: .85rem; color: var(--mta-bullet-ink); line-height: 1;
+}
+
+/* checklists */
+.checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.checks li + li { border-top: 1px solid var(--line); }
+.check { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start; padding: 10px 0; cursor: pointer; }
+.check input { width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--sign); }
+.check .txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.check input:checked + .txt > .main { text-decoration: line-through; color: var(--muted); }
+.leg .main { font-weight: 700; }
+.leg .seq { font-family: var(--f-mono); font-size: .72rem; color: var(--muted); letter-spacing: .05em; }
+.leg .links { display: flex; flex-wrap: wrap; gap: 12px; font-size: .88rem; }
+.ext { font-family: var(--f-mono); font-size: .66rem; letter-spacing: .06em; text-transform: uppercase; color: var(--warn); background: var(--warn-soft); padding: 1px 6px; border-radius: 4px; margin-inline-start: 6px; vertical-align: 2px; }
+
+.tips { margin: 0; padding-inline-start: 1.1em; display: flex; flex-direction: column; gap: 6px; }
+
+/* form */
+form { display: flex; flex-direction: column; gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field label, .field .lbl { font-size: .85rem; font-weight: 700; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+input[type=text], input[type=date], select, textarea {
+  width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 10px; min-height: 44px;
+}
+textarea { min-height: 64px; resize: vertical; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.seg label { border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; font-weight: 400; font-size: .9rem; cursor: pointer; display: flex; gap: 8px; align-items: center; background: var(--bg); }
+.seg input { accent-color: var(--sign); margin: 0; }
+.seg label:has(input:checked) { border-color: var(--sign); background: var(--sign-soft); font-weight: 700; }
+.btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 0; border-radius: 8px; padding: 11px 16px; font-weight: 700; cursor: pointer; min-height: 44px; }
+.btn.primary { background: var(--sign); color: var(--sign-ink); }
+.btn.ghost { background: transparent; border: 1px solid var(--line); }
+.btn.small { padding: 6px 10px; min-height: 34px; font-size: .85rem; }
+.btn.danger { color: var(--bad); }
+.toast { font-size: .88rem; color: var(--sign); font-weight: 700; min-height: 1.3em; }
+
+/* stop log */
+.stops { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.stop { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; background: var(--surface); border-inline-start: 4px solid var(--line); }
+.stop[data-o="spoke"] { border-inline-start-color: var(--sign); }
+.stop[data-o="name"] { border-inline-start-color: var(--warn); }
+.stop .head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.stop .name { font-weight: 700; }
+.pill { font-family: var(--f-mono); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.pill.go { background: var(--sign-soft); color: var(--sign); border-color: transparent; }
+.pill.late { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.stop .meta { font-size: .88rem; color: var(--muted); }
+.stop .pain { font-size: .92rem; font-style: italic; }
+.empty { font-size: .92rem; color: var(--muted); padding: 10px 0; }
+
+/* script */
+.script blockquote { margin: 0; padding: 10px 12px; border-inline-start: 4px solid var(--sign); background: var(--sign-soft); border-radius: 0 8px 8px 0; }
+.qa { display: flex; flex-direction: column; gap: 8px; }
+.qa div { display: flex; flex-direction: column; gap: 2px; }
+.qa b { font-size: .92rem; }
+ol.q { margin: 0; padding-inline-start: 1.3em; display: flex; flex-direction: column; gap: 4px; }
+
+/* bottom nav */
+nav.tabs {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 5;
+  background: var(--surface); border-top: 1px solid var(--line);
+  padding-left: max(8px, env(safe-area-inset-left, 0px)); padding-right: max(8px, env(safe-area-inset-right, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+nav.tabs .in { max-width: 640px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); }
+nav.tabs a { text-decoration: none; color: var(--muted); text-align: center; padding: 12px 4px; font-weight: 700; font-size: .92rem; border-top: 3px solid transparent; }
+nav.tabs a[aria-current="true"] { color: var(--sign); border-top-color: var(--sign); }
+@media (max-width: 380px) { .facts, .row2 { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: no-preference) { .chip, .btn, nav.tabs a { transition: background-color .15s, color .15s; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">Wiz Scheduler · Manhattan walk-ins · Nov 10 – Dec 2</span>
+    <h1>Manhattan Walk Plan</h1>
+    <div class="stats" id="stats"></div>
+    <div class="note" id="dbnote" hidden></div>
+  </header>
+  <div class="strip" id="strip" role="navigation" aria-label="Sessions"></div>
+  <main id="view"></main>
+</div>
+<nav class="tabs" aria-label="Sections"><div class="in">
+  <a href="#" id="tab-plan">Sessions</a>
+  <a href="#followups" id="tab-fu">Follow-ups</a>
+  <a href="#script" id="tab-script">Script</a>
+</div></nav>
+
+<script>
+(function () {
+  "use strict";
+  var LINE = { L:"--mta-grey", A:"--mta-blue", C:"--mta-blue", E:"--mta-blue", B:"--mta-orange", D:"--mta-orange", F:"--mta-orange", M:"--mta-orange", J:"--mta-brown", Z:"--mta-brown", "1":"--mta-red", "2":"--mta-red", "3":"--mta-red", Q:"--mta-yellow" };
+
+  var BEFORE = [
+    ["Pin 20–25 places on Google Maps along tomorrow's route", "Skip corporate chains like Starbucks, Sweetgreen and Pret."],
+    ["Check Poached and Indeed for places on the route that are hiring", "Visit those first. Hiring means scheduling pain right now."],
+    ["Pack 15 one-pagers and business cards", ""],
+    ["Charge phone and battery pack; save the demo video offline", ""],
+    ["Check the weather and bring a warm layer", ""]
+  ];
+  var AFTER = [
+    ["Log every stop below, ideally right after each one", ""],
+    ["Send a same-day text or email to everyone you spoke with", "“Thanks for the chat today. Here’s the 1-minute demo. Does Tuesday 3pm work for setup?”"],
+    ["Book any setups within 48 hours", ""],
+    ["Write down which opener and objection came up most", "Change the script before the next session."]
+  ];
+
+  var SESSIONS = [
+    { id:"s1", n:1, date:"2026-11-10", label:"Tue Nov 10", area:"East Village",
+      why:"Mostly independent cafés and restaurants, with owners often on-site. The easiest place to practice the script.",
+      start:{ st:"1 Av", lines:["L"], at:"14th St & 1st Ave" }, end:{ st:"1 Av", lines:["L"], at:"14th St & Ave A exit" },
+      search:"1st Ave & E 7th St", indeed:"East Village",
+      legs:[
+        { t:"1st Ave, east side", d:"E 14th St → E Houston St", a:"1st Ave & E 14th St", b:"1st Ave & E Houston St" },
+        { t:"1st Ave, west side", d:"E Houston St → St Marks Pl", a:"1st Ave & E Houston St", b:"1st Ave & St Marks Pl" },
+        { t:"Side streets: St Marks Pl, then E 7th St", d:"1st Ave → Ave A", a:"St Marks Pl & 1st Ave", b:"E 7th St & Avenue A" },
+        { t:"Ave A", d:"E 7th St → E 14th St", a:"Avenue A & E 7th St", b:"Avenue A & E 14th St", ext:true }
+      ],
+      tips:[
+        "Many bars are closed at 2:30pm. Note them as “evening revisit” instead of waiting.",
+        "Ask everyone “Who does the schedule here?”, not “Is the manager in?”",
+        "This is a practice day. Expect a rough first hour and adjust the opener as you go."
+      ] },
+    { id:"s2", n:2, date:"2026-11-11", label:"Wed Nov 11", area:"Lower East Side",
+      why:"Narrow streets packed with cafés, brunch spots and small restaurants. Easy to cover both sides at once.",
+      start:{ st:"Delancey St–Essex St", lines:["F","M","J","Z"], at:"Delancey & Essex" }, end:{ st:"Delancey St–Essex St", lines:["F","M","J","Z"], at:"" },
+      search:"Orchard St & Rivington St", indeed:"Lower East Side",
+      legs:[
+        { t:"Orchard St", d:"Delancey St → E Houston St", a:"Orchard St & Delancey St", b:"Orchard St & E Houston St" },
+        { t:"Ludlow St", d:"E Houston St → Delancey St", a:"Ludlow St & E Houston St", b:"Ludlow St & Delancey St" },
+        { t:"Essex St", d:"Delancey St → E Houston St", a:"Essex St & Delancey St", b:"Essex St & E Houston St" },
+        { t:"Clinton St", d:"E Houston St → Delancey St", a:"Clinton St & E Houston St", b:"Clinton St & Delancey St", ext:true }
+      ],
+      tips:[
+        "Cover both sides as you go. These streets are narrow, so crossing is quick.",
+        "Glance down Rivington and Stanton at each corner for spots worth a detour.",
+        "Essex Market, by the subway, has many small food vendors under one roof."
+      ] },
+    { id:"s3", n:3, date:"2026-11-12", label:"Thu Nov 12", area:"West Village",
+      why:"Dense independent restaurants and cafés with steady staff. Lots of owner-operators.",
+      start:{ st:"W 4 St–Wash Sq", lines:["A","C","E","B","D","F","M"], at:"6th Ave & W 3rd St" }, end:{ st:"Christopher St–Stonewall", lines:["1"], at:"7th Ave S & Christopher St" },
+      search:"Bleecker St & Grove St", indeed:"West Village",
+      legs:[
+        { t:"Bleecker St", d:"6th Ave → 7th Ave S", a:"Bleecker St & 6th Ave", b:"Bleecker St & 7th Ave S" },
+        { t:"Bleecker St", d:"7th Ave S → Abingdon Square (8th Ave)", a:"Bleecker St & 7th Ave S", b:"Abingdon Square, New York" },
+        { t:"Hudson St", d:"Abingdon Square → Christopher St", a:"Hudson St & W 12th St", b:"Hudson St & Christopher St" },
+        { t:"Christopher St", d:"Hudson St → 7th Ave S", a:"Christopher St & Hudson St", b:"Christopher St & 7th Ave S", ext:true }
+      ],
+      tips:[
+        "Skip clothing boutiques. Focus on food, cafés and fitness studios.",
+        "Bleecker is narrow, so do both sides as you walk.",
+        "Ask small restaurant owners if they run other places nearby."
+      ] },
+    { id:"s4", n:4, date:"2026-11-17", label:"Tue Nov 17", area:"Hell's Kitchen",
+      why:"One of the densest restaurant stretches in Manhattan, with many small groups owning 2–4 restaurants.",
+      start:{ st:"42 St–Port Authority", lines:["A","C","E"], at:"8th Ave & 42nd St, walk 1 block west" }, end:{ st:"59 St–Columbus Circle", lines:["A","C","B","D","1"], at:"" },
+      search:"9th Ave & W 48th St", indeed:"Hell's Kitchen",
+      legs:[
+        { t:"9th Ave, east side", d:"W 43rd St → W 57th St", a:"9th Ave & W 43rd St", b:"9th Ave & W 57th St" },
+        { t:"9th Ave, west side", d:"W 57th St → W 43rd St", a:"9th Ave & W 57th St", b:"9th Ave & W 43rd St" },
+        { t:"10th Ave", d:"W 43rd St → W 57th St", a:"10th Ave & W 43rd St", b:"10th Ave & W 57th St", ext:true }
+      ],
+      tips:[
+        "Do 44th–48th St first. Theater-district spots get busy with pre-show prep from about 4:30pm.",
+        "Ask every manager: “Does the owner have other locations?”",
+        "A group owner is worth 3–4 walk-ins. Get their email, not just a name."
+      ] },
+    { id:"s5", n:5, date:"2026-11-18", label:"Wed Nov 18", area:"Upper West Side",
+      why:"Neighborhood restaurants, cafés, bakeries and studios with steady staff. Calmer conversations, good for testing the offer.",
+      start:{ st:"72 St", lines:["1","2","3"], at:"Broadway & 72nd, walk 1 block east" }, end:{ st:"72 St", lines:["B","C"], at:"Central Park West & 72nd" },
+      search:"Amsterdam Ave & W 79th St", indeed:"Upper West Side",
+      legs:[
+        { t:"Amsterdam Ave", d:"W 72nd St → W 86th St", a:"Amsterdam Ave & W 72nd St", b:"Amsterdam Ave & W 86th St" },
+        { t:"Cross on 86th, then Columbus Ave", d:"W 86th St → W 72nd St", a:"Columbus Ave & W 86th St", b:"Columbus Ave & W 72nd St" },
+        { t:"Amsterdam Ave, if ahead of pace", d:"W 86th St → W 96th St, then back down Columbus", a:"Amsterdam Ave & W 86th St", b:"Amsterdam Ave & W 96th St", ext:true }
+      ],
+      tips:[
+        "Walk quickly past blocks of banks and retail.",
+        "Owners here tend to have more time. Try asking what they would expect to pay.",
+        "Fitness studios: ask for the studio manager."
+      ] },
+    { id:"s6", n:6, date:"2026-11-19", label:"Thu Nov 19", area:"Chelsea",
+      why:"Restaurants, cafés, gyms and studios. A chance to test a second market: front-desk and trainer schedules.",
+      start:{ st:"14 St", lines:["A","C","E","L"], at:"8th Ave & 14th St" }, end:{ st:"14 St", lines:["A","C","E","L"], at:"" },
+      search:"8th Ave & W 20th St", indeed:"Chelsea",
+      legs:[
+        { t:"8th Ave", d:"W 14th St → W 28th St", a:"8th Ave & W 14th St", b:"8th Ave & W 28th St" },
+        { t:"Cross on 28th, then 9th Ave", d:"W 28th St → W 14th St", a:"9th Ave & W 28th St", b:"9th Ave & W 14th St" },
+        { t:"7th Ave, for gyms and studios", d:"W 14th St → W 23rd St", a:"7th Ave & W 14th St", b:"7th Ave & W 23rd St", ext:true }
+      ],
+      tips:[
+        "Around 14th–16th St (Chelsea Market and Meatpacking), many places are chains or big groups. Ask for the ops director anyway.",
+        "Gyms: ask who schedules front desk and trainers.",
+        "Compare how gyms react to the pitch vs. restaurants."
+      ] },
+    { id:"s7", n:7, date:"2026-12-01", label:"Tue Dec 1", area:"Revisits",
+      why:"Go back to every place where you got a name but not a conversation. Arrive when staff said the scheduler would be in.",
+      start:{ st:"Plan your own loop", lines:[], at:"From the revisit list below" }, end:{ st:"", lines:[], at:"" },
+      revisit:true, legs:[],
+      tips:[
+        "Open with the name: “Hi Maria, Jake said you’d be in today.”",
+        "Group revisits by neighborhood to cut subway time.",
+        "If they’re still not in, leave a one-pager with their name written on it."
+      ] },
+    { id:"s8", n:8, date:"2026-12-02", label:"Wed Dec 2", area:"Upper East Side",
+      why:"Neighborhood restaurants and cafés along 2nd Ave. Or swap in your best neighborhood so far.",
+      start:{ st:"72 St", lines:["Q"], at:"2nd Ave & 72nd St" }, end:{ st:"86 St", lines:["Q"], at:"2nd Ave & 86th St" },
+      search:"2nd Ave & E 79th St", indeed:"Upper East Side",
+      legs:[
+        { t:"2nd Ave, west side", d:"E 72nd St → E 86th St", a:"2nd Ave & E 72nd St", b:"2nd Ave & E 86th St" },
+        { t:"2nd Ave, east side", d:"E 86th St → E 72nd St", a:"2nd Ave & E 86th St", b:"2nd Ave & E 72nd St" },
+        { t:"1st Ave", d:"E 72nd St → E 86th St", a:"1st Ave & E 72nd St", b:"1st Ave & E 86th St", ext:true }
+      ],
+      tips:[
+        "December is busy. Keep the pitch under a minute and offer to come back after the holidays.",
+        "Use holiday staffing as the opener: “How are you handling holiday schedules?”",
+        "If your best area so far was elsewhere, go there instead."
+      ] }
+  ];
+  var FOLLOW = [
+    { id:"f1", label:"Nov 13–16", after:"s3", title:"Follow-ups and script review",
+      items:[["Follow up with everyone from sessions 1–3",""],["Book setups for anyone interested",""],["Rewrite the opener based on what worked",""],["Pick which neighborhood felt best so far",""]] },
+    { id:"f2", label:"Nov 23–27", after:"s6", title:"Thanksgiving week: phone and email only",
+      items:[["Follow up with everyone from sessions 4–6",""],["Visit businesses using it, and fix anything that annoys them",""],["Ask happy users for a testimonial and an introduction",""],["Build the Dec 1 revisit loop from the list",""]] }
+  ];
+  var ORDER = ["s1","s2","s3","f1","s4","s5","s6","f2","s7","s8"];
+
+  var OUTCOMES = { spoke:"Spoke with scheduler", name:"Got a name, come back", nofit:"Not a fit", closed:"Closed or too busy" };
+  var NEXTS = { setup:"Setup booked", demo:"Send demo", revisit:"Revisit", none:"None" };
+
+  var state = { checks:{}, stops:[], editing:null };
+  var db = null, dbReady = false;
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  function enc(s){ return encodeURIComponent(s); }
+  function dirUrl(a,b){ return "https://www.google.com/maps/dir/?api=1&origin="+enc(a+", Manhattan, NY")+"&destination="+enc(b+", Manhattan, NY")+"&travelmode=walking"; }
+  function searchUrl(q){ return "https://www.google.com/maps/search/?api=1&query="+enc("restaurants cafes near "+q+", Manhattan, NY"); }
+  function indeedUrl(area){ return "https://www.indeed.com/jobs?q=restaurant&l="+enc(area+", New York, NY"); }
+  function todayStr(){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+  function bullets(lines){ return lines.map(function(l){ var tok=LINE[l]||"--mta-grey"; var ink = l==="Q" ? "var(--mta-yellow-ink)" : "var(--mta-bullet-ink)"; return '<span class="bullet" style="background:var('+tok+');color:'+ink+'" aria-label="'+esc(l)+' train">'+esc(l)+'</span>'; }).join(""); }
+  function findSession(id){ for (var i=0;i<SESSIONS.length;i++) if (SESSIONS[i].id===id) return SESSIONS[i]; return null; }
+  function findFollow(id){ for (var i=0;i<FOLLOW.length;i++) if (FOLLOW[i].id===id) return FOLLOW[i]; return null; }
+  function fmtDate(s){ if(!s) return ""; var p=s.split("-"); var m=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+p[1]-1]; return m+" "+(+p[2]); }
+
+  function defaultView(){
+    var t=todayStr();
+    for (var i=0;i<SESSIONS.length;i++) if (SESSIONS[i].date>=t) return SESSIONS[i].id;
+    return "s8";
+  }
+  function currentView(){
+    var h=(location.hash||"").replace("#","");
+    if (h==="followups"||h==="script"||findSession(h)||findFollow(h)) return h;
+    return defaultView();
+  }
+
+  /* ---------- rendering ---------- */
+  function checkList(prefix, items, extraClass){
+    return '<ul class="checks">'+items.map(function(it,i){
+      var id=prefix+"-"+i, on=!!state.checks[id];
+      return '<li><label class="check '+(extraClass||"")+'"><input type="checkbox" id="ck-'+id+'" data-ck="'+id+'"'+(on?" checked":"")+'><span class="txt"><span class="main">'+esc(it[0])+'</span>'+(it[1]?'<span class="muted" style="font-size:.88rem">'+esc(it[1])+'</span>':'')+'</span></label></li>';
+    }).join("")+'</ul>';
+  }
+  function sessionDone(s){
+    var total=BEFORE.length+AFTER.length+s.legs.length, done=0, k;
+    for (k=0;k<BEFORE.length;k++) if(state.checks[s.id+"-b-"+k]) done++;
+    for (k=0;k<AFTER.length;k++) if(state.checks[s.id+"-a-"+k]) done++;
+    for (k=0;k<s.legs.length;k++) if(state.checks[s.id+"-l-"+k]) done++;
+    return [done,total];
+  }
+
+  function renderStats(){
+    var walk=state.stops.length, talk=0, setup=0;
+    state.stops.forEach(function(s){ if(s.outcome==="spoke") talk++; if(s.next==="setup") setup++; });
+    function tile(n,label,target){ var pct=Math.min(100,Math.round(n/target*100)); return '<div class="stat"><b>'+n+'</b><small>'+label+'</small><div class="bar"><i style="width:'+pct+'%"></i></div></div>'; }
+    $("stats").innerHTML = tile(walk,"walk-ins of 140",140)+tile(talk,"conversations of 40",40)+tile(setup,"setups of 6",6);
+  }
+
+  function renderStrip(view){
+    $("strip").innerHTML = ORDER.map(function(id){
+      var s=findSession(id), f=findFollow(id), cur = id===view;
+      if (s){ var d=sessionDone(s); return '<a class="chip" href="#'+id+'" aria-current="'+cur+'"><span class="k">S'+s.n+'</span><span class="d">'+esc(s.label.slice(4))+'</span><span class="done">'+d[0]+'/'+d[1]+'</span></a>'; }
+      return '<a class="chip f" href="#'+id+'" aria-current="'+cur+'"><span class="k">Follow-up</span><span class="d">'+esc(f.label)+'</span></a>';
+    }).join("");
+    var c=$("strip").querySelector('[aria-current="true"]'); if (c && c.scrollIntoView) { try { c.scrollIntoView({block:"nearest",inline:"center"}); } catch(e){} }
+  }
+
+  function stopItem(s){
+    var late = s.followUp && s.next!=="none" && s.followUp < todayStr();
+    var pills = '<span class="pill">'+esc(OUTCOMES[s.outcome]||"")+'</span>';
+    if (s.next && s.next!=="none") pills += '<span class="pill '+(late?"late":"go")+'">'+esc(NEXTS[s.next])+(s.followUp?' · '+esc(fmtDate(s.followUp)):'')+'</span>';
+    var who = [s.contact, s.role].filter(Boolean).join(", ");
+    var meta = [s.where, who, s.tool?("Uses "+s.tool):""].filter(Boolean).map(esc).join(" · ");
+    return '<li class="stop" data-o="'+esc(s.outcome)+'"><div class="head"><span class="name">'+esc(s.name)+'</span><span style="display:flex;gap:4px;flex-wrap:wrap">'+pills+'</span></div>'+
+      (meta?'<div class="meta">'+meta+'</div>':'')+
+      (s.pain?'<div class="pain">“'+esc(s.pain)+'”</div>':'')+
+      '<div class="btns"><button class="btn ghost small" data-edit="'+esc(s.id)+'" type="button">Edit</button><button class="btn ghost small danger" data-del="'+esc(s.id)+'" type="button">Delete</button></div></li>';
+  }
+
+  function stopForm(sid){
+    var e = state.editing ? state.stops.filter(function(x){return x.id===state.editing;})[0] : null;
+    var v = e || { outcome:"spoke", next:"none", session:sid };
+    function opt(map,cur,name){ return Object.keys(map).map(function(k){ return '<label><input type="radio" name="'+name+'" id="'+name+'-'+k+'" value="'+k+'"'+(cur===k?" checked":"")+'>'+esc(map[k])+'</label>'; }).join(""); }
+    var tools=["","Paper or whiteboard","Excel or Google Sheets","Text or WhatsApp","7shifts","Deputy","Homebase","Other software"];
+    return '<form id="stopform" autocomplete="off">'+
+      '<div class="row2"><div class="field"><label for="f-name">Business</label><input type="text" id="f-name" required value="'+esc(v.name)+'" placeholder="Name on the sign"></div>'+
+      '<div class="field"><label for="f-where">Cross street</label><input type="text" id="f-where" value="'+esc(v.where)+'" placeholder="e.g. 1st Ave & E 9th"></div></div>'+
+      '<div class="field"><span class="lbl">What happened</span><div class="seg">'+opt(OUTCOMES,v.outcome,"f-outcome")+'</div></div>'+
+      '<div class="row2"><div class="field"><label for="f-contact">Scheduler’s name</label><input type="text" id="f-contact" value="'+esc(v.contact)+'" placeholder="Who makes the schedule"></div>'+
+      '<div class="field"><label for="f-role">Role or when they’re in</label><input type="text" id="f-role" value="'+esc(v.role)+'" placeholder="GM, in Tue/Wed pm"></div></div>'+
+      '<div class="field"><label for="f-tool">How they schedule now</label><select id="f-tool">'+tools.map(function(t){return '<option value="'+esc(t)+'"'+((v.tool||"")===t?" selected":"")+'>'+(t||"Didn’t find out")+'</option>';}).join("")+'</select></div>'+
+      '<div class="field"><label for="f-pain">Pain point, in their words</label><textarea id="f-pain" placeholder="“It takes me all of Sunday night”">'+esc(v.pain)+'</textarea></div>'+
+      '<div class="field"><span class="lbl">Next step</span><div class="seg">'+opt(NEXTS,v.next,"f-next")+'</div></div>'+
+      '<div class="field"><label for="f-fu">Follow-up date</label><input type="date" id="f-fu" value="'+esc(v.followUp)+'"></div>'+
+      '<div class="btns"><button class="btn primary" type="submit">'+(e?"Save changes":"Log this stop")+'</button>'+(e?'<button class="btn ghost" type="button" id="f-cancel">Cancel</button>':'')+'</div>'+
+      '<div class="toast" id="toast" role="status"></div></form>';
+  }
+
+  function renderSession(s){
+    var mine = state.stops.filter(function(x){ return x.session===s.id; });
+    var h = '<div class="section">';
+    h += '<div class="sign"><span class="eyebrow">Session '+s.n+' of 8 · '+esc(s.label)+' · 2:30–5:00pm</span><h2>'+esc(s.area)+'</h2><p>'+esc(s.why)+'</p></div>';
+    if (!s.revisit){
+      h += '<div class="card"><div class="facts">'+
+        '<div><span class="eyebrow">Start</span><span class="station">'+bullets(s.start.lines)+' '+esc(s.start.st)+'</span><span class="muted" style="font-size:.85rem">'+esc(s.start.at)+'</span></div>'+
+        '<div><span class="eyebrow">End</span><span class="station">'+bullets(s.end.lines)+' '+esc(s.end.st)+'</span>'+(s.end.at?'<span class="muted" style="font-size:.85rem">'+esc(s.end.at)+'</span>':'')+'</div>'+
+        '<div><span class="eyebrow">Target</span><span><b>25–30</b> walk-ins</span></div>'+
+        '<div><span class="eyebrow">Pace</span><span>~12 stops an hour</span></div>'+
+        '</div></div>';
+    }
+    h += '<div class="card"><h3>Night before</h3>'+checkList(s.id+"-b",BEFORE)+
+      (s.search?'<div class="btns" style="font-size:.9rem;gap:14px"><a href="'+searchUrl(s.search)+'" target="_blank" rel="noopener">Find places on Google Maps</a><a href="https://poachedjobs.com/" target="_blank" rel="noopener">Poached</a><a href="'+indeedUrl(s.indeed)+'" target="_blank" rel="noopener">Indeed: '+esc(s.indeed)+'</a></div>':'')+'</div>';
+    if (s.revisit){
+      var rv = state.stops.filter(function(x){ return x.outcome==="name" || x.next==="revisit"; });
+      h += '<div class="card"><h3>Revisit list</h3>'+(rv.length?'<ul class="stops">'+rv.map(stopItem).join("")+'</ul>':'<p class="empty">Nothing here yet. Stops you log as “Got a name, come back” or with next step “Revisit” appear here.</p>')+'</div>';
+    } else {
+      h += '<div class="card"><h3>Route</h3><ul class="checks">'+s.legs.map(function(l,i){
+        var id=s.id+"-l-"+i, on=!!state.checks[id];
+        return '<li><label class="check leg"><input type="checkbox" id="ck-'+id+'" data-ck="'+id+'"'+(on?" checked":"")+'><span class="txt"><span class="seq">LEG '+(i+1)+'</span><span class="main">'+esc(l.t)+(l.ext?'<span class="ext">If time</span>':'')+'</span><span class="muted" style="font-size:.9rem">'+esc(l.d)+'</span><span class="links"><a href="'+dirUrl(l.a,l.b)+'" target="_blank" rel="noopener">Walking directions</a></span></span></label></li>';
+      }).join("")+'</ul></div>';
+    }
+    h += '<div class="card"><h3>On the street</h3><ul class="tips">'+s.tips.map(function(t){return '<li>'+esc(t)+'</li>';}).join("")+'</ul></div>';
+    h += '<div class="card"><h3>'+(state.editing?"Edit stop":"Log a stop")+'</h3>'+stopForm(s.id)+'</div>';
+    h += '<div class="card"><h3>Logged this session <span class="muted" style="font-family:var(--f-body);font-size:.95rem;font-weight:400;text-transform:none">('+mine.length+')</span></h3>'+(mine.length?'<ul class="stops">'+mine.slice().reverse().map(stopItem).join("")+'</ul>':'<p class="empty">No stops yet. Log each one right after you walk out, using the form above.</p>')+'</div>';
+    h += '<div class="card"><h3>After the session</h3>'+checkList(s.id+"-a",AFTER)+'</div>';
+    return h+'</div>';
+  }
+
+  function renderFollow(f){
+    var h='<div class="section"><div class="sign"><span class="eyebrow">'+esc(f.label)+' · No walking</span><h2>'+esc(f.title)+'</h2></div>';
+    h+='<div class="card"><h3>To do</h3>'+checkList(f.id,f.items)+'</div>';
+    h+=followList();
+    return h+'</div>';
+  }
+  function followList(){
+    var list = state.stops.filter(function(x){ return x.next && x.next!=="none"; }).sort(function(a,b){ return (a.followUp||"9999").localeCompare(b.followUp||"9999"); });
+    return '<div class="card"><h3>Follow-ups due</h3>'+(list.length?'<ul class="stops">'+list.map(stopItem).join("")+'</ul>':'<p class="empty">Nothing yet. Any stop with a next step (setup, send demo, revisit) shows up here, soonest first.</p>')+'</div>';
+  }
+
+  function renderScript(){
+    return '<div class="section script"><div class="sign"><span class="eyebrow">Under 60 seconds to the first question</span><h2>The script</h2></div>'+
+      '<div class="card"><h3>At the counter</h3><blockquote>“Hi, who does the staff schedule here? I have a quick question for them. It takes two minutes.”</blockquote><p class="muted">Not in? “What’s their name, and when are they usually in?” Write it down, leave a one-pager with their name on it.</p></div>'+
+      '<div class="card"><h3>With the scheduler</h3><blockquote>“I built a tool that creates the weekly staff schedule automatically. It works around availability, max hours, and who can work which role. I’m not selling anything today. I’m looking for a few local places to try it free. Can I ask how you do your schedule now?”</blockquote></div>'+
+      '<div class="card"><h3>Ask, then listen</h3><ol class="q"><li>How do you build the schedule now?</li><li>How long does it take each week?</li><li>What’s the most annoying part?</li><li>Who else would care? The owner, other locations?</li></ol></div>'+
+      '<div class="card"><h3>The offer</h3><blockquote>“I’ll set it all up for you and build your next 4 schedules free. You just check them. If it doesn’t save you time, no hard feelings.”</blockquote><p class="muted">Close: name, phone, and a 20-minute setup within 48 hours.</p></div>'+
+      '<div class="card"><h3>Objections</h3><div class="qa">'+
+        '<div><b>“We use 7shifts / Deputy.”</b><span>Great, it plugs into both. It builds the schedule automatically, then sends it back.</span></div>'+
+        '<div><b>“I don’t have time.”</b><span>That’s the point. I do the setup. Could you give me 20 minutes next week?</span></div>'+
+        '<div><b>“How much is it?”</b><span>Free while you try it. After that it’s $18 a month for everything.</span></div>'+
+        '<div><b>“Send me an email.”</b><span>Sure. Is it OK if I stop by Thursday to follow up?</span></div>'+
+        '<div><b>“Talk to the owner.”</b><span>Happy to. What’s the best way to reach them? Do they own other locations?</span></div>'+
+      '</div></div></div>';
+  }
+
+  function render(){
+    var view=currentView();
+    renderStats();
+    renderStrip(view);
+    var s=findSession(view), f=findFollow(view), html;
+    if (view==="followups") html='<div class="section"><div class="sign"><span class="eyebrow">Every stop with a next step</span><h2>Follow-ups</h2></div>'+followList()+'</div>';
+    else if (view==="script") html=renderScript();
+    else if (f) html=renderFollow(f);
+    else html=renderSession(s);
+    $("view").innerHTML=html;
+    $("tab-plan").setAttribute("aria-current", String(!!(s||f)));
+    $("tab-plan").setAttribute("href", "#"+((s||f) ? view : defaultView()));
+    $("tab-fu").setAttribute("aria-current", String(view==="followups"));
+    $("tab-script").setAttribute("aria-current", String(view==="script"));
+  }
+
+  /* ---------- persistence ---------- */
+  var checkTimer=null, checkChain=Promise.resolve(), checksDirty=false;
+  function saveChecks(){
+    checksDirty=true;
+    clearTimeout(checkTimer);
+    checkTimer=setTimeout(function(){
+      if (!db) { checksDirty=false; return; }
+      var body={ items: JSON.parse(JSON.stringify(state.checks)) };
+      checkChain = checkChain.then(function(){ return db.doc("progress/checks").set(body); })
+        .then(function(){ checksDirty=false; })
+        .catch(function(){ checksDirty=false; showNote("Couldn’t save your checklist. Check your connection and tick it again."); });
+    }, 600);
+  }
+  function showNote(t){ var n=$("dbnote"); n.textContent=t; n.hidden=!t; }
+  function toast(t){ var el=$("toast"); if(el){ el.textContent=t; setTimeout(function(){ if(el.textContent===t) el.textContent=""; }, 2500);} }
+
+  function readForm(sid){
+    function val(id){ var el=$(id); return el ? el.value.trim() : ""; }
+    function radio(n){ var el=document.querySelector('input[name="'+n+'"]:checked'); return el?el.value:""; }
+    return { name:val("f-name"), where:val("f-where"), outcome:radio("f-outcome")||"spoke", contact:val("f-contact"), role:val("f-role"),
+      tool:val("f-tool"), pain:val("f-pain"), next:radio("f-next")||"none", followUp:val("f-fu"), session:sid };
+  }
+
+  function submitStop(ev){
+    ev.preventDefault();
+    var view=currentView(); var sid=findSession(view)?view:"s7";
+    var data=readForm(sid);
+    if (!data.name) { toast("Add the business name first."); return; }
+    var editing=state.editing;
+    if (editing){
+      var old=state.stops.filter(function(x){return x.id===editing;})[0];
+      data.session = old ? old.session : sid;
+      data.createdAt = old ? old.createdAt : new Date().toISOString();
+    } else data.createdAt=new Date().toISOString();
+    if (!db){
+      if (editing) state.stops = state.stops.map(function(x){ return x.id===editing ? Object.assign({id:editing},data) : x; });
+      else state.stops.push(Object.assign({id:"local-"+Date.now()},data));
+      state.editing=null; render(); toast(editing?"Saved":"Logged"); return;
+    }
+    var p = editing ? db.collection("stops").doc(editing).set(data) : db.collection("stops").add(data);
+    state.editing=null;
+    p.then(function(){ toast(editing?"Saved":"Logged ✓"); })
+     .catch(function(e){ toast(e && e.code==="quota_exceeded" ? "Storage is full. Delete some old stops." : "Couldn’t save. Check your connection and try again."); });
+    render();
+    toast("Saving…");
+  }
+
+  var delArm=null;
+  document.addEventListener("click", function(ev){
+    var t=ev.target;
+    if (!(t instanceof Element)) return;
+    var del=t.closest("[data-del]"), ed=t.closest("[data-edit]");
+    if (ed){ state.editing=ed.getAttribute("data-edit"); var st=state.stops.filter(function(x){return x.id===state.editing;})[0];
+      if (st && findSession(st.session) && currentView()!==st.session){ location.hash=st.session; } else render();
+      setTimeout(function(){ var f=$("f-name"); if(f){ f.scrollIntoView({block:"center"}); f.focus(); } },50); return; }
+    if (del){
+      var id=del.getAttribute("data-del");
+      if (delArm!==id){ delArm=id; del.textContent="Tap again to delete"; setTimeout(function(){ if(delArm===id){ delArm=null; if(del.isConnected) del.textContent="Delete"; } },3000); return; }
+      delArm=null;
+      if (db) db.collection("stops").doc(id).delete().catch(function(){ showNote("Couldn’t delete that stop. Try again."); });
+      state.stops=state.stops.filter(function(x){return x.id!==id;});
+      render(); return;
+    }
+    if (t.id==="f-cancel"){ state.editing=null; render(); }
+  });
+  document.addEventListener("change", function(ev){
+    var t=ev.target;
+    if (t && t.getAttribute && t.getAttribute("data-ck")){
+      var id=t.getAttribute("data-ck");
+      if (t.checked) state.checks[id]=true; else delete state.checks[id];
+      renderStats(); renderStrip(currentView()); saveChecks();
+    }
+  });
+  document.addEventListener("submit", function(ev){ if (ev.target && ev.target.id==="stopform") submitStop(ev); });
+  window.addEventListener("hashchange", function(){ state.editing=null; render(); window.scrollTo(0,0); });
+
+  render();
+
+  /* connect store */
+  if (window.claude && typeof window.claude.use==="function"){
+    window.claude.use("db").then(function(d){
+      if (!d){ showNote("Saving is off in this view. Ticks and stops will be lost when you close the page. Open it signed in on claude.ai to save."); return; }
+      db=d;
+      var confirmed=false;
+      var timer=setTimeout(function(){ if(!confirmed) showNote("Can’t reach your saved data yet. What you see may be out of date."); },10000);
+      function ok(meta){ if(!meta.fromCache){ confirmed=true; clearTimeout(timer); if(!$("dbnote").textContent.indexOf("Can’t reach")) showNote(""); } }
+      db.doc("progress/checks").onSnapshot(function(snap){
+        ok(snap.metadata);
+        if (checksDirty) return;
+        var items = snap.exists ? (snap.data().items||{}) : {};
+        state.checks = JSON.parse(JSON.stringify(items));
+        render();
+      }, function(){ clearTimeout(timer); showNote("Your checklist can’t load right now. Reload the page later."); });
+      db.collection("stops").onSnapshot(function(snap){
+        ok(snap.metadata);
+        state.stops = snap.docs.map(function(dc){ return Object.assign({ id: dc.id }, dc.data()); })
+          .sort(function(a,b){ return String(a.createdAt||"").localeCompare(String(b.createdAt||"")); });
+        var active=document.activeElement, typing = active && active.closest && active.closest("#stopform") && active.tagName!=="BUTTON";
+        if (typing){ renderStats(); return; }
+        render();
+      }, function(){ clearTimeout(timer); showNote("Your logged stops can’t load right now. Reload the page later."); });
+    });
+  } else {
+    showNote("Saving is off in this copy. Open the page on claude.ai to save your progress.");
+  }
+})();
+</script>
