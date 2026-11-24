@@ -5,7 +5,7 @@ import RotaHero from "../islands/RotaHero";
 import FlowFieldStory from "../islands/FlowFieldStory";
 import { m } from "../theme";
 import { getCopy, getSiteCopy } from "../i18n";
-import { appLink } from "../lib/site";
+import { appLink, AI_HOST_DEMO_PATH } from "../lib/site";
 import { serializeJsonLd } from "../lib/jsonLd";
 import { isSiteLocale, localePath, type Locale } from "../lib/links";
 
@@ -174,6 +174,7 @@ const title = `${t.common.appName} — ${t.landing.badge}`;
     client:load
     copy={t.landing}
     registerUrl={appLink("/register")}
+    aiHost={{ url: appLink(AI_HOST_DEMO_PATH), label: t.home.aiHostBtn, note: t.home.aiHostNote }}
     rota={{ shifts: t.home.rotaShifts, people: t.home.rotaPeople, violations: t.home.rotaViolations }}
   />
 

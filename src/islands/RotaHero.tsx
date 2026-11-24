@@ -13,9 +13,11 @@ interface Props {
   copy: RotaCopy;
   registerUrl: string;
   rota: { shifts: string; people: string; violations: string };
+  /** Demo of the AI reservation host; opens in a new tab. Omitted = no button. */
+  aiHost?: { url: string; label: string; note: string };
 }
 
-export default function RotaHero({ copy, registerUrl, rota }: Props) {
+export default function RotaHero({ copy, registerUrl, rota, aiHost }: Props) {
   const reduce = useReducedMotion();
 
   const cellAt = (day: number, band: number) => CELLS.find((c) => c.day === day && c.band === band);
@@ -79,6 +81,14 @@ export default function RotaHero({ copy, registerUrl, rota }: Props) {
             {copy.viewDemo}
           </a>
         </div>
+        {aiHost && (
+          <div className="mt-8 max-w-[46ch]">
+            <a href={aiHost.url} target="_blank" rel="noopener" className={m.btn.secondary}>
+              {aiHost.label}
+            </a>
+            <p className={`${m.text.muted} text-sm leading-relaxed mt-3`}>{aiHost.note}</p>
+          </div>
+        )}
       </div>
 
       {/* Decorative rota: day/band labels and cell contents are not localized, so it is hidden from AT. */}

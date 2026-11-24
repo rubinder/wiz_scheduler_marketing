@@ -27,6 +27,8 @@ const chrome: Chrome = {
     rotaShifts: "シフト",
     rotaPeople: "人",
     rotaViolations: "休息違反",
+    aiHostBtn: "AIホストを試す",
+    aiHostNote: "デモレストランの席を、AIホストとチャットして予約できます。同じアシスタントがお店の電話にも対応できます。",
   },
   footer: {
     guides: "ガイド",

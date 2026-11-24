@@ -27,6 +27,8 @@ const chrome: Chrome = {
     rotaShifts: "postes",
     rotaPeople: "personnes",
     rotaViolations: "infractions au repos",
+    aiHostBtn: "Essayer l'hôte IA",
+    aiHostNote: "Réservez une table dans notre restaurant de démonstration en discutant avec l'hôte IA. Le même assistant peut répondre au téléphone de votre restaurant.",
   },
   footer: {
     guides: "Guides",

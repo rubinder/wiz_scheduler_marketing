@@ -27,6 +27,8 @@ const chrome: Chrome = {
     rotaShifts: "শিফট",
     rotaPeople: "জন",
     rotaViolations: "বিশ্রাম লঙ্ঘন",
+    aiHostBtn: "AI হোস্ট চেষ্টা করুন",
+    aiHostNote: "আমাদের ডেমো রেস্তোরাঁয় AI হোস্টের সঙ্গে চ্যাট করে টেবিল বুক করুন। একই সহকারী আপনার রেস্তোরাঁর ফোনও ধরতে পারে।",
   },
   footer: {
     guides: "গাইড",

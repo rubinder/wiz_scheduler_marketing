@@ -27,6 +27,8 @@ const chrome: Chrome = {
     rotaShifts: "شفٹیں",
     rotaPeople: "افراد",
     rotaViolations: "آرام کی خلاف ورزیاں",
+    aiHostBtn: "اے آئی میزبان آزمائیں",
+    aiHostNote: "ہمارے ڈیمو ریستوران میں اے آئی میزبان سے چیٹ کر کے میز بُک کریں۔ یہی اسسٹنٹ آپ کے ریستوران کا فون بھی اٹھا سکتا ہے۔",
   },
   footer: {
     guides: "رہنما",

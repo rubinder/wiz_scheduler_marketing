@@ -27,6 +27,8 @@ const chrome: Chrome = {
     rotaShifts: "shifts",
     rotaPeople: "people",
     rotaViolations: "rest violations",
+    aiHostBtn: "Try di AI host",
+    aiHostNote: "Book table for our demo restaurant by chatting wit di AI host. Di same assistant fit answer your restaurant phone too.",
   },
   footer: {
     guides: "Guides",
