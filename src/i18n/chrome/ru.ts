@@ -27,6 +27,8 @@ const chrome: Chrome = {
     rotaShifts: "смен",
     rotaPeople: "человек",
     rotaViolations: "нарушений отдыха",
+    aiHostBtn: "Попробуйте ИИ-хостес",
+    aiHostNote: "Забронируйте столик в нашем демо-ресторане, пообщавшись в чате с ИИ-хостес.",
   },
   footer: {
     guides: "Руководства",

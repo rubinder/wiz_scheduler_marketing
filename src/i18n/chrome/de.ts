@@ -27,6 +27,8 @@ const chrome: Chrome = {
     rotaShifts: "Schichten",
     rotaPeople: "Personen",
     rotaViolations: "Ruhezeitverstöße",
+    aiHostBtn: "KI-Gastgeber ausprobieren",
+    aiHostNote: "Reservieren Sie einen Tisch in unserem Demo-Restaurant, indem Sie mit dem KI-Gastgeber chatten.",
   },
   footer: {
     guides: "Ratgeber",

@@ -3,6 +3,8 @@ export const APP_URL: string = import.meta.env.PUBLIC_APP_URL || "https://app.wi
 export const API_URL: string = import.meta.env.PUBLIC_API_URL || `${APP_URL}/api/v1`;
 export const LEGAL_API_URL: string = import.meta.env.LEGAL_API_URL || API_URL;
 export const CHECKER_ENABLED: boolean = import.meta.env.PUBLIC_CHECKER_ENABLED === "true";
+/** Public booking page with the AI host chat for the demo restaurant (Fernhollow Kitchen). */
+export const AI_HOST_DEMO_PATH = "/r/acme-corp/locn0001";
 export const NYC_PRESET = "nyc-fair-workweek";
 
 /** Absolute link into the app, optionally tagged with a signup preset. */

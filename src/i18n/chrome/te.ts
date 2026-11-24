@@ -27,6 +27,8 @@ const chrome: Chrome = {
     rotaShifts: "షిఫ్ట్‌లు",
     rotaPeople: "వ్యక్తులు",
     rotaViolations: "విశ్రాంతి ఉల్లంఘనలు",
+    aiHostBtn: "AI హోస్ట్\u200cను ప్రయత్నించండి",
+    aiHostNote: "మా డెమో రెస్టారెంట్‌లో AI హోస్ట్‌తో చాట్ చేసి టేబుల్ బుక్ చేయండి.",
   },
   footer: {
     guides: "గైడ్‌లు",

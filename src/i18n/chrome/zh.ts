@@ -27,6 +27,8 @@ const chrome: Chrome = {
     rotaShifts: "班次",
     rotaPeople: "人",
     rotaViolations: "休息违规",
+    aiHostBtn: "体验 AI 接待员",
+    aiHostNote: "与 AI 接待员聊天，即可预订我们演示餐厅的餐桌。",
   },
   footer: {
     guides: "指南",

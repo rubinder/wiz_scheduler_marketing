@@ -27,6 +27,8 @@ const chrome: Chrome = {
     rotaShifts: "turnos",
     rotaPeople: "pessoas",
     rotaViolations: "violações de descanso",
+    aiHostBtn: "Experimente o anfitrião com IA",
+    aiHostNote: "Reserve uma mesa no nosso restaurante de demonstração conversando com o anfitrião com IA.",
   },
   footer: {
     guides: "Guias",

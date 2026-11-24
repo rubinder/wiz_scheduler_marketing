@@ -16,6 +16,16 @@ describe("RotaHero", () => {
     );
   });
 
+  it("links the AI host demo in a new tab without leaking the opener", () => {
+    const aiHost = { url: "https://app.example.com/r/demo/loc", label: en.home.aiHostBtn, note: en.home.aiHostNote };
+    render(<RotaHero copy={en.landing} registerUrl="/r" rota={rota} aiHost={aiHost} />);
+    const link = screen.getByRole("link", { name: en.home.aiHostBtn });
+    expect(link).toHaveAttribute("href", aiHost.url);
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link.getAttribute("rel")).toContain("noopener");
+    expect(screen.getByText(en.home.aiHostNote)).toBeInTheDocument();
+  });
+
   it("keeps the decorative rota out of the accessibility tree", () => {
     const { container } = render(<RotaHero copy={en.landing} registerUrl="/r" rota={rota} />);
     expect(container.querySelector('[aria-hidden="true"] [data-total="shifts"]')).not.toBeNull();

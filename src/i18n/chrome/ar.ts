@@ -27,6 +27,8 @@ const chrome: Chrome = {
     rotaShifts: "مناوبات",
     rotaPeople: "أشخاص",
     rotaViolations: "مخالفات الراحة",
+    aiHostBtn: "جرّب مضيف الذكاء الاصطناعي",
+    aiHostNote: "احجز طاولة في مطعمنا التجريبي عبر الدردشة مع مضيف الذكاء الاصطناعي.",
   },
   footer: {
     guides: "الأدلة",
