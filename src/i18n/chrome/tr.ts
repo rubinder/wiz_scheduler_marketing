@@ -28,7 +28,7 @@ const chrome: Chrome = {
     rotaPeople: "kişi",
     rotaViolations: "dinlenme ihlali",
     aiHostBtn: "Yapay zeka karşılayıcıyı deneyin",
-    aiHostNote: "Demo restoranımızda yapay zeka karşılayıcıyla sohbet ederek masa ayırtın. Aynı asistan restoranınızın telefonunu da yanıtlayabilir.",
+    aiHostNote: "Demo restoranımızda yapay zeka karşılayıcıyla sohbet ederek masa ayırtın.",
   },
   footer: {
     guides: "Rehberler",

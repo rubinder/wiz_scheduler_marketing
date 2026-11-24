@@ -28,7 +28,7 @@ const chrome: Chrome = {
     rotaPeople: "người",
     rotaViolations: "vi phạm nghỉ ngơi",
     aiHostBtn: "Dùng thử trợ lý đón khách AI",
-    aiHostNote: "Đặt bàn tại nhà hàng demo của chúng tôi bằng cách trò chuyện với trợ lý đón khách AI. Chính trợ lý này cũng có thể trả lời điện thoại của nhà hàng bạn.",
+    aiHostNote: "Đặt bàn tại nhà hàng demo của chúng tôi bằng cách trò chuyện với trợ lý đón khách AI.",
   },
   footer: {
     guides: "Hướng dẫn",
